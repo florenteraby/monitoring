@@ -337,6 +337,8 @@ def updateRow(to_parse, success_command, command_type, logger):
             loadavgAddValue(to_parse, row, command_type, success_command)
         elif "BACKHAUL_AP_ID" in command_type :
             row[command_type] = "NA"
+        elif "BACKHAUL_AP_TYPE" in command_type :
+            row[command_type] = "NA"
         elif "BACKHAUL_AP_RSSI" in command_type :
             row[command_type] = 0
         elif "FIRMWARE_VERSION" in command_type :
