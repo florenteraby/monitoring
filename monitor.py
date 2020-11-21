@@ -18,9 +18,9 @@ LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 DEFAULT_POLLING_FREQUENCY = 600
 
 common_command_list = [
-["xmo-client -p Device/DeviceInfo/RebootCount", "REBOOT"],
-["xmo-client -p Device/DeviceInfo/ExternalFirmwareVersion", "FIRMWARE_VERSION"],
-["xmo-client -p Device/DeviceInfo/ModelNumber", "MODELE_NAME"],
+["/usr/bin/xmo-client -p Device/DeviceInfo/RebootCount", "REBOOT"],
+["/usr/bin/xmo-client -p Device/DeviceInfo/ExternalFirmwareVersion", "FIRMWARE_VERSION"],
+["/usr/bin/xmo-client -p Device/DeviceInfo/ModelNumber", "MODELE_NAME"],
 ["cat /proc/uptime", "UPTIME"],
 ["cat /proc/meminfo | grep -iw memfree", "MEMINFO_MEMFREE"],
 ["cat /proc/meminfo | grep -iw MemAvailable:", "MEMINFO_MEMAVAILABLE"],
@@ -40,7 +40,7 @@ common_command_list = [
 ["vmstat", "VMSTAT"],
 ["ps | grep -w hg6d", "VMZ_HG6D"],
 ["ps | grep -w wshd", "VMZ_WSHD"],
-["ps | grep -w wstpd", "VMZ_WSTPD"],
+["ps | grep -w wstd", "VMZ_WSTPD"],
 ["ps | grep -w dhclient", "VMZ_DHCLIENT"],
 ["ps | grep -w dhcrelay", "VMZ_DHCPRELAY"],
 ["ps | grep -w ismd", "VMZ_ISMD"],
@@ -50,28 +50,28 @@ common_command_list = [
 ["du -s /opt/data/", "DATA_FS_SIZE"]
 ]
 system_command_list_F398BT = common_command_list + [
-["xmo-client -p Device/Services/BTServices/BTGlobalState/TemperatureMonitoring/Temperature", "TEMPERATURE"],
+["/usr/bin/xmo-client -p Device/Services/BTServices/BTGlobalState/TemperatureMonitoring/Temperature", "TEMPERATURE"],
 #TODO Add hg6d, wshd VM SIZE command add data usage file size monitoring
 
-["xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device/Active | grep true -c", "NBCONNECTEDCLIENT"],
+["/usr/bin/xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device/Active | grep true -c", "NBCONNECTEDCLIENT"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device[ConnectionType=\\'ETH\\']/Active | grep true -c", "NBETHCONNECTEDCLIENT"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device[ConnectionType=\\'WL\\']/Active | grep true -c", "NBWLCONNECTEDCLIENT"],
 #TODO Add wshd PID monitoring
-["wlctl -i wl0 channel", "WIFI_CHANNEL_BH"],
+["/usr/sbin/wlctl -i wl0 channel", "WIFI_CHANNEL_BH"],
 #F398
-["wlctl -i wl1 channel", "WIFI_CHANNEL_5G"],
+["/usr/sbin/wlctl -i wl1 channel", "WIFI_CHANNEL_5G"],
 #F398
-["wlctl -i wl2 channel", "WIFI_CHANNEL_24G"],
-["wlctl -i wl0 chanim_stats", "WIFI_CHANIM_BH"],
+["/usr/sbin/wlctl -i wl2 channel", "WIFI_CHANNEL_24G"],
+["/usr/sbin/wlctl -i wl0 chanim_stats", "WIFI_CHANIM_BH"],
 #F398
-["wlctl -i wl1 chanim_stats", "WIFI_CHANIM_5G"],
+["/usr/sbin/wlctl -i wl1 chanim_stats", "WIFI_CHANIM_5G"],
 #F398
-["wlctl -i wl2 chanim_stats", "WIFI_CHANIM_24G"],
-["wlctl -i wl1.2 assoclist > /tmp/assoc | wlctl -i wl2.1 assoclist >> /tmp/assoc ; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"],
-["xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulAccessPoint", "BACKHAUL_AP_ID"],
-["xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulConnexionType", "BACKHAUL_AP_TYPE"],
-["xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulRSSI", "BACKHAUL_AP_RSSI"],
-["xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device[ConnectionType=\\'WL\\'] | grep -e MACAddress -e RSSI -e Layer1Interface -e Name -e Active -e Connected -e Band", "DEVICE_STATUS"],
+["/usr/sbin/wlctl -i wl2 chanim_stats", "WIFI_CHANIM_24G"],
+["/usr/sbin/wlctl -i wl1.2 assoclist > /tmp/assoc | wlctl -i wl2.1 assoclist >> /tmp/assoc ; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"],
+["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulAccessPoint", "BACKHAUL_AP_ID"],
+["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulConnexionType", "BACKHAUL_AP_TYPE"],
+["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulRSSI", "BACKHAUL_AP_RSSI"],
+["/usr/bin/xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device[ConnectionType=\\'WL\\'] | grep -e MACAddress -e RSSI -e Layer1Interface -e Name -e Active -e Connected -e Band", "DEVICE_STATUS"],
 ["du -s /opt/conf/datausage.db", "DATA_USAGE_FS_SIZE"]
 ]  
 
