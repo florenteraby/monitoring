@@ -346,7 +346,7 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif "DEVICE_STATUS" in command_type:
             row[command_type] = []
         elif "MEMINFO" in command_type:
-            row[command_type] = 0.0
+            row[command_type] = float("0")
         else:
             row[command_type] = -1
             logger.debug("Command {} failed".format(row))
