@@ -322,7 +322,7 @@ def loadavgAddValue(to_parse, row, command_type, success_command):
     else:
         i = 0
         for loadavg in loadavg_info:
-            row[command_type + "-" + loadavg] = 0.0
+            row[command_type + "-" + loadavg] = float("0")
             i = i + 1
 
 
