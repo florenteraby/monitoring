@@ -322,7 +322,7 @@ def loadavgAddValue(to_parse, row, command_type, success_command):
     else:
         i = 0
         for loadavg in loadavg_info:
-            row[command_type + "-" + loadavg] = 0.0
+            row[command_type + "-" + loadavg] = float("0")
             i = i + 1
 
 
@@ -346,6 +346,10 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif "DEVICE_STATUS" in command_type:
             row[command_type] = []
         elif "MEMINFO" in command_type:
+            row[command_type] = float("0")
+        elif "MODELE_NAME" in command_type:
+            row[command_type] = "NA"
+        elif "UPTIME" in command_type:
             row[command_type] = float("0")
         else:
             row[command_type] = -1
