@@ -349,6 +349,8 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] = float("0")
         elif "MODELE_NAME" in command_type:
             row[command_type] = "NA"
+        elif "UPTIME" in command_type:
+            row[command_type] = float("0")
         else:
             row[command_type] = -1
             logger.debug("Command {} failed".format(row))
