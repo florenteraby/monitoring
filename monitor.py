@@ -110,7 +110,7 @@ def usage(argv):
     print ("[-v, --verbose]: \tOptional set debug level mode") 
 
 def prepareCommand(command, ip, login, password, logger):
-    command_to_execute = "/usr/bin/sshpass -p"+password.strip()+" ssh -o StrictHostKeyChecking=no ConnectTimeout=3 -o ConnectionAttempts=2 "+login.strip()+"@"+ip.strip()+" "+command
+    command_to_execute = "/usr/bin/sshpass -p"+password.strip()+" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 -o ConnectionAttempts=2 "+login.strip()+"@"+ip.strip()+" "+command
     logger.debug("Command to execute {}".format(command_to_execute))
     return command_to_execute
 
