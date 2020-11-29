@@ -288,6 +288,12 @@ def chanimAddValue(to_parse, row, command_type, success_command):
     if success_command == True:
         chanim_answer = to_parse.split("\n")[2].split("\t")
         i = 0
+        if (len(chanim_answer) < 1):
+            i = 0
+            for chanim in chanim_info:
+                row[command_type + "-" + chanim] = -1
+                i = i + 1
+            return
         for chanim in chanim_info:
             if (chanim_answer[i].isdigit()):
                 row[command_type + "-" + chanim] = int(chanim_answer[i])
