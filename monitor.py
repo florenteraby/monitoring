@@ -295,11 +295,16 @@ def chanimAddValue(to_parse, row, command_type, success_command):
                 i = i + 1
             return
         for chanim in chanim_info:
-            if (chanim_answer[i].isdigit()):
-                row[command_type + "-" + chanim] = int(chanim_answer[i])
-            elif (chanim_answer[i].isalnum()):
-                row[command_type + "-" + chanim] = 0 #chanim_answer[i]
-            i = i + 1
+            try :
+                chanim_answer[i].isdigit() 
+            except IndexError:
+                print ("Index Error {} {}".format(i, chanim_answer))
+            else:
+                if (chanim_answer[i].isdigit()):
+                    row[command_type + "-" + chanim] = int(chanim_answer[i])
+                elif (chanim_answer[i].isalnum()):
+                    row[command_type + "-" + chanim] = 0 #chanim_answer[i]
+                i = i + 1
     else:
         i = 0
         for chanim in chanim_info:
