@@ -67,7 +67,7 @@ system_command_list_F398BT = common_command_list + [
 ["/usr/sbin/wlctl -i wl1 chanim_stats", "WIFI_CHANIM_5G"],
 #F398
 ["/usr/sbin/wlctl -i wl2 chanim_stats", "WIFI_CHANIM_24G"],
-["/usr/sbin/wlctl -i wl1.2 assoclist > /tmp/assoc | wlctl -i wl2.1 assoclist >> /tmp/assoc ; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"],
+["/usr/sbin/wlctl -i wl1.1 assoclist > /tmp/assoc | wlctl -i wl2 assoclist >> /tmp/assoc ; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulAccessPoint", "BACKHAUL_AP_ID"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulConnexionType", "BACKHAUL_AP_TYPE"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulRSSI", "BACKHAUL_AP_RSSI"],
