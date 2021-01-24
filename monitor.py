@@ -67,6 +67,9 @@ system_command_list_F398BT = common_command_list + [
 ["/usr/sbin/wlctl -i wl1 chanim_stats", "WIFI_CHANIM_5G"],
 #F398
 ["/usr/sbin/wlctl -i wl2 chanim_stats", "WIFI_CHANIM_24G"],
+["/usr/bin/xmo-client -p Device/WiFi/Radios/Radio[1]/Channel", "WIFI_CONFIG_CHANNEL_24G"],
+["/usr/bin/xmo-client -p Device/WiFi/Radios/Radio[2]/Channel", "WIFI_CONFIG_CHANNEL_5G"],
+["/usr/bin/xmo-client -p Device/WiFi/Radios/Radio[3]/Channel", "WIFI_CONFIG_CHANNEL_BH"],
 ["/usr/sbin/wlctl -i wl1.1 assoclist > /tmp/assoc | wlctl -i wl2 assoclist >> /tmp/assoc ; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulAccessPoint", "BACKHAUL_AP_ID"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulConnexionType", "BACKHAUL_AP_TYPE"],
@@ -391,6 +394,9 @@ def updateRow(to_parse, success_command, command_type, logger):
             vmstatAddValue(to_parse, row, command_type, success_command)
             pass
         elif command_type == "TEMPERATURE":
+            row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
+            pass
+        elif command_type in "WIFI_CONFIG_CHANNEL":
             row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
             pass
         elif command_type == "REBOOT":
