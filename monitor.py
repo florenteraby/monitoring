@@ -396,7 +396,7 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif command_type == "TEMPERATURE":
             row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
             pass
-        elif command_type in "WIFI_CONFIG_CHANNEL":
+        elif  "WIFI_CONFIG_CHANNEL" in command_type:
             row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
             pass
         elif command_type == "REBOOT":
@@ -460,7 +460,7 @@ def updateRow(to_parse, success_command, command_type, logger):
     return row
     
 
-def DoExtenderMonitoring(network_list, logger, system_command_lst, client):
+def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst, client):
     """This function launch per exender the list of commands. Then store the result into the file link to the extedner
     the system commande list is global.
     #TODO Don't forget to use the WiFi command too. Ands check how to deal with 2 differents lists
@@ -490,6 +490,7 @@ def DoExtenderMonitoring(network_list, logger, system_command_lst, client):
         tags = {'name' : extender['name'].strip(),
             'fw_version' : rows['FIRMWARE_VERSION'],
             'model_name' : rows['MODELE_NAME'],
+            'setup': network_setup,
             'role' : extender['role'].strip()
             }
 
@@ -512,7 +513,7 @@ def DoExtenderMonitoring(network_list, logger, system_command_lst, client):
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")
 
-def monitoringExtenders(network_list, polling_frequency, influxServer, dest_file, logger, system_command_lst):
+def monitoringExtenders(network_list, network_setup, polling_frequency, influxServer, dest_file, logger, system_command_lst):
     extender_csv_file_list = []
     csv_header = []
     """Monitoring Extender poll for polling_frequency all the extender part of the network_list. Then will store the 
@@ -557,7 +558,7 @@ def monitoringExtenders(network_list, polling_frequency, influxServer, dest_file
     while 1:
         try:
             #Launch the command
-            DoExtenderMonitoring(network_list, logger, system_command_lst, client)
+            DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst, client)
             #Sleep for polling frequency
             time.sleep(int(polling_frequency))
             
@@ -670,7 +671,7 @@ def main(argv):
             return -1
 
         logger.info("Start monitoring with config file {}, destination file will be {}, polling frequency is {} network type {}".format(config_jsonlist["network_config"], dest_file, config_jsonlist["Frequency"], config_jsonlist["network_type"]))
-        monitoringExtenders(config_jsonlist["network_config"], config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
+        monitoringExtenders(config_jsonlist["network_config"], config_jsonlist["network_setup"],config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
     finally:
 
         pass
