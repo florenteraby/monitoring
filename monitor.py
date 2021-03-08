@@ -70,7 +70,7 @@ system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/WiFi/Radios/Radio[1]/Channel", "WIFI_CONFIG_CHANNEL_24G"],
 ["/usr/bin/xmo-client -p Device/WiFi/Radios/Radio[2]/Channel", "WIFI_CONFIG_CHANNEL_5G"],
 ["/usr/bin/xmo-client -p Device/WiFi/Radios/Radio[3]/Channel", "WIFI_CONFIG_CHANNEL_BH"],
-["/usr/sbin/wlctl -i wl1.1 assoclist > /tmp/assoc | wlctl -i wl2 assoclist >> /tmp/assoc ; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"],
+["/usr/sbin/wlctl -i wl1.1 assoclist > /tmp/assoc | /usr/sbin/wlctl -i wl2 assoclist >> /tmp/assoc | /usr/sbin/wlctl -i wl1 assoclist > /tmp/assoc | /usr/sbin/wlctl -i wl2.1 assoclist >> /tmp/assoc; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulAccessPoint", "BACKHAUL_AP_ID"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulConnexionType", "BACKHAUL_AP_TYPE"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulRSSI", "BACKHAUL_AP_RSSI"],
@@ -154,11 +154,11 @@ def parseProcessVMZ(to_find, output, logger):
         return -1    
     finally:
         try:
-            VMSize = vmz_str[vmz_index].strip().split(" ")[index_status-1]
+            VMSize = vmz_str[vmz_index].strip().split(" ")[index_status-1].replace('m', '')
         except UnboundLocalError:
             return -1
 
-    if VMSize.isalnum() == True:
+    if VMSize.isdigit() == True:
         logger.info("Found VMSize {}".format(VMSize))
         return int(VMSize)
     else:
