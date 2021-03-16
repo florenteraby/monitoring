@@ -59,6 +59,7 @@ system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device[ConnectionType=\\'WL\\']/Active | grep true -c", "NBWLCONNECTEDCLIENT"],
 #TODO Add wshd PID monitoring
 ["/usr/sbin/wlctl -i wl0 channel", "WIFI_CHANNEL_BH"],
+["/usr/sbin/wlctl -i wl0.1 assoclist", "WIFI_BH_ASSOCLIST"],
 #F398
 ["/usr/sbin/wlctl -i wl1 channel", "WIFI_CHANNEL_5G"],
 #F398
@@ -130,7 +131,6 @@ def runCommand(command, logger):
         success_command = True
     finally:
         return output, success_command
-
 def parseProcessVMZ(to_find, output, logger):
     vmz_index = 0
     vmz_str = output.split("\n")
@@ -287,7 +287,14 @@ def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
                 fields = {}            
 
     return 
-
+# assoclist 10:D7:B0:1A:96:6F
+# assoclist 10:D7:B0:1A:96:7B
+def parseBHAssoclist(to_parse, row, command_type, success_command):
+    if (len(to_parse) == 0):
+        row[command_type] = 0
+    else:    
+        row[command_type] = len(to_parse.split("\n"))
+    
 def chanimAddValue(to_parse, row, command_type, success_command):
     if success_command == True:
         chanim_answer = to_parse.split("\n")[2].split("\t")
@@ -439,6 +446,8 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif command_type == "WIFI_CHANNEL_24G":
             row[command_type] = int(to_parse.split("\n")[1].split("\t")[1])
             pass
+        elif command_type == "WIFI_BH_ASSOCLIST":
+            parseBHAssoclist(to_parse, row, command_type, success_command)
         elif "WIFI_CHANIM" in command_type:
             chanimAddValue(to_parse, row, command_type, success_command)
         elif command_type == "NB_CLIENT_WIFI_CONNECTED":
@@ -647,7 +656,7 @@ def main(argv):
                         index_path = 1
                     print ("{} {} {}".format(index_path, len (path.split(" ")), path.split(" ")))
 
-                    print "{} {} {}".format(index_path, path.split(" ")[index_path], os.path.isdir(path.split(" ")[index_path]))
+                    print ("{} {} {}".format(index_path, path.split(" ")[index_path], os.path.isdir(path.split(" ")[index_path])))
                     if (os.path.isdir(path.split(" ")[index_path]) == False):
                         os.mkdir(path.split(" ")[index_path])
                 logger.info("Destination file is : {}".format(dest_file))
