@@ -292,8 +292,10 @@ def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
 def parseBHAssoclist(to_parse, row, command_type, success_command):
     if (len(to_parse) == 0):
         row[command_type] = 0
+        return ""
     else:    
-        row[command_type] = len(to_parse.split("\n"))
+        row[command_type] = len(to_parse.split("\n")) - 1
+        return (to_parse.split("\n"))
     
 def chanimAddValue(to_parse, row, command_type, success_command):
     if success_command == True:
@@ -470,7 +472,31 @@ def updateRow(to_parse, success_command, command_type, logger):
             logger.error("Unknown command type {}".format(command_type))
 
     return row
-    
+
+def parseStaInfo(to_parse, macSta):
+    row = {}
+    staInfoList = to_parse.split("\n")
+    for item in staInfoList:
+        if ("tx failures:" in item):
+            row['BH_STA_INFO_TX_FAILURES_'+macSta] = item.split(":")[1].strip(" ")
+        if ("link bandwidth =" in item):
+            row['BH_STA_INFO_BANDWIDTH_'+macSta] = item.split("=")[1].split(" ")[1]
+        if ("in network " in item):
+            row['BH_STA_INFO_UPTIME_'+macSta] = item.strip(" ").split(" ")[2]
+        if ("rx decrypt failures:" in item):
+            row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] = item.split(":")[1].strip(" ")
+    return row
+
+def getAssoclistInfo(ip, username, password, BHAssoclist, logger):
+    row = {}
+    for STA in BHAssoclist:
+        macSta = STA.split(" ")[1]
+        command = "wlctl -i wl0.1 sta_info "+ macSta
+        myCommand = prepareCommand(command, ip, login, password, logger)
+        output, result = runCommand(myCommand, logger)
+        row.update(parseStaInfo(to_parse, macSta))
+    return row
+
 
 def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst, client):
     """This function launch per exender the list of commands. Then store the result into the file link to the extedner
@@ -491,7 +517,12 @@ def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst
             # For each command connect to extender and launch it
             command_to_execute = prepareCommand(command, extender['ip'], extender['username'], extender['password'], logger)
             output, success_command = runCommand(command_to_execute, logger)
-
+            if (command_type == 'WIFI_BH_ASSOCLIST'):
+                myRow = {}
+                BHAssocList = parseBHAssoclist(output, myRow, command_type, success_command)
+                rows.update(myRow)
+                myRow = getAssoclistInfo(extender['ip'], extender['username'], extender['password'], BHAssoclist, logger)
+                rows.update(myRow)
             rows.update(updateRow(output, success_command, command_type, logger))
         
         
