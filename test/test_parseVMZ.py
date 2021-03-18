@@ -23,6 +23,11 @@ output_hg6d_2 = """17098 root      3244 R    grep -w hg6d
 output_hg6d_6 = """17098 root      3244 R    grep -w hg6d
 1202 root     43168 S    hg6d
 """
+
+output_hg6d_10 = """17098 root      3244 R    grep -w hg6d
+1202 root     43168 R    hg6d
+"""
+
 output_hg6d_7 = """17098 root      3244 R    grep -w hg6d
 1202 root     143m S    hg6d
 """
@@ -49,6 +54,11 @@ output_hg6d_4 = """1202 root     143m R    hg6d
 17098 root      3244 R    grep -w hg6d
 """
 
+output_hg6d_11 = """17098 root      3244 R    grep -w hg6d
+"""
+
+output_hg6d_12 = """17098 root      3244 S    grep -w hg6d
+"""
 
 
 def test_parseHG6D_1(supply_logger):
@@ -87,3 +97,11 @@ def test_parseHG6D_8(supply_logger):
 def test_parseHG6D_9(supply_logger):
     vmz = parseProcessVMZ("hg6d", output_hg6d_9, supply_logger)
     assert vmz == 43168
+
+def test_parseHG6D_10(supply_logger):
+    vmz = parseProcessVMZ("hg6d", output_hg6d_10, supply_logger)
+    assert vmz == 43168
+
+def test_parseHG6D_11(supply_logger):
+    vmz = parseProcessVMZ("hg6d", output_hg6d_11, supply_logger)
+    assert vmz == -1
