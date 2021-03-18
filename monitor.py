@@ -150,12 +150,12 @@ def parseProcessVMZ(to_find, output, logger):
         index_status = vmz_str[vmz_index].strip().split(" ").index("R")
     except ValueError:
         index_status = vmz_str[vmz_index].strip().split(" ").index("S")
-    else :
-        logger.error("Process not running {}".format(to_find))
-        return -1    
+    # else :
+    #     logger.error("Process not running {}".format(to_find))
+    #     return -1    
     finally:
         try:
-            VMSize = vmz_str[vmz_index].strip().split(" ")[index_status-1].replace('m', '')
+            VMSize = vmz_str[vmz_index].strip().split(" ")[index_status-1].replace('m', '000000')
         except UnboundLocalError:
             return -1
 
