@@ -47,7 +47,8 @@ common_command_list = [
 ["ps | grep -w dnsmasq", "VMZ_DNSMASQ"],
 ["du -s /tmp", "TMP_FS_SIZE"],
 ["du -s /opt/conf/", "CONF_FS_SIZE"],
-["du -s /opt/data/", "DATA_FS_SIZE"]
+["du -s /opt/data/", "DATA_FS_SIZE"],
+["ps | grep hostapd | wc -l", "NB_HOSTPAD"]
 ]
 system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTGlobalState/TemperatureMonitoring/Temperature", "TEMPERATURE"],
@@ -58,6 +59,7 @@ system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device[ConnectionType=\\'WL\\']/Active | grep true -c", "NBWLCONNECTEDCLIENT"],
 #TODO Add wshd PID monitoring
 ["/usr/sbin/wlctl -i wl0 channel", "WIFI_CHANNEL_BH"],
+["/usr/sbin/wlctl -i wl0.1 assoclist", "WIFI_BH_ASSOCLIST"],
 #F398
 ["/usr/sbin/wlctl -i wl1 channel", "WIFI_CHANNEL_5G"],
 #F398
@@ -67,7 +69,10 @@ system_command_list_F398BT = common_command_list + [
 ["/usr/sbin/wlctl -i wl1 chanim_stats", "WIFI_CHANIM_5G"],
 #F398
 ["/usr/sbin/wlctl -i wl2 chanim_stats", "WIFI_CHANIM_24G"],
-["/usr/sbin/wlctl -i wl1.2 assoclist > /tmp/assoc | wlctl -i wl2.1 assoclist >> /tmp/assoc ; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"],
+["/usr/bin/xmo-client -p Device/WiFi/Radios/Radio[1]/Channel", "WIFI_CONFIG_CHANNEL_24G"],
+["/usr/bin/xmo-client -p Device/WiFi/Radios/Radio[2]/Channel", "WIFI_CONFIG_CHANNEL_5G"],
+["/usr/bin/xmo-client -p Device/WiFi/Radios/Radio[3]/Channel", "WIFI_CONFIG_CHANNEL_BH"],
+["/usr/sbin/wlctl -i wl1.1 assoclist > /tmp/assoc | /usr/sbin/wlctl -i wl2 assoclist >> /tmp/assoc | /usr/sbin/wlctl -i wl1 assoclist > /tmp/assoc | /usr/sbin/wlctl -i wl2.1 assoclist >> /tmp/assoc; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulAccessPoint", "BACKHAUL_AP_ID"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulConnexionType", "BACKHAUL_AP_TYPE"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulRSSI", "BACKHAUL_AP_RSSI"],
@@ -110,7 +115,7 @@ def usage(argv):
     print ("[-v, --verbose]: \tOptional set debug level mode") 
 
 def prepareCommand(command, ip, login, password, logger):
-    command_to_execute = "/usr/bin/sshpass -p"+password.strip()+" ssh -o StrictHostKeyChecking=no "+login.strip()+"@"+ip.strip()+" "+command
+    command_to_execute = "/usr/bin/sshpass -p"+password.strip()+" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 -o ConnectionAttempts=2 "+login.strip()+"@"+ip.strip()+" "+command
     logger.debug("Command to execute {}".format(command_to_execute))
     return command_to_execute
 
@@ -126,7 +131,6 @@ def runCommand(command, logger):
         success_command = True
     finally:
         return output, success_command
-
 def parseProcessVMZ(to_find, output, logger):
     vmz_index = 0
     vmz_str = output.split("\n")
@@ -151,11 +155,11 @@ def parseProcessVMZ(to_find, output, logger):
         return -1    
     finally:
         try:
-            VMSize = vmz_str[vmz_index].strip().split(" ")[index_status-1]
+            VMSize = vmz_str[vmz_index].strip().split(" ")[index_status-1].replace('m', '')
         except UnboundLocalError:
             return -1
 
-    if VMSize.isalnum() == True:
+    if VMSize.isdigit() == True:
         logger.info("Found VMSize {}".format(VMSize))
         return int(VMSize)
     else:
@@ -283,17 +287,37 @@ def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
                 fields = {}            
 
     return 
-
+# assoclist 10:D7:B0:1A:96:6F
+# assoclist 10:D7:B0:1A:96:7B
+def parseBHAssoclist(to_parse, row, command_type, success_command):
+    if (len(to_parse) == 0):
+        row[command_type] = 0
+        return ""
+    else:    
+        row[command_type] = len(to_parse.split("\n")) - 1
+        return (to_parse.split("\n"))
+    
 def chanimAddValue(to_parse, row, command_type, success_command):
     if success_command == True:
         chanim_answer = to_parse.split("\n")[2].split("\t")
         i = 0
+        if (len(chanim_answer) < 1):
+            i = 0
+            for chanim in chanim_info:
+                row[command_type + "-" + chanim] = -1
+                i = i + 1
+            return
         for chanim in chanim_info:
-            if (chanim_answer[i].isdigit()):
-                row[command_type + "-" + chanim] = int(chanim_answer[i])
-            elif (chanim_answer[i].isalnum()):
-                row[command_type + "-" + chanim] = 0 #chanim_answer[i]
-            i = i + 1
+            try :
+                chanim_answer[i].isdigit() 
+            except IndexError:
+                print ("Index Error {} {}".format(i, chanim_answer))
+            else:
+                if (chanim_answer[i].isdigit()):
+                    row[command_type + "-" + chanim] = int(chanim_answer[i])
+                elif (chanim_answer[i].isalnum()):
+                    row[command_type + "-" + chanim] = 0 #chanim_answer[i]
+                i = i + 1
     else:
         i = 0
         for chanim in chanim_info:
@@ -351,6 +375,8 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] = "NA"
         elif "UPTIME" in command_type:
             row[command_type] = float("0")
+        elif "NB_CLIENT_WIFI_CONNECTED" in command_type:
+            row[command_type] = "0"
         else:
             row[command_type] = -1
             logger.debug("Command {} failed".format(row))
@@ -378,6 +404,9 @@ def updateRow(to_parse, success_command, command_type, logger):
             vmstatAddValue(to_parse, row, command_type, success_command)
             pass
         elif command_type == "TEMPERATURE":
+            row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
+            pass
+        elif  "WIFI_CONFIG_CHANNEL" in command_type:
             row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
             pass
         elif command_type == "REBOOT":
@@ -419,6 +448,8 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif command_type == "WIFI_CHANNEL_24G":
             row[command_type] = int(to_parse.split("\n")[1].split("\t")[1])
             pass
+        elif command_type == "WIFI_BH_ASSOCLIST":
+            parseBHAssoclist(to_parse, row, command_type, success_command)
         elif "WIFI_CHANIM" in command_type:
             chanimAddValue(to_parse, row, command_type, success_command)
         elif command_type == "NB_CLIENT_WIFI_CONNECTED":
@@ -435,13 +466,39 @@ def updateRow(to_parse, success_command, command_type, logger):
             loadavgAddValue(to_parse, row, command_type, success_command)
         elif "DEVICE_STATUS" in command_type:
             row[command_type] =  to_parse.split("\n")
+        elif "NB_HOSTAPD" in command_type:
+            row[command_type] =  to_parse.split("\n")
         else :
             logger.error("Unknown command type {}".format(command_type))
 
     return row
-    
 
-def DoExtenderMonitoring(network_list, logger, system_command_lst, client):
+def parseStaInfo(to_parse, macSta):
+    row = {}
+    staInfoList = to_parse.split("\n")
+    for item in staInfoList:
+        if ("tx failures:" in item):
+            row['BH_STA_INFO_TX_FAILURES_'+macSta] = item.split(":")[1].strip(" ")
+        if ("link bandwidth =" in item):
+            row['BH_STA_INFO_BANDWIDTH_'+macSta] = item.split("=")[1].split(" ")[1]
+        if ("in network " in item):
+            row['BH_STA_INFO_UPTIME_'+macSta] = item.strip(" ").split(" ")[2]
+        if ("rx decrypt failures:" in item):
+            row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] = item.split(":")[1].strip(" ")
+    return row
+
+def getAssoclistInfo(ip, username, password, BHAssoclist, logger):
+    row = {}
+    for STA in BHAssoclist:
+        macSta = STA.split(" ")[1]
+        command = "wlctl -i wl0.1 sta_info "+ macSta
+        myCommand = prepareCommand(command, ip, login, password, logger)
+        output, result = runCommand(myCommand, logger)
+        row.update(parseStaInfo(to_parse, macSta))
+    return row
+
+
+def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst, client):
     """This function launch per exender the list of commands. Then store the result into the file link to the extedner
     the system commande list is global.
     #TODO Don't forget to use the WiFi command too. Ands check how to deal with 2 differents lists
@@ -460,7 +517,12 @@ def DoExtenderMonitoring(network_list, logger, system_command_lst, client):
             # For each command connect to extender and launch it
             command_to_execute = prepareCommand(command, extender['ip'], extender['username'], extender['password'], logger)
             output, success_command = runCommand(command_to_execute, logger)
-
+            if (command_type == 'WIFI_BH_ASSOCLIST'):
+                myRow = {}
+                BHAssocList = parseBHAssoclist(output, myRow, command_type, success_command)
+                rows.update(myRow)
+                myRow = getAssoclistInfo(extender['ip'], extender['username'], extender['password'], BHAssoclist, logger)
+                rows.update(myRow)
             rows.update(updateRow(output, success_command, command_type, logger))
         
         
@@ -471,6 +533,7 @@ def DoExtenderMonitoring(network_list, logger, system_command_lst, client):
         tags = {'name' : extender['name'].strip(),
             'fw_version' : rows['FIRMWARE_VERSION'],
             'model_name' : rows['MODELE_NAME'],
+            'setup': network_setup,
             'role' : extender['role'].strip()
             }
 
@@ -493,7 +556,7 @@ def DoExtenderMonitoring(network_list, logger, system_command_lst, client):
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")
 
-def monitoringExtenders(network_list, polling_frequency, influxServer, dest_file, logger, system_command_lst):
+def monitoringExtenders(network_list, network_setup, polling_frequency, influxServer, dest_file, logger, system_command_lst):
     extender_csv_file_list = []
     csv_header = []
     """Monitoring Extender poll for polling_frequency all the extender part of the network_list. Then will store the 
@@ -538,7 +601,7 @@ def monitoringExtenders(network_list, polling_frequency, influxServer, dest_file
     while 1:
         try:
             #Launch the command
-            DoExtenderMonitoring(network_list, logger, system_command_lst, client)
+            DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst, client)
             #Sleep for polling frequency
             time.sleep(int(polling_frequency))
             
@@ -624,7 +687,7 @@ def main(argv):
                         index_path = 1
                     print ("{} {} {}".format(index_path, len (path.split(" ")), path.split(" ")))
 
-                    print "{} {} {}".format(index_path, path.split(" ")[index_path], os.path.isdir(path.split(" ")[index_path]))
+                    print ("{} {} {}".format(index_path, path.split(" ")[index_path], os.path.isdir(path.split(" ")[index_path])))
                     if (os.path.isdir(path.split(" ")[index_path]) == False):
                         os.mkdir(path.split(" ")[index_path])
                 logger.info("Destination file is : {}".format(dest_file))
@@ -651,7 +714,7 @@ def main(argv):
             return -1
 
         logger.info("Start monitoring with config file {}, destination file will be {}, polling frequency is {} network type {}".format(config_jsonlist["network_config"], dest_file, config_jsonlist["Frequency"], config_jsonlist["network_type"]))
-        monitoringExtenders(config_jsonlist["network_config"], config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
+        monitoringExtenders(config_jsonlist["network_config"], config_jsonlist["network_setup"],config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
     finally:
 
         pass
