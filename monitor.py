@@ -470,6 +470,8 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] =  to_parse.split("\n")
         elif "NB_HOSTAPD" in command_type:
             row[command_type] =  to_parse.split("\n")
+        elif "WIFI_BH_ASSOCLIST" == command_type:
+            pass
         else :
             logger.error("Unknown command type {}".format(command_type))
 
