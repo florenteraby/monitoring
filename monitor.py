@@ -134,6 +134,8 @@ def runCommand(command, logger):
 def parseProcessVMZ(to_find, output, logger):
     vmz_index = 0
     vmz_str = output.split("\n")
+    if (len(vmz_str) == 1):
+        return -1
     if 'grep' in vmz_str[0]:
         vmz_index = 1
     elif 'grep' in  vmz_str[1]:

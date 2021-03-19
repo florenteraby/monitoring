@@ -60,6 +60,8 @@ output_hg6d_11 = """17098 root      3244 R    grep -w hg6d
 output_hg6d_12 = """17098 root      3244 S    grep -w hg6d
 """
 
+output_hg6d_13 = """"""
+
 
 def test_parseHG6D_1(supply_logger):
     vmz = parseProcessVMZ("hg6d", output_hg6d_1, supply_logger)
@@ -104,4 +106,8 @@ def test_parseHG6D_10(supply_logger):
 
 def test_parseHG6D_11(supply_logger):
     vmz = parseProcessVMZ("hg6d", output_hg6d_11, supply_logger)
+    assert vmz == -1
+
+def test_parseHG6D_12(supply_logger):
+    vmz = parseProcessVMZ("hg6d", output_hg6d_13, supply_logger)
     assert vmz == -1
