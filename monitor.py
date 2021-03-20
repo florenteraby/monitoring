@@ -484,13 +484,13 @@ def parseStaInfo(to_parse, macSta):
     staInfoList = to_parse.split("\n")
     for item in staInfoList:
         if ("tx failures:" in item):
-            row['BH_STA_INFO_TX_FAILURES_'+macSta] = item.split(":")[1].strip(" ")
+            row['BH_STA_INFO_TX_FAILURES_'+macSta] = int(item.split(":")[1].strip(" "))
         if ("link bandwidth =" in item):
-            row['BH_STA_INFO_BANDWIDTH_'+macSta] = item.split("=")[1].split(" ")[1]
+            row['BH_STA_INFO_BANDWIDTH_'+macSta] = int(item.split("=")[1].split(" ")[1])
         if ("in network " in item):
-            row['BH_STA_INFO_UPTIME_'+macSta] = item.strip(" ").split(" ")[2]
+            row['BH_STA_INFO_UPTIME_'+macSta] = int(item.strip(" ").split(" ")[2])
         if ("rx decrypt failures:" in item):
-            row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] = item.split(":")[1].strip(" ")
+            row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] = int(item.split(":")[1].strip(" "))
     return row
 
 def getAssoclistInfo(ip, username, password, BHAssoclist, logger):
