@@ -493,6 +493,8 @@ def parseStaInfo(to_parse, macSta):
 
 def getAssoclistInfo(ip, username, password, BHAssoclist, logger):
     row = {}
+    if (len(BHAssoclist) == 0):
+        return row
     for STA in BHAssoclist:
         macSta = STA.split(" ")[1]
         command = "wlctl -i wl0.1 sta_info "+ macSta
