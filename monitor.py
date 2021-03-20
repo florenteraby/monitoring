@@ -471,7 +471,7 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif "DEVICE_STATUS" in command_type:
             row[command_type] =  to_parse.split("\n")
         elif "NB_HOSTAPD" in command_type:
-            row[command_type] =  to_parse.split("\n")
+            row[command_type] =  int(to_parse.split("\n")[0])
         elif "WIFI_BH_ASSOCLIST" == command_type:
             pass
         else :
