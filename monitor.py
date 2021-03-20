@@ -525,7 +525,7 @@ def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst
                 myRow = {}
                 BHAssocList = parseBHAssoclist(output, myRow, command_type, success_command)
                 rows.update(myRow)
-                myRow = getAssoclistInfo(extender['ip'], extender['username'], extender['password'], BHAssoclist, logger)
+                myRow = getAssoclistInfo(extender['ip'], extender['username'], extender['password'], BHAssocList, logger)
                 rows.update(myRow)
             rows.update(updateRow(output, success_command, command_type, logger))
         
