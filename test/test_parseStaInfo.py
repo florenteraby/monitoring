@@ -76,10 +76,10 @@ def test_parseStaInfo():
     row = {}
     macSta = "10:D7:B0:1A:96:6F"
     row = parseStaInfo(sta_info, macSta)
-    assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == "11"
-    assert row['BH_STA_INFO_BANDWIDTH_'+macSta] == "80"
-    assert row['BH_STA_INFO_UPTIME_'+macSta] == "13416"
-    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] == "0"
+    assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 11
+    assert row['BH_STA_INFO_BANDWIDTH_'+macSta] == 80
+    assert row['BH_STA_INFO_UPTIME_'+macSta] == 13416
+    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] == 0
 
 def test_parseStaInfoEmpty():
     row = {}
@@ -160,7 +160,7 @@ def test_parseStaInfoMissingParam():
     row = {}
     macSta = "10:D7:B0:1A:96:6F"
     row = parseStaInfo(sta_info_missingBandwidth, macSta)
-    assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == "11"
+    assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 11
     assert 'BH_STA_INFO_BANDWIDTH_'+macSta not in row
-    assert row['BH_STA_INFO_UPTIME_'+macSta] == "13416"
-    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] == "0"
+    assert row['BH_STA_INFO_UPTIME_'+macSta] == 13416
+    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] == 0
