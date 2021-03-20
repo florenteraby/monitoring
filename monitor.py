@@ -498,7 +498,7 @@ def getAssoclistInfo(ip, username, password, BHAssoclist, logger):
         command = "wlctl -i wl0.1 sta_info "+ macSta
         myCommand = prepareCommand(command, ip, username, password, logger)
         output, result = runCommand(myCommand, logger)
-        row.update(parseStaInfo(to_parse, macSta))
+        row.update(parseStaInfo(output, macSta))
     return row
 
 
