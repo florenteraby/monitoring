@@ -295,9 +295,11 @@ def parseBHAssoclist(to_parse, row, command_type, success_command):
     if (len(to_parse) == 0):
         row[command_type] = 0
         return ""
-    else:    
-        row[command_type] = len(to_parse.split("\n")) - 1
-        return (to_parse.split("\n"))
+    else:
+        myList = to_parse.split("\n")
+        del myList[-1]
+        row[command_type] = len(myList)
+        return (myList)
     
 def chanimAddValue(to_parse, row, command_type, success_command):
     if success_command == True:
