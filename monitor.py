@@ -488,7 +488,7 @@ def parseStaInfo(to_parse, macSta):
         if ("link bandwidth =" in item):
             row['BH_STA_INFO_BANDWIDTH_'+macSta] = int(item.split("=")[1].split(" ")[1])
         if ("in network " in item):
-            row['BH_STA_INFO_UPTIME_'+macSta] = float(item.strip(" ").split(" ")[2])
+            row['BH_STA_INFO_UPTIME_'+macSta] = long(item.strip(" ").split(" ")[2])
         if ("rx decrypt failures:" in item):
             row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] = int(item.split(":")[1].strip(" "))
     return row
