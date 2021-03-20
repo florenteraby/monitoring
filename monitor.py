@@ -48,7 +48,7 @@ common_command_list = [
 ["du -s /tmp", "TMP_FS_SIZE"],
 ["du -s /opt/conf/", "CONF_FS_SIZE"],
 ["du -s /opt/data/", "DATA_FS_SIZE"],
-["ps | grep hostapd | wc -l", "NB_HOSTPAD"]
+["ps | grep hostapd | wc -l", "NB_HOSTAPD"]
 ]
 system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTGlobalState/TemperatureMonitoring/Temperature", "TEMPERATURE"],
