@@ -14,7 +14,7 @@ List of configuration must have :
 - "password"  : password for the login 
 
 "network_type" : Define the network type for commands definition, supported values ("F398BT", "GEN")
-
+"network_setup": Setup Name 
 "Frequency" : Is the frequence when the script will launch commands
 
 Node "Influx_Server" : Define the influxDB server
@@ -23,4 +23,10 @@ Node "Influx_Server" : Define the influxDB server
 "DB_username"  : DB user name
 "DB_password"  : DB password
 "DB_name"      : DB name
+
+Node Influx_Server : Support also Influx2.0 to allow cloud connection
+"URL" : URL of the influxDB 2.0 cloud ("https://us-central1-1.gcp.cloud2.influxdata.com")
+"ORG" : Organization initialization
+"TOKEN": TOKEN to allow connection
+"BUCKET" : Bucket to store all information
 

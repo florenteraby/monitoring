@@ -1,15 +1,18 @@
 {
     "network_config" : [
-        {"ip":"192.168.10.11", "role": "MASTER", "name":"STUDY", "username":"root", "password":"root"}
+        {"ip":"192.168.10.13", "role": "MASTER", "name":"TV", "username":"root", "password":"root"},
+        {"ip":"192.168.10.11", "role": "SLAVE", "name":"DESK", "username":"root", "password":"root"},
+        {"ip":"192.168.10.10", "role": "MASTER", "name":"CLOSET", "username":"root", "password":"root"}
     ],
     "network_type" : "F398BT",
-    "Frequency" : "30",
-    "Influx_Server" : { "Server_name"  :"ELK.home",
-                        "Server_port"  : "8086",
-                        "DB_username"  : "BT",
-                        "DB_password"  : "BT",
-                        "DB_name"      : "DEVICE_TEST"
-                        }
+    "Frequency" : "60",
+    "network_setup" : "OFFICE_FLORENT",
+    "Influx_Server" : { 
+        "URL" : "https://us-central1-1.gcp.cloud2.influxdata.com",
+        "ORG" : "f8cbe9e09989eea2",
+        "TOKEN" : "pN_5IFFK_7kNXykXecQH84dJwyPLjgZl9RIF_J4vT2rRXbK-6HvZUfbqCqpYe0724w7FHIGUUIT6x7j4pNJ1jA==", 
+        "BUCKET" : "myTestBucket"
+                    }
 }
 
 

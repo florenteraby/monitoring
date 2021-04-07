@@ -12,7 +12,8 @@ assoclist 10:D7:B0:1A:96:7B
 assoclist 10:D7:B0:1A:96:7B
 """
 
-
+"""Test of parseBHAssoclist fonction with empty parameter
+"""
 def test_parseBHEmptyAnswer():
     to_parse = ""
     command_type = "WIFI_BH_ASSOCLIST"
