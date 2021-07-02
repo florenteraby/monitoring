@@ -59,7 +59,7 @@ system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device[ConnectionType=\\'WL\\']/Active | grep true -c", "NBWLCONNECTEDCLIENT"],
 #TODO Add wshd PID monitoring
 ["/usr/sbin/wlctl -i wl0 channel", "WIFI_CHANNEL_BH"],
-["/usr/sbin/wlctl -i wl0.1 assoclist", "WIFI_BH_ASSOCLIST"],
+["/usr/sbin/wlctl -i wl0.2 assoclist", "WIFI_BH_ASSOCLIST"],
 #F398
 ["/usr/sbin/wlctl -i wl1 channel", "WIFI_CHANNEL_5G"],
 #F398
