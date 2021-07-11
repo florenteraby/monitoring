@@ -8,7 +8,15 @@ import time
 import subprocess
 import datetime
 import os
-from influxdb import InfluxDBClient
+from sys import version_info
+if version_info[0] < 3:
+    from influxdb import InfluxDBClient
+else :
+    import influxdb_client
+    from influxdb_client import InfluxDBClient, Point
+    from influxdb_client.client.write_api import SYNCHRONOUS
+    
+
 from subprocess import STDOUT
 from config_file import *
 import json
