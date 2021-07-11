@@ -1,12 +1,23 @@
-    """The purpose of this script is to check if the URL for download change.
-    It is really specific to my setup. 
-    The idea is to use cron mecanism on the pi to launch the script
-    """
+#!/usr/bin/python
+
+"""The purpose of this script is to check if the URL for download change.
+It is really specific to my setup. 
+The idea is to use cron mecanism on the pi to launch the script
+"""
 import json
 import sys
+import logging
+import getopt
+
+LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
+DEFAULT_POLLING_FREQUENCY = 600
+
+def usage(argv):
+    print("Usage ")
+    print ("[-h, --help]: \t\tthis Message")
+    print ("[-c, --config]: \tMandatory Config file with the format")
 
 
-def main():
 def main(argv):
     logging.basicConfig(filename = "monitoring.log",
     level = logging.ERROR,
@@ -30,7 +41,6 @@ def main(argv):
             if option in ('-c', '--config'):
                 logger.info("config file {}".format(arg))
                 #network_list = openConfigFile(arg.strip(), logger)
-                network_list = []
                 try:
                     with open (arg.strip(), 'r+') as configFile:
                         config_jsonlist = json.load(configFile)
