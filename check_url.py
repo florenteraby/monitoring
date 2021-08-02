@@ -13,10 +13,32 @@ LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 DEFAULT_POLLING_FREQUENCY = 600
 
 def usage(argv):
+    """[Usage of the scripts]
+
+    Args:
+        argv ([type]): [description]
+    """
     print("Usage ")
     print ("[-h, --help]: \t\tthis Message")
     print ("[-c, --config]: \tMandatory Config file with the format")
 
+def check_upgrade_url(discList_json):
+    """[summary]
+
+    Args:
+        discList_json ([List]): [List of disc we need to check the upgrade URL]
+
+    Returns:
+        [BOOL]: [False no disc in the list, or the 
+                 True Disc list is not empty and action was done OK]
+    """
+    if len(discList_json) == 0 :
+        return False
+    
+    for disc in discList_json:
+        print("Disc {}".format(disc))
+    return True
+        
 
 def main(argv):
     logging.basicConfig(filename = "monitoring.log",
@@ -53,7 +75,7 @@ def main(argv):
                 usage(argv)
                 return 0
 
-
+        check_upgrade_url(config_jsonlist["network_config"])
 
 if __name__ == "__main__":
         main(sys.argv[1:])

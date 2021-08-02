@@ -10,7 +10,8 @@ import datetime
 import os
 from sys import version_info
 if version_info[0] < 3:
-    from influxdb import InfluxDBClient
+#    from influxdb import InfluxDBClient
+    print ("{}".format(version_info))
 else :
     import influxdb_client
     from influxdb_client import InfluxDBClient, Point
