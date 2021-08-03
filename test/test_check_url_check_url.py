@@ -1,6 +1,20 @@
 import pytest
-
+import logging
 from check_url import check_upgrade_url
+
+LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
+
+@pytest.fixture
+#Creates the default cermony files
+def supply_logger():
+    logging.basicConfig(filename = "check_url_test.log",
+    level = logging.INFO,
+    format = LOG_FORMAT,
+    filemode = 'w')
+
+    logger = logging.getLogger()
+    return logger
+
 
 disc_json = {
     "network_config" : [
@@ -16,8 +30,8 @@ disc_json = {
                         }
 }
 
-def test_check_upgrade_url_1():
-    assert check_upgrade_url(disc_json["network_config"]) == True
+def test_check_upgrade_url_1(supply_logger):
+    assert check_upgrade_url(disc_json["network_config"], supply_logger) == True
 
 disc_json_NO_NETWORK_CONFIGURED = {
     "network_config" : [
@@ -32,8 +46,8 @@ disc_json_NO_NETWORK_CONFIGURED = {
                         }
 }
 
-def test_check_upgrade_url_2():
-    assert check_upgrade_url(disc_json_NO_NETWORK_CONFIGURED["network_config"]) == False
+def test_check_upgrade_url_2(supply_logger):
+    assert check_upgrade_url(disc_json_NO_NETWORK_CONFIGURED["network_config"], supply_logger) == False
 
 disc_json_4_NETWORK_CONFIGURED = {
     "network_config" : [
@@ -52,5 +66,5 @@ disc_json_4_NETWORK_CONFIGURED = {
                         }
 }
 
-def test_check_upgrade_url_3():
-    assert check_upgrade_url(disc_json_4_NETWORK_CONFIGURED["network_config"]) == True
+def test_check_upgrade_url_3(supply_logger):
+    assert check_upgrade_url(disc_json_4_NETWORK_CONFIGURED["network_config"], supply_logger) == True

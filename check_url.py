@@ -8,6 +8,8 @@ import json
 import sys
 import logging
 import getopt
+from monitor import prepareCommand, runCommand
+
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 DEFAULT_POLLING_FREQUENCY = 600
@@ -22,26 +24,71 @@ def usage(argv):
     print ("[-h, --help]: \t\tthis Message")
     print ("[-c, --config]: \tMandatory Config file with the format")
 
-def check_upgrade_url(discList_json):
+URL_LOCAL_SUOTA = "http://pi-fry.home/TEST2/WHW6"
+def check_url_output(current_url):
+    """[This fontion check if the URL in parameter is the expected to allow dedicated upgrade SUOTA]
+
+    Args:
+        current_url ([string]): [The URL read ]
+
+    Returns:
+        [BOOL]: [True  : URL is the one expected]
+                [False : URL is not the one expected]
+    """
+    try:
+        read_url = current_url.split("value : ")[1].strip().replace("'", "")
+    except IndexError:
+        return False
+    else :
+        if (read_url != URL_LOCAL_SUOTA):
+            return False
+        else:
+            return True
+
+check_command = "xmo-client -p Device/Services/AdvancedFwUpdate/URL"
+def check_url_set_to(disc, url_to_set, logger):
+    """[Set the url to the one in parameter on the disc/extender]
+
+    Args:
+        url_to_set ([string]): [URL to configure]
+        disc
+    """
+    command_to_set = check_command + " -s " + url_to_set
+    cmd = prepareCommand(command_to_set, disc['ip'], disc['username'], disc['password'], logger)
+    output, cmdSuccess = runCommand(cmd,logger)
+    if (cmdSuccess == False):
+        logger.error("Cannot execute command {} : {}".format(cmd, output))
+        
+
+def check_upgrade_url(discList_json, logger):
     """[summary]
 
     Args:
         discList_json ([List]): [List of disc we need to check the upgrade URL]
+        logger
 
     Returns:
         [BOOL]: [False no disc in the list, or the 
-                 True Disc list is not empty and action was done OK]
+                [True Disc list is not empty and action was done OK]
     """
     if len(discList_json) == 0 :
         return False
     
     for disc in discList_json:
         print("Disc {}".format(disc))
+        cmd = prepareCommand(check_command, disc["ip"],disc["username"], disc["password"], logger)
+        outputCmd, successCmd = runCommand(cmd, logger)
+        if (successCmd == True):
+            if (check_url_output(outputCmd) == False):
+                logger.info("Need to change URL {}".format(URL_LOCAL_SUOTA))
+                check_url_set_to(disc, URL_LOCAL_SUOTA, logger)
+        else:
+            logger.debug("Command failed : {} - {}".format(cmd, outputCmd))
     return True
         
 
 def main(argv):
-    logging.basicConfig(filename = "monitoring.log",
+    logging.basicConfig(filename = "check_url.log",
     level = logging.ERROR,
     format = LOG_FORMAT,
     filemode = 'w')
@@ -75,7 +122,7 @@ def main(argv):
                 usage(argv)
                 return 0
 
-        check_upgrade_url(config_jsonlist["network_config"])
+        check_upgrade_url(config_jsonlist["network_config"], logger)
 
 if __name__ == "__main__":
         main(sys.argv[1:])
