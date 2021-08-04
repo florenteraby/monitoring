@@ -1,0 +1,17 @@
+{
+    "network_config" : [
+        {"ip":"192.168.10.10", "role": "MASTER", "name":"STUDY", "username":"root", "password":"root"},
+        {"ip":"192.168.10.11", "role": "SLAVE", "name":"OFFICE", "username":"root", "password":"root"},
+        {"ip":"192.168.10.12", "role": "SLAVE", "name":"OFFICE_2", "username":"root", "password":"root"}
+    ],
+    "network_type" : "F398BT",
+    "Frequency" : "30",
+    "Influx_Server" : { "Server_name"  :"ELK.home",
+                        "Server_port"  : "8086",
+                        "DB_username"  : "BT",
+                        "DB_password"  : "BT",
+                        "DB_name"      : "DEVICE_TEST"
+                        }
+}
+
+
