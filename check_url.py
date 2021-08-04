@@ -23,6 +23,7 @@ def usage(argv):
     print("Usage ")
     print ("[-h, --help]: \t\tthis Message")
     print ("[-c, --config]: \tMandatory Config file with the format")
+    print ("[-v, --v]: \tverbosity in log file")
 
 URL_LOCAL_SUOTA = "http://pi-fry.home/TEST2/WHW6"
 def check_url_output(current_url):
@@ -36,7 +37,7 @@ def check_url_output(current_url):
                 [False : URL is not the one expected]
     """
     try:
-        read_url = current_url.split("value : ")[1].strip().replace("'", "")
+        read_url = current_url.decode('utf8').split("value : ")[1].strip().replace("'", "")
     except IndexError:
         return False
     else :
@@ -56,6 +57,7 @@ def check_url_set_to(disc, url_to_set, logger):
     command_to_set = check_command + " -s " + url_to_set
     cmd = prepareCommand(command_to_set, disc['ip'], disc['username'], disc['password'], logger)
     output, cmdSuccess = runCommand(cmd,logger)
+    logger.debug("Execute cmd {} \n\t Result of the commande {} {}".format(cmd, output, cmdSuccess))
     if (cmdSuccess == False):
         logger.error("Cannot execute command {} : {}".format(cmd, output))
         
@@ -71,17 +73,20 @@ def check_upgrade_url(discList_json, logger):
         [BOOL]: [False no disc in the list, or the 
                 [True Disc list is not empty and action was done OK]
     """
-    if len(discList_json) == 0 :
+    if (len(discList_json) == 0 ):
+        logger.debug("Disc list is empty : {}".format(len(discList_json)))
         return False
     
     for disc in discList_json:
-        print("Disc {}".format(disc))
+        logger.debug("Disc {}".format(disc))
         cmd = prepareCommand(check_command, disc["ip"],disc["username"], disc["password"], logger)
         outputCmd, successCmd = runCommand(cmd, logger)
         if (successCmd == True):
             if (check_url_output(outputCmd) == False):
                 logger.info("Need to change URL {}".format(URL_LOCAL_SUOTA))
                 check_url_set_to(disc, URL_LOCAL_SUOTA, logger)
+            else :
+                logger.debug("No need to change the URL {}".format(outputCmd))
         else:
             logger.debug("Command failed : {} - {}".format(cmd, outputCmd))
     return True
@@ -95,11 +100,12 @@ def main(argv):
 
     logger = logging.getLogger()
     network_list = []
+    run = False
     system_command_list = []
     dest_file = ""
     polling_frequency = DEFAULT_POLLING_FREQUENCY
     try:
-        opts, args = getopt.getopt(argv, "c:h:", ["config=","help"])
+        opts, args = getopt.getopt(argv, "c:hv", ["config=","help", "v"])
     except getopt.GetoptError:
         logger.error("Option error");
         print ("Option error")
@@ -111,8 +117,9 @@ def main(argv):
                 logger.info("config file {}".format(arg))
                 #network_list = openConfigFile(arg.strip(), logger)
                 try:
-                    with open (arg.strip(), 'r+') as configFile:
+                    with open (arg, 'r+') as configFile:
                         config_jsonlist = json.load(configFile)
+                        run = True
                 except IOError:
                     logger.error("File {} does not exist".format(arg.strip()))
                 else :
@@ -122,7 +129,14 @@ def main(argv):
                 usage(argv)
                 return 0
 
-        check_upgrade_url(config_jsonlist["network_config"], logger)
+            if option in ('-v', '--v'):
+                logger.setLevel(logging.DEBUG)
+            
+
+        if (run == True):
+            check_upgrade_url(config_jsonlist["network_config"], logger)
+        else :
+            usage(argv)
 
 if __name__ == "__main__":
         main(sys.argv[1:])
