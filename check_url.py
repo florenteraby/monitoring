@@ -14,6 +14,60 @@ from monitor import prepareCommand, runCommand
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 DEFAULT_POLLING_FREQUENCY = 600
 
+
+CHECK_COMMAND = "xmo-client -p "
+class check_xpath_class:
+    """[Class check_xpath_class : Allow to check if a xpa]
+    """
+    def __init__(self, xpath, expected_value):
+        self.xpath = xpath
+        self.expected_value = expected_value
+
+    def check_xpath(self, disc):
+        """[check if the xPath get the expected value]
+
+        Args:
+            disc ([Json Disc]): [IP, UserName, Password to connect to the extender]
+        """
+        check_command = CHECK_COMMAND + self.xpath
+        """Prepare the command to run, should contain xmo-client -p then add the expected xpath """
+        cmd = prepareCommand(check_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
+        """"Call the prepare command fonction to get the fulll sshpass"""
+        outputCmd, successCmd = runCommand(cmd, logging.getLogger())
+        """"Run the command"""
+        if (successCmd == True):
+            """"if the command success we can parse the result"""
+            try:
+                read_value = outputCmd.decode('utf8').split("value : ")[1].strip().replace("'", "")
+            except IndexError:
+                return False
+            else :
+                if (read_value != self.expected_value):
+                    """"Compare with the expected result"""
+                    return False
+                else:
+                    return True
+        else:
+            """"Command is not successful, log it"""
+            logging.getLogger().error("Command : {} Failed\n\t{}".format(cmd, outputCmd))
+            return False
+    
+    def set_expectedValue(self, disc):
+        """[Set the expected on the xpath]
+
+        Args:
+            disc ([Json Disc]): [IP, UserName, Password to connect to the extender]
+        """
+        set_command = CHECK_COMMAND + self.xpath +" -s " + self.expected_value
+        cmd = prepareCommand(set_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
+        outputCmd, successCmd = runCommand(cmd, logging.getLogger())
+        if (successCmd == True):
+            return successCmd
+        else:
+            logging.getLogger().error("Command : {} Failed\n\t{}".format(cmd, outputCmd))
+            return successCmd
+
+
 def usage(argv):
     """[Usage of the scripts]
 
@@ -25,72 +79,33 @@ def usage(argv):
     print ("[-c, --config]: \tMandatory Config file with the format")
     print ("[-v, --v]: \tverbosity in log file")
 
-URL_LOCAL_SUOTA = "http://pi-fry.home/TEST2/WHW6"
-def check_url_output(current_url):
-    """[This fontion check if the URL in parameter is the expected to allow dedicated upgrade SUOTA]
-
-    Args:
-        current_url ([string]): [The URL read ]
-
-    Returns:
-        [BOOL]: [True  : URL is the one expected]
-                [False : URL is not the one expected]
-    """
-    try:
-        read_url = current_url.decode('utf8').split("value : ")[1].strip().replace("'", "")
-    except IndexError:
-        return False
-    else :
-        if (read_url != URL_LOCAL_SUOTA):
-            return False
-        else:
-            return True
-
-check_command = "xmo-client -p Device/Services/AdvancedFwUpdate/URL"
-def check_url_set_to(disc, url_to_set, logger):
-    """[Set the url to the one in parameter on the disc/extender]
-
-    Args:
-        url_to_set ([string]): [URL to configure]
-        disc
-    """
-    command_to_set = check_command + " -s " + url_to_set
-    cmd = prepareCommand(command_to_set, disc['ip'], disc['username'], disc['password'], logger)
-    output, cmdSuccess = runCommand(cmd,logger)
-    logger.debug("Execute cmd {} \n\t Result of the commande {} {}".format(cmd, output, cmdSuccess))
-    if (cmdSuccess == False):
-        logger.error("Cannot execute command {} : {}".format(cmd, output))
         
 
-def check_upgrade_url(discList_json, logger):
+def check_xpath(discList_json, xpath2check_json, logger):
     """[summary]
 
     Args:
         discList_json ([List]): [List of disc we need to check the upgrade URL]
+        xpath2check_json ([List] : [List of xpath and value we need to check])
         logger
 
     Returns:
         [BOOL]: [False no disc in the list, or the 
                 [True Disc list is not empty and action was done OK]
     """
-    if (len(discList_json) == 0 ):
+    if (len(discList_json) == 0 or len(xpath2check_json) == 0):
         logger.debug("Disc list is empty : {}".format(len(discList_json)))
         return False
     
     for disc in discList_json:
         logger.debug("Disc {}".format(disc))
-        cmd = prepareCommand(check_command, disc["ip"],disc["username"], disc["password"], logger)
-        outputCmd, successCmd = runCommand(cmd, logger)
-        if (successCmd == True):
-            if (check_url_output(outputCmd) == False):
-                logger.info("Need to change URL {}".format(URL_LOCAL_SUOTA))
-                check_url_set_to(disc, URL_LOCAL_SUOTA, logger)
-            else :
-                logger.debug("No need to change the URL {}".format(outputCmd))
-        else:
-            logger.debug("Command failed : {} - {}".format(cmd, outputCmd))
-    return True
-        
+        for xpath2check in xpath2check_json:
+            xpath_check = check_xpath_class(xpath2check['xpath'], xpath2check['expected_value'])
+            if (xpath_check.check_xpath(disc) == False):
+                xpath_check.set_expectedValue(disc)
+            else:
+                logger.info("No Change needed")
+
 
 def main(argv):
     logging.basicConfig(filename = "check_url.log",
@@ -132,9 +147,9 @@ def main(argv):
             if option in ('-v', '--v'):
                 logger.setLevel(logging.DEBUG)
             
-
         if (run == True):
-            check_upgrade_url(config_jsonlist["network_config"], logger)
+            check_xpath(config_jsonlist["network_config"], config_jsonlist["check_xpath"],logger)
+            return True
         else :
             usage(argv)
 
