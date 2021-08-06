@@ -1,6 +1,6 @@
 import pytest
 
-from check_url import usage
+from check_xpath import usage
 
 def test_usage_1():
     argv = []

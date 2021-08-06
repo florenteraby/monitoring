@@ -19,7 +19,10 @@ else :
     
 
 from subprocess import STDOUT
-from config_file import *
+#Local packages
+from tools.config_file import *
+from tools.tools import prepareCommand, runCommand
+
 import json
 
 
@@ -123,23 +126,6 @@ def usage(argv):
     print ("[-d, --destfile]: \tMandatory root name of the CSV destination file") 
     print ("[-v, --verbose]: \tOptional set debug level mode") 
 
-def prepareCommand(command, ip, login, password, logger):
-    command_to_execute = "/usr/bin/sshpass -p"+password.strip()+" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 -o ConnectionAttempts=2 "+login.strip()+"@"+ip.strip()+" "+command
-    logger.debug("Command to execute {}".format(command_to_execute))
-    return command_to_execute
-
-def runCommand(command, logger):
-    success_command = False
-    try:
-        output = subprocess.check_output(command.split(" "), stderr=STDOUT)
-    except subprocess.CalledProcessError as error_exec:
-        logger.error("{} -> {}".format(error_exec.cmd, error_exec.output))
-        output = error_exec.output
-    else:
-        logger.info("{}\n".format (output))
-        success_command = True
-    finally:
-        return output, success_command
 def parseProcessVMZ(to_find, output, logger):
     vmz_index = 0
     vmz_str = output.split("\n")

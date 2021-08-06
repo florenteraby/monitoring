@@ -156,6 +156,7 @@ VENDOR OUI VALUE[2] 00:50:F2
 RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
 
+
 def test_parseStaInfoMissingParam():
     row = {}
     macSta = "10:D7:B0:1A:96:6F"

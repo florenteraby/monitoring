@@ -8,8 +8,8 @@ import json
 import sys
 import logging
 import getopt
-from monitor import prepareCommand, runCommand
-
+#from tools.tools import prepareCommand, runCommand
+import tools.tools
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 DEFAULT_POLLING_FREQUENCY = 600
@@ -31,9 +31,9 @@ class check_xpath_class:
         """
         check_command = CHECK_COMMAND + self.xpath
         """Prepare the command to run, should contain xmo-client -p then add the expected xpath """
-        cmd = prepareCommand(check_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
+        cmd = tools.tools.prepareCommand(check_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
         """"Call the prepare command fonction to get the fulll sshpass"""
-        outputCmd, successCmd = runCommand(cmd, logging.getLogger())
+        outputCmd, successCmd = tools.tools.runCommand(cmd, logging.getLogger())
         """"Run the command"""
         if (successCmd == True):
             """"if the command success we can parse the result"""
@@ -53,17 +53,22 @@ class check_xpath_class:
             return False
     
     def set_expectedValue(self, disc):
-        """[Set the expected on the xpath]
+        """[Set the expected on the  on disc]
 
         Args:
             disc ([Json Disc]): [IP, UserName, Password to connect to the extender]
         """
         set_command = CHECK_COMMAND + self.xpath +" -s " + self.expected_value
-        cmd = prepareCommand(set_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
-        outputCmd, successCmd = runCommand(cmd, logging.getLogger())
+        #Prepare the command to set the expected value
+        cmd = tools.tools.prepareCommand(set_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
+
+        outputCmd, successCmd = tools.tools.runCommand(cmd, logging.getLogger())
+        #Execute the command 
         if (successCmd == True):
+            #If the command is successfull return the success
             return successCmd
         else:
+            #Log if the command is not successfull
             logging.getLogger().error("Command : {} Failed\n\t{}".format(cmd, outputCmd))
             return successCmd
 
@@ -105,6 +110,7 @@ def check_xpath(discList_json, xpath2check_json, logger):
                 xpath_check.set_expectedValue(disc)
             else:
                 logger.info("No Change needed")
+            del xpath_check
 
 
 def main(argv):
