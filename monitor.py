@@ -469,7 +469,10 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif "NB_HOSTAPD" in command_type:
             row[command_type] =  int(to_parse)
         elif "NB_DUMPCORE" in command_type:
-            row[command_type] =  int(to_parse)
+            if "cat: can't open" in to_parse:
+                row[command_type] = 0
+            else:
+                row[command_type] =  int(to_parse)
         elif "WIFI_BH_ASSOCLIST" == command_type:
             pass
         else :
