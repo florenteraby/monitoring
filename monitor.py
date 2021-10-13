@@ -60,7 +60,8 @@ common_command_list = [
 ["du -s /tmp", "TMP_FS_SIZE"],
 ["du -s /opt/conf/", "CONF_FS_SIZE"],
 ["du -s /opt/data/", "DATA_FS_SIZE"],
-["ps | grep hostapd | wc -l", "NB_HOSTAPD"]
+["ps | grep hostapd | wc -l", "NB_HOSTAPD"],
+["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"]
 ]
 system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTGlobalState/TemperatureMonitoring/Temperature", "TEMPERATURE"],
@@ -466,6 +467,8 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif "DEVICE_STATUS" in command_type:
             row[command_type] =  to_parse.split("\n")
         elif "NB_HOSTAPD" in command_type:
+            row[command_type] =  int(to_parse)
+        elif "NB_DUMPCORE" in command_type:
             row[command_type] =  int(to_parse)
         elif "WIFI_BH_ASSOCLIST" == command_type:
             pass
