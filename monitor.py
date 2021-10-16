@@ -62,7 +62,7 @@ common_command_list = [
 ["du -s /opt/data/", "DATA_FS_SIZE"],
 ["ps | grep hostapd | wc -l", "NB_HOSTAPD"],
 ["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"],
-["infos-cli -t OSM_MASTER_ELECTION -c all | grep ElecState", "ELEC_STATE"]
+["/usr/sbin/infos-cli -t OSM_MASTER_ELECTION -c all | grep ElecState", "ELEC_STATE"]
 ]
 system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTGlobalState/TemperatureMonitoring/Temperature", "TEMPERATURE"],
