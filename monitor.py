@@ -61,7 +61,8 @@ common_command_list = [
 ["du -s /opt/conf/", "CONF_FS_SIZE"],
 ["du -s /opt/data/", "DATA_FS_SIZE"],
 ["ps | grep hostapd | wc -l", "NB_HOSTAPD"],
-["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"]
+["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"],
+["infos-cli -t OSM_MASTER_ELECTION -c all | grep ElecState", "ELEC_STATE"]
 ]
 system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTGlobalState/TemperatureMonitoring/Temperature", "TEMPERATURE"],
@@ -126,6 +127,11 @@ def usage(argv):
     print ("[-f, --frequency]: \tOptional Polling frequency (default:{}s)".format(DEFAULT_POLLING_FREQUENCY))
     print ("[-d, --destfile]: \tMandatory root name of the CSV destination file") 
     print ("[-v, --verbose]: \tOptional set debug level mode") 
+
+def parseElecState(to_parse):
+    myListe = to_parse.split(",")
+    elecState = myListe[0].split(" ")[1].strip("<").strip(">")
+    return elecState
 
 def parseProcessVMZ(to_find, output, logger):
     vmz_index = 0
@@ -377,12 +383,17 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] = float("0")
         elif "NB_CLIENT_WIFI_CONNECTED" in command_type:
             row[command_type] = "0"
+        elif "ELEC_STATE" in command_type:
+            row[command_type] = "UNKNOWN"
         else:
             row[command_type] = -1
             logger.debug("Command {} failed".format(row))
     else :
         if command_type == "UPTIME":
             row[command_type] = float(to_parse.split(" ")[0])
+            pass
+        elif "ELEC_STATE" in command_type:
+            row[command_type] = parseElecState(to_parse)
             pass
         elif "MEMINFO" in command_type :
             if to_parse.split(":")[1].strip().split(" ")[0].strip().isalnum() == True:
