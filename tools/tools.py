@@ -3,7 +3,7 @@
 import sys
 import subprocess
 import logging
-from subprocess import STDOUT
+from subprocess import STDOUT, TimeoutExpired
 
 
 def prepareCommand(command, ip, login, password, logger):
@@ -14,8 +14,11 @@ def prepareCommand(command, ip, login, password, logger):
 def runCommand(command, logger):
     success_command = False
     try:
-        output = subprocess.check_output(command.split(" "), stderr=STDOUT)
+        output = subprocess.check_output(command.split(" "), stderr=STDOUT, timeout=30)
     except subprocess.CalledProcessError as error_exec:
+        logger.error("{} -> {}".format(error_exec.cmd, error_exec.output))
+        output = error_exec.output
+    except subprocess.TimeoutExpired as error_exec:
         logger.error("{} -> {}".format(error_exec.cmd, error_exec.output))
         output = error_exec.output
     else:
