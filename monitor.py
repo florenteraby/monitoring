@@ -50,13 +50,14 @@ common_command_list = [
 ["cat /sys/class/ubi/ubi2*/total_eraseblocks", "TOTAL_ERASE_BLOCKS_UBI2"],
 ["cat /proc/loadavg", "LOADAVG"],
 ["vmstat", "VMSTAT"],
-["ps | grep -w hg6d", "VMZ_HG6D"],
-["ps | grep -w wshd", "VMZ_WSHD"],
-["ps | grep -w wstd", "VMZ_WSTPD"],
-["ps | grep -w dhclient", "VMZ_DHCLIENT"],
-["ps | grep -w dhcrelay", "VMZ_DHCPRELAY"],
-["ps | grep -w ismd", "VMZ_ISMD"],
-["ps | grep -w dnsmasq", "VMZ_DNSMASQ"],
+["ps -aux", "VMZ_PS"]
+# ["ps | grep -w hg6d", "VMZ_HG6D"],
+# ["ps | grep -w wshd", "VMZ_WSHD"],
+# ["ps | grep -w wstd", "VMZ_WSTPD"],
+# ["ps | grep -w dhclient", "VMZ_DHCLIENT"],
+# ["ps | grep -w dhcrelay", "VMZ_DHCPRELAY"],
+# ["ps | grep -w ismd", "VMZ_ISMD"],
+# ["ps | grep -w dnsmasq", "VMZ_DNSMASQ"],
 ["du -s /tmp", "TMP_FS_SIZE"],
 ["du -s /opt/conf/", "CONF_FS_SIZE"],
 ["du -s /opt/data/", "DATA_FS_SIZE"],
@@ -133,42 +134,40 @@ def parseElecState(to_parse):
     elecState = myListe[0].split(" ")[1].strip("<").strip(">")
     return elecState
 
-def parseProcessVMZ(to_find, output, logger):
-    vmz_index = 0
-    vmz_str = output.split("\n")
-    if (len(vmz_str) == 1):
-        return -1
-    if 'grep' in vmz_str[0]:
-        vmz_index = 1
-    elif 'grep' in  vmz_str[1]:
-        vmz_index = 0
-    else:
-        logger.error("VMZ ISSUE {}".format(output))
-        return -1
-    
-    if vmz_index == len(vmz_str):
-        logger.error("VMZ ISSUE no {}".format(output))
-        return -1
-
-    try:
-        index_status = vmz_str[vmz_index].strip().split(" ").index("R")
+def getVMZ(ps_result, logger):
+    try :
+        index_status = ps_result.split(" ").index("R")
+        logger.debug("{} -> Detect process in R")
     except ValueError:
-        index_status = vmz_str[vmz_index].strip().split(" ").index("S")
-    # else :
-    #     logger.error("Process not running {}".format(to_find))
-    #     return -1    
+        index_status = ps_result.split(" ").index("S")
+        logger.debug("{} -> Detect process in S")
     finally:
-        try:
-            VMSize = vmz_str[vmz_index].strip().split(" ")[index_status-1].replace('m', '000000')
-        except UnboundLocalError:
-            return -1
+        vmz_size = ps_result.split(" ")[index_status - 1]
+        if "m" in vmz_size:
+            vmz_size = vmz_size.replace("m", "000000")
+        logger.debug("VMZ is {}".format(int(vmz_size)))
+        return int(vmz_size)
 
-    if VMSize.isdigit() == True:
-        logger.info("Found VMSize {}".format(VMSize))
-        return int(VMSize)
-    else:
-        logger.error("Try to find {} but computed index does not contained digit {}\n output".format(to_find, VMSize, output))
-        return -1
+
+def parseProcessVMZ2(output, row, logger):
+    ps_list = output.split("\n")
+    for ps_result in ps_list:
+        if "hg6d" in ps_result:
+            row["VMZ_HG6D"] = getVMZ(ps_result, logger)
+        if "wshd" in ps_result:
+            row["VMZ_WSHD"] = getVMZ(ps_result, logger)
+        if "wstd" in ps_result:
+            row["VMZ_WSTD"] = getVMZ(ps_result, logger)
+        if "dhclient" in ps_result:
+            row["VMZ_DHCLIENT"] = getVMZ(ps_result, logger)
+        if "dhcrelay" in ps_result:
+            row["VMZ_DHRELAY"] = getVMZ(ps_result, logger)
+        if "ismd" in ps_result:
+            row["VMZ_ISMD"] = getVMZ(ps_result, logger)
+        if "dnsmasq" in ps_result:
+            row["VMZ_DNSMASQ"] = getVMZ(ps_result, logger)
+        if "hal_wifi" in ps_result:
+            row["VMZ_HALWIFI"] = getVMZ(ps_result, logger)
 
 ''' deviceParseResult example of result
 We can see on F@ST266 the foloowing result
@@ -429,24 +428,8 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif command_type == "MODELE_NAME":
             row[command_type] = to_parse.split("\n")[1].split(":")[1].replace("'", "").strip()
             pass
-        elif command_type == "VMZ_HG6D":
-            row[command_type] = parseProcessVMZ("hg6d", to_parse, logger)
-        elif command_type == "VMZ_WSHD":
-            row[command_type] = parseProcessVMZ("wshd", to_parse, logger)
-        elif command_type == "VMZ_WSTPD":
-            row[command_type]= parseProcessVMZ("wstpd", to_parse, logger)
-        elif command_type == "VMZ_DHCLIENT":
-            row[command_type] = parseProcessVMZ("dhclient", to_parse, logger)
-        elif command_type == "VMZ_DHCPRELAY":
-            row[command_type] = parseProcessVMZ("dhcrelay", to_parse, logger)
-        elif command_type == "VMZ_ISMD":
-            row[command_type] = parseProcessVMZ("ismd", to_parse, logger)
-        elif command_type == "VMZ_DNSMASQ":
-            row[command_type] = parseProcessVMZ("dnsmasq", to_parse, logger)
-        elif command_type == "VMZ_DATACOLLECTOR":
-            row[command_type] = parseProcessVMZ("data-collector", to_parse, logger)
-        elif command_type == "VMZ_HALWIFI":
-            row[command_type] =  parseProcessVMZ("halwifi", to_parse, logger)
+        elif command_type == "VMZ_PS":
+            parseProcessVMZ2(to_parse, row, logger)
         elif "CONNECTEDCLIENT" in command_type:
             row[command_type] = int(to_parse.split("\n")[0])
             pass
