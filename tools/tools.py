@@ -14,7 +14,8 @@ def prepareCommand(command, ip, login, password, logger):
 def runCommand(command, logger):
     success_command = False
     try:
-        output = subprocess.check_output(command.split(" "), stderr=STDOUT, timeout=30)
+        # output = subprocess.check_output(command.split(" "), stderr=STDOUT, timeout=30)
+        output = subprocess.check_output(command.split(" "), stderr=STDOUT)
     except subprocess.CalledProcessError as error_exec:
         logger.error("{} -> {}".format(error_exec.cmd, error_exec.output))
         output = error_exec.output
