@@ -139,8 +139,12 @@ def getVMZ(ps_result, logger):
         index_status = ps_result.split(" ").index("R")
         logger.debug("{} -> Detect process in R")
     except ValueError:
-        index_status = ps_result.split(" ").index("S")
-        logger.debug("{} -> Detect process in S")
+        try :
+            index_status = ps_result.split(" ").index("S")
+            logger.debug("{} -> Detect process in S")
+        except ValueError:
+            logger.error("Cannot find index {}".format(ps_result))
+            return -1
     finally:
         vmz_size = ps_result.split(" ")[index_status - 1]
         if "m" in vmz_size:
