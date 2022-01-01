@@ -1,7 +1,6 @@
 import pytest
-import os
 import logging
-from monitor import parseProcessVMZ, parseProcessVMZ2
+from monitor import parseProcessVMZ2
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 
@@ -270,52 +269,3 @@ def test_parseVMZ2_m(supply_logger):
     assert row["VMZ_DHRELAY"] == 4944
     assert row["VMZ_ISMD"] == 7888
     assert row["VMZ_DNSMASQ"] == 3420
-
-def test_parseHG6D_1(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_1, supply_logger)
-    assert vmz == 43168
-
-def test_parseHG6D_2(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_2, supply_logger)
-    assert vmz == 43168
-
-
-def test_parseHG6D_3(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_3, supply_logger)
-    assert vmz == 143000000
-
-def test_parseHG6D_4(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_4, supply_logger)
-    assert vmz == 143000000
-
-def test_parseHG6D_5(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_5, supply_logger)
-    assert vmz == 43168
-
-def test_parseHG6D_6(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_6, supply_logger)
-    assert vmz == 43168
-
-def test_parseHG6D_7(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_7, supply_logger)
-    assert vmz == 143000000
-
-def test_parseHG6D_8(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_8, supply_logger)
-    assert vmz == 143000000
-
-def test_parseHG6D_9(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_9, supply_logger)
-    assert vmz == 43168
-
-def test_parseHG6D_10(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_10, supply_logger)
-    assert vmz == 43168
-
-def test_parseHG6D_11(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_11, supply_logger)
-    assert vmz == -1
-
-def test_parseHG6D_12(supply_logger):
-    vmz = parseProcessVMZ("hg6d", output_hg6d_13, supply_logger)
-    assert vmz == -1
