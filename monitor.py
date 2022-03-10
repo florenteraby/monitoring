@@ -63,6 +63,10 @@ common_command_list = [
 ["du -s /opt/data/", "DATA_FS_SIZE"],
 ["ps | grep hostapd | wc -l", "NB_HOSTAPD"],
 ["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"],
+["ping -c1 8.8.8.8", "PING_WO_DNS"],
+["nslookup -debug www.microsoft.com", "DNS_RESOLUTION_MICROSOFT"],
+["nslookup -debug www.google.com", "DNS_RESOLUTION_GOOGLE"],
+["nslookup -debug www.lemonde.fr", "DNS_RESOLUTION_LEMONDE"],
 ["/usr/sbin/infos-cli -t OSM_MASTER_ELECTION -c all | grep ElecState", "ELEC_STATE"]
 ]
 system_command_list_F398BT = common_command_list + [
@@ -362,6 +366,28 @@ def loadavgAddValue(to_parse, row, command_type, success_command):
             row[command_type + "-" + loadavg] = float("0")
             i = i + 1
 
+""" PING 8.8.8.8 (8.8.8.8): 56 data bytes
+64 bytes from 8.8.8.8: seq=0 ttl=115 time=13.199 ms
+
+--- 8.8.8.8 ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 13.199/13.199/13.199 ms
+
+root@ftr-3140:~# ping -c1 255.255.255.255
+PING 255.255.255.255 (255.255.255.255): 56 data bytes
+
+--- 255.255.255.255 ping statistics ---
+1 packets transmitted, 0 packets received, 100% packet loss
+ """
+def parsePingWODNS(to_parse):
+    round_trip = -1
+    pingParsed = to_parse.split("\n")
+    for elt in pingParsed:
+        if "round-trip" in elt:
+            round_trip = elt.split("=")[1].split("/")[0].strip(" ")
+
+    print("round_trip {}".format(round_trip))
+    return float(round_trip)
 
 def updateRow(to_parse, success_command, command_type, logger):
     row = {}
@@ -392,6 +418,8 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] = "0"
         elif "ELEC_STATE" in command_type:
             row[command_type] = "UNKNOWN"
+        elif ("PING_WO_DNS" in command_type):
+            row[command_type] = -1
         else:
             row[command_type] = -1
             logger.debug("Command {} failed".format(row))
@@ -477,6 +505,9 @@ def updateRow(to_parse, success_command, command_type, logger):
                 row[command_type] =  int(to_parse)
         elif "WIFI_BH_ASSOCLIST" == command_type:
             pass
+        elif ("PING_WO_DNS" in command_type):
+            row[command_type] = parsePingWODNS(to_parse)
+
         else :
             logger.error("Unknown command type {}".format(command_type))
 
