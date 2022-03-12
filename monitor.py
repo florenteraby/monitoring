@@ -64,9 +64,9 @@ common_command_list = [
 ["ps | grep hostapd | wc -l", "NB_HOSTAPD"],
 ["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"],
 ["ping -c1 8.8.8.8", "PING_WO_DNS"],
-["nslookup -debug www.microsoft.com", "DNS_RESOLUTION_MICROSOFT"],
-["nslookup -debug www.google.com", "DNS_RESOLUTION_GOOGLE"],
-["nslookup -debug www.lemonde.fr", "DNS_RESOLUTION_LEMONDE"],
+# ["nslookup -debug www.microsoft.com", "DNS_RESOLUTION_MICROSOFT"],
+# ["nslookup -debug www.google.com", "DNS_RESOLUTION_GOOGLE"],
+# ["nslookup -debug www.lemonde.fr", "DNS_RESOLUTION_LEMONDE"],
 ["/usr/sbin/infos-cli -t OSM_MASTER_ELECTION -c all | grep ElecState", "ELEC_STATE"]
 ]
 system_command_list_F398BT = common_command_list + [
@@ -386,8 +386,13 @@ def parsePingWODNS(to_parse):
         if "round-trip" in elt:
             round_trip = elt.split("=")[1].split("/")[0].strip(" ")
 
-    print("round_trip {}".format(round_trip))
     return float(round_trip)
+
+def parseDNSResolution(to_parse):
+    queryIPv4 = -1
+    queryIPv6 = -1
+
+    return (queryIPv4, queryIPv6)
 
 def updateRow(to_parse, success_command, command_type, logger):
     row = {}
