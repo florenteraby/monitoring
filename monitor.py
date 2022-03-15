@@ -380,7 +380,7 @@ PING 255.255.255.255 (255.255.255.255): 56 data bytes
 1 packets transmitted, 0 packets received, 100% packet loss
  """
 def parsePingWODNS(to_parse):
-    round_trip = -1
+    round_trip = -1.0
     pingParsed = to_parse.split("\n")
     for elt in pingParsed:
         if "round-trip" in elt:
@@ -424,7 +424,7 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif "ELEC_STATE" in command_type:
             row[command_type] = "UNKNOWN"
         elif ("PING_WO_DNS" in command_type):
-            row[command_type] = -1
+            row[command_type] = -1.0
         else:
             row[command_type] = -1
             logger.debug("Command {} failed".format(row))
