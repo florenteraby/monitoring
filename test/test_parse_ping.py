@@ -33,6 +33,7 @@ def test_parse_ping_OK(supply_logger):
 
 def test_parse_ping_KO(supply_logger):
     round_trip = parsePingWODNS(ping_result_ko)
-    assert round_trip == -1
+    assert round_trip == -1.0
+    assert type(round_trip) == float
 
 
