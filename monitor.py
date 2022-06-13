@@ -19,7 +19,10 @@ else :
     
 
 from subprocess import STDOUT
-from config_file import *
+#Local packages
+from tools.config_file import *
+from tools.tools import prepareCommand, runCommand
+
 import json
 
 
@@ -47,17 +50,24 @@ common_command_list = [
 ["cat /sys/class/ubi/ubi2*/total_eraseblocks", "TOTAL_ERASE_BLOCKS_UBI2"],
 ["cat /proc/loadavg", "LOADAVG"],
 ["vmstat", "VMSTAT"],
-["ps | grep -w hg6d", "VMZ_HG6D"],
-["ps | grep -w wshd", "VMZ_WSHD"],
-["ps | grep -w wstd", "VMZ_WSTPD"],
-["ps | grep -w dhclient", "VMZ_DHCLIENT"],
-["ps | grep -w dhcrelay", "VMZ_DHCPRELAY"],
-["ps | grep -w ismd", "VMZ_ISMD"],
-["ps | grep -w dnsmasq", "VMZ_DNSMASQ"],
+["ps -aux", "VMZ_PS"],
+# ["ps | grep -w hg6d", "VMZ_HG6D"],
+# ["ps | grep -w wshd", "VMZ_WSHD"],
+# ["ps | grep -w wstd", "VMZ_WSTPD"],
+# ["ps | grep -w dhclient", "VMZ_DHCLIENT"],
+# ["ps | grep -w dhcrelay", "VMZ_DHCPRELAY"],
+# ["ps | grep -w ismd", "VMZ_ISMD"],
+# ["ps | grep -w dnsmasq", "VMZ_DNSMASQ"],
 ["du -s /tmp", "TMP_FS_SIZE"],
 ["du -s /opt/conf/", "CONF_FS_SIZE"],
 ["du -s /opt/data/", "DATA_FS_SIZE"],
-["ps | grep hostapd | wc -l", "NB_HOSTAPD"]
+["ps | grep hostapd | wc -l", "NB_HOSTAPD"],
+["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"],
+["ping -c1 8.8.8.8", "PING_WO_DNS"],
+# ["nslookup -debug www.microsoft.com", "DNS_RESOLUTION_MICROSOFT"],
+# ["nslookup -debug www.google.com", "DNS_RESOLUTION_GOOGLE"],
+# ["nslookup -debug www.lemonde.fr", "DNS_RESOLUTION_LEMONDE"],
+["/usr/sbin/infos-cli -t OSM_MASTER_ELECTION -c all | grep ElecState", "ELEC_STATE"]
 ]
 system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTGlobalState/TemperatureMonitoring/Temperature", "TEMPERATURE"],
@@ -123,59 +133,53 @@ def usage(argv):
     print ("[-d, --destfile]: \tMandatory root name of the CSV destination file") 
     print ("[-v, --verbose]: \tOptional set debug level mode") 
 
-def prepareCommand(command, ip, login, password, logger):
-    command_to_execute = "/usr/bin/sshpass -p"+password.strip()+" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 -o ConnectionAttempts=2 "+login.strip()+"@"+ip.strip()+" "+command
-    logger.debug("Command to execute {}".format(command_to_execute))
-    return command_to_execute
+def parseElecState(to_parse):
+    myListe = to_parse.split(",")
+    elecState = myListe[0].split(" ")[1].strip("<").strip(">")
+    return elecState
 
-def runCommand(command, logger):
-    success_command = False
-    try:
-        output = subprocess.check_output(command.split(" "), stderr=STDOUT)
-    except subprocess.CalledProcessError as error_exec:
-        logger.error("{} -> {}".format(error_exec.cmd, error_exec.output))
-        output = error_exec.output
-    else:
-        logger.info("{}\n".format (output))
-        success_command = True
-    finally:
-        return output, success_command
-def parseProcessVMZ(to_find, output, logger):
-    vmz_index = 0
-    vmz_str = output.split("\n")
-    if (len(vmz_str) == 1):
-        return -1
-    if 'grep' in vmz_str[0]:
-        vmz_index = 1
-    elif 'grep' in  vmz_str[1]:
-        vmz_index = 0
-    else:
-        logger.error("VMZ ISSUE {}".format(output))
-        return -1
-    
-    if vmz_index == len(vmz_str):
-        logger.error("VMZ ISSUE no {}".format(output))
-        return -1
-
-    try:
-        index_status = vmz_str[vmz_index].strip().split(" ").index("R")
+def getVMZ(ps_result, logger):
+    try :
+        index_status = ps_result.split(" ").index("R")
+        logger.debug("{} -> Detect process in R")
     except ValueError:
-        index_status = vmz_str[vmz_index].strip().split(" ").index("S")
-    # else :
-    #     logger.error("Process not running {}".format(to_find))
-    #     return -1    
+        try :
+            index_status = ps_result.split(" ").index("S")
+            logger.debug("{} -> Detect process in S")
+        except ValueError:
+            try :
+                index_status = ps_result.split(" ").index("D")
+                logger.debug("{} -> Detect process in D")
+            except ValueError:
+                logger.error("Cannot find index {}".format(ps_result))
+                return -1
     finally:
-        try:
-            VMSize = vmz_str[vmz_index].strip().split(" ")[index_status-1].replace('m', '000000')
-        except UnboundLocalError:
-            return -1
+        vmz_size = ps_result.split(" ")[index_status - 1]
+        if "m" in vmz_size:
+            vmz_size = vmz_size.replace("m", "000000")
+        logger.debug("VMZ is {}".format(int(vmz_size)))
+        return int(vmz_size)
 
-    if VMSize.isdigit() == True:
-        logger.info("Found VMSize {}".format(VMSize))
-        return int(VMSize)
-    else:
-        logger.error("Try to find {} but computed index does not contained digit {}\n output".format(to_find, VMSize, output))
-        return -1
+
+def parseProcessVMZ2(output, row, logger):
+    ps_list = output.split("\n")
+    for ps_result in ps_list:
+        if "hg6d" in ps_result:
+            row["VMZ_HG6D"] = getVMZ(ps_result, logger)
+        if "wshd" in ps_result:
+            row["VMZ_WSHD"] = getVMZ(ps_result, logger)
+        if "wstd" in ps_result:
+            row["VMZ_WSTD"] = getVMZ(ps_result, logger)
+        if "dhclient" in ps_result:
+            row["VMZ_DHCLIENT"] = getVMZ(ps_result, logger)
+        if "dhcrelay" in ps_result:
+            row["VMZ_DHRELAY"] = getVMZ(ps_result, logger)
+        if "ismd" in ps_result:
+            row["VMZ_ISMD"] = getVMZ(ps_result, logger)
+        if "dnsmasq" in ps_result:
+            row["VMZ_DNSMASQ"] = getVMZ(ps_result, logger)
+        if "hal_wifi" in ps_result:
+            row["VMZ_HALWIFI"] = getVMZ(ps_result, logger)
 
 ''' deviceParseResult example of result
 We can see on F@ST266 the foloowing result
@@ -362,6 +366,33 @@ def loadavgAddValue(to_parse, row, command_type, success_command):
             row[command_type + "-" + loadavg] = float("0")
             i = i + 1
 
+""" PING 8.8.8.8 (8.8.8.8): 56 data bytes
+64 bytes from 8.8.8.8: seq=0 ttl=115 time=13.199 ms
+
+--- 8.8.8.8 ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 13.199/13.199/13.199 ms
+
+root@ftr-3140:~# ping -c1 255.255.255.255
+PING 255.255.255.255 (255.255.255.255): 56 data bytes
+
+--- 255.255.255.255 ping statistics ---
+1 packets transmitted, 0 packets received, 100% packet loss
+ """
+def parsePingWODNS(to_parse):
+    round_trip = -1.0
+    pingParsed = to_parse.split("\n")
+    for elt in pingParsed:
+        if "round-trip" in elt:
+            round_trip = elt.split("=")[1].split("/")[0].strip(" ")
+
+    return float(round_trip)
+
+def parseDNSResolution(to_parse):
+    queryIPv4 = -1
+    queryIPv6 = -1
+
+    return (queryIPv4, queryIPv6)
 
 def updateRow(to_parse, success_command, command_type, logger):
     row = {}
@@ -390,12 +421,19 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] = float("0")
         elif "NB_CLIENT_WIFI_CONNECTED" in command_type:
             row[command_type] = "0"
+        elif "ELEC_STATE" in command_type:
+            row[command_type] = "UNKNOWN"
+        elif ("PING_WO_DNS" in command_type):
+            row[command_type] = -1.0
         else:
             row[command_type] = -1
             logger.debug("Command {} failed".format(row))
     else :
         if command_type == "UPTIME":
             row[command_type] = float(to_parse.split(" ")[0])
+            pass
+        elif "ELEC_STATE" in command_type:
+            row[command_type] = parseElecState(to_parse)
             pass
         elif "MEMINFO" in command_type :
             if to_parse.split(":")[1].strip().split(" ")[0].strip().isalnum() == True:
@@ -431,24 +469,8 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif command_type == "MODELE_NAME":
             row[command_type] = to_parse.split("\n")[1].split(":")[1].replace("'", "").strip()
             pass
-        elif command_type == "VMZ_HG6D":
-            row[command_type] = parseProcessVMZ("hg6d", to_parse, logger)
-        elif command_type == "VMZ_WSHD":
-            row[command_type] = parseProcessVMZ("wshd", to_parse, logger)
-        elif command_type == "VMZ_WSTPD":
-            row[command_type]= parseProcessVMZ("wstpd", to_parse, logger)
-        elif command_type == "VMZ_DHCLIENT":
-            row[command_type] = parseProcessVMZ("dhclient", to_parse, logger)
-        elif command_type == "VMZ_DHCPRELAY":
-            row[command_type] = parseProcessVMZ("dhcrelay", to_parse, logger)
-        elif command_type == "VMZ_ISMD":
-            row[command_type] = parseProcessVMZ("ismd", to_parse, logger)
-        elif command_type == "VMZ_DNSMASQ":
-            row[command_type] = parseProcessVMZ("dnsmasq", to_parse, logger)
-        elif command_type == "VMZ_DATACOLLECTOR":
-            row[command_type] = parseProcessVMZ("data-collector", to_parse, logger)
-        elif command_type == "VMZ_HALWIFI":
-            row[command_type] =  parseProcessVMZ("halwifi", to_parse, logger)
+        elif command_type == "VMZ_PS":
+            parseProcessVMZ2(to_parse, row, logger)
         elif "CONNECTEDCLIENT" in command_type:
             row[command_type] = int(to_parse.split("\n")[0])
             pass
@@ -481,8 +503,16 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] =  to_parse.split("\n")
         elif "NB_HOSTAPD" in command_type:
             row[command_type] =  int(to_parse)
+        elif "NB_DUMPCORE" in command_type:
+            if "cat: can't open" in to_parse:
+                row[command_type] = 0
+            else:
+                row[command_type] =  int(to_parse)
         elif "WIFI_BH_ASSOCLIST" == command_type:
             pass
+        elif ("PING_WO_DNS" in command_type):
+            row[command_type] = parsePingWODNS(to_parse)
+
         else :
             logger.error("Unknown command type {}".format(command_type))
 
@@ -509,7 +539,7 @@ def getAssoclistInfo(ip, username, password, BHAssoclist, logger):
         return row
     for STA in BHAssoclist:
         macSta = STA.split(" ")[1]
-        command = "/usr/sbin/wlctl -i wl0.1 sta_info "+ macSta
+        command = "/usr/sbin/wlctl -i wl0.2 sta_info "+ macSta
         myCommand = prepareCommand(command, ip, username, password, logger)
         output, result = runCommand(myCommand, logger)
         row.update(parseStaInfo(output, macSta))

@@ -11,7 +11,17 @@
                         "DB_username"  : "BT",
                         "DB_password"  : "BT",
                         "DB_name"      : "DEVICE_TEST"
-                        }
+                        },
+    "check_xpath" : [
+        {
+            "xpath": "Device/Services/AdvancedFwUpdate/URL", 
+            "expected_value" : "http://pi-fry.home/TEST2/WHW6"
+        },
+        {
+            "xpath" : "Device/DeviceInfo/Logging/Syslog/Server/Enable",
+            "expected_value" : "true"
+        }
+    ]
 }
 
 
