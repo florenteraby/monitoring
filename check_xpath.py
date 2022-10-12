@@ -35,7 +35,7 @@ class check_xpath_class:
         """"Call the prepare command fonction to get the fulll sshpass"""
         outputCmd, successCmd = tools.tools.runCommand(cmd, logging.getLogger())
         """"Run the command"""
-        if (successCmd == True):
+        if (successCmd is True):
             """"if the command success we can parse the result"""
             try:
                 read_value = outputCmd.decode('utf8').split("value : ")[1].strip().replace("'", "")
