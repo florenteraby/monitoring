@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """The purpose of this script is to check if the URL for download change.
-It is really specific to my setup. 
+It is really specific to my setup.
 The idea is to use cron mecanism on the pi to launch the script
 """
 import json
@@ -63,7 +63,7 @@ class check_xpath_class:
         cmd = tools.tools.prepareCommand(set_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
 
         outputCmd, successCmd = tools.tools.runCommand(cmd, logging.getLogger())
-        #Execute the command 
+    #Execute the command
         if (successCmd == True):
             #If the command is successfull return the success
             return successCmd
@@ -84,8 +84,6 @@ def usage(argv):
     print ("[-c, --config]: \tMandatory Config file with the format")
     print ("[-v, --v]: \tverbosity in log file")
 
-        
-
 def check_xpath(discList_json, xpath2check_json, logger):
     """[summary]
 
@@ -95,13 +93,13 @@ def check_xpath(discList_json, xpath2check_json, logger):
         logger
 
     Returns:
-        [BOOL]: [False no disc in the list, or the 
+        [BOOL]: [False no disc in the list, or the
                 [True Disc list is not empty and action was done OK]
     """
     if (len(discList_json) == 0 or len(xpath2check_json) == 0):
         logger.debug("Disc list is empty : {}".format(len(discList_json)))
         return False
-    
+
     for disc in discList_json:
         logger.debug("Disc {}".format(disc))
         for xpath2check in xpath2check_json:
@@ -149,7 +147,7 @@ def main(argv):
 
             if option in ('-v', '--v'):
                 logger.setLevel(logging.DEBUG)
-            
+
         if (run is True):
             check_xpath(config_jsonlist["network_config"], config_jsonlist["check_xpath"],logger)
             return True
