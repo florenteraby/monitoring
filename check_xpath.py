@@ -122,9 +122,6 @@ def main(argv):
     logger = logging.getLogger()
     network_list = []
     run = False
-    system_command_list = []
-    dest_file = ""
-    polling_frequency = DEFAULT_POLLING_FREQUENCY
     try:
         opts, args = getopt.getopt(argv, "c:hv", ["config=","help", "v"])
     except getopt.GetoptError:
@@ -153,7 +150,7 @@ def main(argv):
             if option in ('-v', '--v'):
                 logger.setLevel(logging.DEBUG)
             
-        if (run == True):
+        if (run is True):
             check_xpath(config_jsonlist["network_config"], config_jsonlist["check_xpath"],logger)
             return True
         else :
