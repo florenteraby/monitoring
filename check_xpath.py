@@ -66,7 +66,7 @@ class check_xpath_class:
         #Execute the command
         if (success_cmd is False):
             #Log if the command is not successfull
-            logging.getLogger().error("Command : {%s} Failed\n\t{%s}".format(cmd, output_cmd))
+            logging.getLogger().error("Command : %s Failed\n\t%s", cmd, output_cmd)
         return success_cmd
 
 
@@ -76,7 +76,7 @@ def usage(argv):
     Args:
         argv ([type]): [description]
     """
-    print("Usage ")
+    print("Usage %s", argv)
     print ("[-h, --help]: \t\tthis Message")
     print ("[-c, --config]: \tMandatory Config file with the format")
     print ("[-v, --v]: \tverbosity in log file")
@@ -94,11 +94,11 @@ def check_xpath(disc_list_json, xpath2check_json, logger):
                 [True Disc list is not empty and action was done OK]
     """
     if (len(disc_list_json) == 0 or len(xpath2check_json) == 0):
-        logger.debug("Disc list is empty : {%d}".format(len(disc_list_json)))
+        logger.debug("Disc list is empty : %d", len(disc_list_json))
         return False
 
     for disc in disc_list_json:
-        logger.debug("Disc {}".format(disc))
+        logger.debug("Disc %s".format(disc))
         for xpath2check in xpath2check_json:
             xpath_check = check_xpath_class(xpath2check['xpath'], xpath2check['expected_value'])
             if (xpath_check.check_xpath(disc) is False):
@@ -136,16 +136,16 @@ def main(argv):
     else:
         for option ,arg in opts:
             if option in ('-c', '--config'):
-                logger.info("config file {%s}".format(arg))
+                logger.info("config file %s".format(arg))
                 #network_list = openConfigFile(arg.strip(), logger)
                 try:
                     with open (arg, 'r+') as config_file:
                         config_jsonlist = json.load(config_file)
                         run = True
                 except IOError:
-                    logger.error("File {} does not exist".format(arg.strip()))
+                    logger.error("File %s does not exist".format(arg.strip()))
                 else :
-                    logger.debug("DUMP config file {%s} ".format(network_list))
+                    logger.debug("DUMP config file %s".format(network_list))
 
             if option in ('-h', '--help'):
                 usage(argv)
