@@ -49,7 +49,7 @@ class check_xpath_class:
                     return True
         else:
             #""""Command is not successful, log it"""
-            logging.getLogger().error("Command : {} Failed\n\t{}".format(cmd, output_cmd))
+            logging.getLogger().error("Command : {%s} Failed\n\t{%s}".format(cmd, output_cmd))
             return False
     
     def set_expected_value(self, disc):
@@ -66,7 +66,7 @@ class check_xpath_class:
         #Execute the command
         if (success_cmd is False):
             #Log if the command is not successfull
-            logging.getLogger().error("Command : {} Failed\n\t{}".format(cmd, output_cmd))
+            logging.getLogger().error("Command : {%s} Failed\n\t{%s}".format(cmd, output_cmd))
         return success_cmd
 
 
@@ -94,7 +94,7 @@ def check_xpath(disc_list_json, xpath2check_json, logger):
                 [True Disc list is not empty and action was done OK]
     """
     if (len(disc_list_json) == 0 or len(xpath2check_json) == 0):
-        logger.debug("Disc list is empty : {}".format(len(disc_list_json)))
+        logger.debug("Disc list is empty : {%d}".format(len(disc_list_json)))
         return False
 
     for disc in disc_list_json:
@@ -136,7 +136,7 @@ def main(argv):
     else:
         for option ,arg in opts:
             if option in ('-c', '--config'):
-                logger.info("config file {}".format(arg))
+                logger.info("config file {%s}".format(arg))
                 #network_list = openConfigFile(arg.strip(), logger)
                 try:
                     with open (arg, 'r+') as config_file:
@@ -145,7 +145,7 @@ def main(argv):
                 except IOError:
                     logger.error("File {} does not exist".format(arg.strip()))
                 else :
-                    logger.debug("DUMP config file {} ".format(network_list))
+                    logger.debug("DUMP config file {%s} ".format(network_list))
 
             if option in ('-h', '--help'):
                 usage(argv)
