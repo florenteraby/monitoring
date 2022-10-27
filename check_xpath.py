@@ -36,7 +36,7 @@ class check_xpath_class:
         output_cmd, success_cmd = tools.tools.runCommand(cmd, logging.getLogger())
         #""""Run the command"""
         if (success_cmd is True):
-            """"if the command success we can parse the result"""
+            #""""if the command success we can parse the result"""
             try:
                 read_value = output_cmd.decode('utf8').split("value : ")[1].strip().replace("'", "")
             except IndexError:
@@ -49,9 +49,9 @@ class check_xpath_class:
                     return True
         else:
             #""""Command is not successful, log it"""
-            logging.getLogger().error("Command : {%s} Failed\n\t{%s}".format(cmd, output_cmd))
+            logging.getLogger().error("Command : %s Failed\n\t%s", cmd, output_cmd)
             return False
-    
+
     def set_expected_value(self, disc):
         """[Set the expected on the  on disc]
 
@@ -158,7 +158,7 @@ def main(argv):
             check_xpath(config_jsonlist["network_config"], config_jsonlist["check_xpath"],logger)
         else :
             usage(argv)
-        
+
         return run
 
 if __name__ == "__main__":
