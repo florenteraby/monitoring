@@ -1,19 +1,5 @@
 #!/usr/bin/python
 
-#Local packages
-from tools.config_file import *
-from tools.tools import prepareCommand, runCommand
-
-import sys
-import getopt
-import logging
-import csv
-import time
-import subprocess
-from subprocess import STDOUT
-import json
-import datetime
-import os
 from sys import version_info
 if version_info[0] < 3:
 #    from influxdb import InfluxDBClient
@@ -22,6 +8,20 @@ else :
     import influxdb_client
     from influxdb_client import InfluxDBClient, Point
     from influxdb_client.client.write_api import SYNCHRONOUS
+
+#Local packages
+
+import sys
+import getopt
+import logging
+import csv
+import time
+import json
+import datetime
+import os
+
+from tools.config_file import *
+from tools.tools import prepareCommand, runCommand
 
 
 
@@ -175,14 +175,15 @@ def get_VMZ(ps_result, logger):
                 index_status = ps_result.split(" ").index("D")
                 logger.debug("{} -> Detect process in D")
             except ValueError:
-                logger.error("Cannot find index {}".format(ps_result))
+                logger.error("Cannot find index %s", ps_result)
                 return -1
     finally:
         vmz_size = ps_result.split(" ")[index_status - 1]
         if "m" in vmz_size:
             vmz_size = vmz_size.replace("m", "000000")
-        logger.debug("VMZ is {}".format(int(vmz_size)))
+        logger.debug("VMZ is %d", int(vmz_size))
         return int(vmz_size)
+    return int(vmz_size)
 
 
 def parse_process_VMZ(output, row, logger):
@@ -212,72 +213,72 @@ def parse_process_VMZ(output, row, logger):
         if "hal_wifi" in ps_result:
             row["VMZ_HALWIFI"] = get_VMZ(ps_result, logger)
 
-''' deviceParseResult example of result
-We can see on F@ST266 the foloowing result
-    MACAddress : '74:e5:f9:f1:bc:6f'
-    Name : 'rmm-p2100409pl'
-    Active : 'true'
-    RSSI : '-65'
-    Layer1Interface : 'Device/WiFi/Radios/Radio[RADIO5G]'
-    MACAddress : 'b8:27:eb:38:b3:93'
-    Name : 'B8:27:EB:38:B3:93'
-    Active : 'true'
-    RSSI : '0'
-    Layer1Interface : 'Device/WiFi/Radios/Radio[RADIO2G4]'
-    MACAddress : 'B8:27:EB:54:83:86'
-    Name : 'B8:27:EB:54:83:86'
-    Active : 'false'
-    RSSI : '0'
-    Layer1Interface : 'Device/Ethernet/Interfaces/Interface[PHY2]'
-    MACAddress : '58:E2:8F:19:CD:36'
-    Name : 'iPhonedeFlorent'
-    Active : 'false'
-    RSSI : '-66'
-    Layer1Interface : 'Device/WiFi/Radios/Radio[RADIO5G]'
-    MACAddress : 'b0:0c:d1:5a:6f:6c'
-    Name : 'CSM-9015427'
-    Active : 'true'
-    RSSI : '0'
-    Layer1Interface : ''
+# """ ''' deviceParseResult example of result
+# We can see on F@ST266 the foloowing result
+#     MACAddress : '74:e5:f9:f1:bc:6f'
+#     Name : 'rmm-p2100409pl'
+#     Active : 'true'
+#     RSSI : '-65'
+#     Layer1Interface : 'Device/WiFi/Radios/Radio[RADIO5G]'
+#     MACAddress : 'b8:27:eb:38:b3:93'
+#     Name : 'B8:27:EB:38:B3:93'
+#     Active : 'true'
+#     RSSI : '0'
+#     Layer1Interface : 'Device/WiFi/Radios/Radio[RADIO2G4]'
+#     MACAddress : 'B8:27:EB:54:83:86'
+#     Name : 'B8:27:EB:54:83:86'
+#     Active : 'false'
+#     RSSI : '0'
+#     Layer1Interface : 'Device/Ethernet/Interfaces/Interface[PHY2]'
+#     MACAddress : '58:E2:8F:19:CD:36'
+#     Name : 'iPhonedeFlorent'
+#     Active : 'false'
+#     RSSI : '-66'
+#     Layer1Interface : 'Device/WiFi/Radios/Radio[RADIO5G]'
+#     MACAddress : 'b0:0c:d1:5a:6f:6c'
+#     Name : 'CSM-9015427'
+#     Active : 'true'
+#     RSSI : '0'
+#     Layer1Interface : ''
 
-On WHW2 here is the result :
-    MACAddress : 'D8:F2:CA:89:CC:F4'
-    Name : 'RMM-P2100723PW'
-    Active : 'false'
-    ConnectedDisc : ''
-    RSSI : '-64'
-    MACAddress : '5C:AA:FD:F0:94:9A'
-    Name : 'SonosZP'
-    Active : 'true'
-    ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='3']'
-    RSSI : '-48'
-    MACAddress : '78:28:CA:2A:A3:AA'
-    Name : 'SonosZP'
-    Active : 'true'
-    ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='1']'
-    RSSI : '-70'
-    MACAddress : 'B8:27:EB:6D:80:77'
-    Name : 'pi-FRy'
-    Active : 'true'
-    ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='1']'
-    RSSI : '0'
-    MACAddress : 'A4:6C:F1:0D:AD:9E'
-    Name : 'Galaxy-A5-2017'
-    Active : 'true'
-    ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='3']'
-    RSSI : '-75'
-    MACAddress : '9C:2E:A1:F9:26:2B'
-    Name : 'Redmi5Plus-theomag'
-    Active : 'true'
-    ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='2']'
-    RSSI : '-52'
+# On WHW2 here is the result :
+#     MACAddress : 'D8:F2:CA:89:CC:F4'
+#     Name : 'RMM-P2100723PW'
+#     Active : 'false'
+#     ConnectedDisc : ''
+#     RSSI : '-64'
+#     MACAddress : '5C:AA:FD:F0:94:9A'
+#     Name : 'SonosZP'
+#     Active : 'true'
+#     ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='3']'
+#     RSSI : '-48'
+#     MACAddress : '78:28:CA:2A:A3:AA'
+#     Name : 'SonosZP'
+#     Active : 'true'
+#     ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='1']'
+#     RSSI : '-70'
+#     MACAddress : 'B8:27:EB:6D:80:77'
+#     Name : 'pi-FRy'
+#     Active : 'true'
+#     ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='1']'
+#     RSSI : '0'
+#     MACAddress : 'A4:6C:F1:0D:AD:9E'
+#     Name : 'Galaxy-A5-2017'
+#     Active : 'true'
+#     ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='3']'
+#     RSSI : '-75'
+#     MACAddress : '9C:2E:A1:F9:26:2B'
+#     Name : 'Redmi5Plus-theomag'
+#     Active : 'true'
+#     ConnectedDisc : 'Device/Services/BTServices/BTDiscsMgt/Discs/Disc[@uid='2']'
+#     RSSI : '-52'
 
-every sample has to be sent to the server
-tag (MACADRESS)/tag (DeviceName)
-field (active)
-field (RSSI)
-field (ConnectedDisc(only the UID of the DISC)
-'''
+# every sample has to be sent to the server
+# tag (MACADRESS)/tag (DeviceName)
+# field (active)
+# field (RSSI)
+# field (ConnectedDisc(only the UID of the DISC)
+# '''
 def device_parse_result(to_parse, extender_name, fw_version, model_name, client):
     """_summary_
 
@@ -356,14 +357,15 @@ def parse_BH_assoclist(to_parse, row, command_type, success_command):
     Returns:
         _type_: _description_
     """
-    if (len(to_parse) == 0):
-        row[command_type] = 0
-        return ""
-    else:
-        my_list = to_parse.split("\n")
-        del my_list[-1]
-        row[command_type] = len(my_list)
-        return my_list
+    if success_command is True:    
+        if (len(to_parse) == 0):
+            row[command_type] = 0
+            return ""
+        else:
+            my_list = to_parse.split("\n")
+            del my_list[-1]
+            row[command_type] = len(my_list)
+            return my_list
 
 def chanim_add_value(to_parse, row, command_type, success_command):
     """_summary_
@@ -374,7 +376,7 @@ def chanim_add_value(to_parse, row, command_type, success_command):
         command_type (_type_): _description_
         success_command (_type_): _description_
     """
-    if success_command == True:
+    if success_command is True:
         chanim_answer = to_parse.split("\n")[2].split("\t")
         i = 0
         if (len(chanim_answer) < 1):
@@ -409,7 +411,7 @@ def vm_stat_add_value(to_parse, row, command_type, success_command):
         command_type (_type_): _description_
         success_command (_type_): _description_
     """
-    if success_command == True:
+    if success_command is True:
         vmstat_list = filter(lambda x: x != "", to_parse.split("\n")[2].split(" "))
         i = 0
         for vmstats in vmstat_info:
@@ -430,7 +432,7 @@ def loadavg_add_value(to_parse, row, command_type, success_command):
     Returns:
         _type_: _description_
     """
-    if success_command == True:
+    if success_command is True:
         i = 0
         for loadavg in loadavg_info:
             row[command_type + "-" + loadavg] = float(to_parse.split(" ")[i])
@@ -529,7 +531,7 @@ def update_row(to_parse, success_command, command_type, logger):
             row[command_type] = -1.0
         else:
             row[command_type] = -1
-            logger.debug("Command {} failed".format(row))
+            logger.debug("Command %d failed", row)
     else :
         if command_type == "UPTIME":
             row[command_type] = float(to_parse.split(" ")[0])
@@ -538,10 +540,10 @@ def update_row(to_parse, success_command, command_type, logger):
             row[command_type] = parse_election_state(to_parse)
             pass
         elif "MEMINFO" in command_type :
-            if to_parse.split(":")[1].strip().split(" ")[0].strip().isalnum() == True:
+            if to_parse.split(":")[1].strip().split(" ")[0].strip().isalnum() is True:
                 row[command_type] = float(to_parse.split(":")[1].strip().split(" ")[0].strip())
             else :
-                logger.error("Command type return non digit {} {}".format(to_parse.split(":")[1].strip().split(" ")[0].strip(),to_parse))
+                logger.error("Command type return non digit %s %s", to_parse.split(":")[1].strip().split(" ")[0].strip(),to_parse)
                 row[command_type] = -1
             pass
         elif "MAX_EC" in command_type:
@@ -616,7 +618,7 @@ def update_row(to_parse, success_command, command_type, logger):
             row[command_type] = parse_ping_wodns(to_parse)
 
         else :
-            logger.error("Unknown command type {}".format(command_type))
+            logger.error("Unknown command type %s", command_type)
 
     return row
 
@@ -638,7 +640,7 @@ def parse_sta_info(to_parse, sta_mac):
         if ("link bandwidth =" in item):
             row['BH_STA_INFO_BANDWIDTH_'+sta_mac] = int(item.split("=")[1].split(" ")[1])
         if ("in network " in item):
-            uptime = item.strip(" ").split(" ")
+            #uptime = item.strip(" ").split(" ")
             row['BH_STA_INFO_UPTIME_'+sta_mac] = int(item.strip(" ").split(" ")[3])
         if ("rx decrypt failures:" in item):
             row['BH_STA_INFO_DECRYPT_FAILURE_'+sta_mac] = int(item.split(":")[1].strip(" "))
@@ -663,8 +665,8 @@ def get_assoc_list_info(ip, username, password, bh_assoc_list, logger):
     for STA in bh_assoc_list:
         sta_mac = STA.split(" ")[1]
         command = "/usr/sbin/wlctl -i wl0.2 sta_info "+ sta_mac
-        myCommand = prepareCommand(command, ip, username, password, logger)
-        output, result = runCommand(myCommand, logger)
+        my_command = prepareCommand(command, ip, username, password, logger)
+        output, result = runCommand(my_command, logger)
         row.update(parse_sta_info(output, sta_mac))
     return row
 
@@ -695,18 +697,18 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
             command_to_execute = prepareCommand(command, extender['ip'], extender['username'], extender['password'], logger)
             output, success_command = runCommand(command_to_execute, logger)
             if (command_type == 'WIFI_BH_ASSOCLIST'):
-                myRow = {}
-                BHAssocList = parse_BH_assoclist(output, myRow, command_type, success_command)
-                rows.update(myRow)
-                myRow = get_assoc_list_info(extender['ip'], extender['username'], extender['password'], BHAssocList, logger)
-                rows.update(myRow)
+                my_row = {}
+                bh_assoc_list = parse_BH_assoclist(output, my_row, command_type, success_command)
+                rows.update(my_row)
+                my_row = get_assoc_list_info(extender['ip'], extender['username'], extender['password'], bh_assoc_list, logger)
+                rows.update(my_row)
             rows.update(update_row(output, success_command, command_type, logger))
 
 
         device_parse_result(rows.pop("DEVICE_STATUS"), extender['name'].strip(), rows['FIRMWARE_VERSION'], rows['MODELE_NAME'], client)
 
         #extender['CSVWriter'].writerow(rows)
-        logger.info("Write row {} in filen {}".format(rows, extender['CSVFile'].name))
+        logger.info("Write row %s in filen %S", rows, extender['CSVFile'].name)
         tags = {'name' : extender['name'].strip(),
             'fw_version' : rows['FIRMWARE_VERSION'],
             'model_name' : rows['MODELE_NAME'],
@@ -715,8 +717,6 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
             }
 
         #print("EXTENDER NAME {} {}".format(extender.name, rows.items()))
-        fields = {}
-
         # for key in rows.keys():
         #     if (key != 'DATE'):
         #         fields[key] = rows[key]
@@ -747,7 +747,6 @@ def monitoring_extenders(network_list, network_setup, polling_frequency, influxd
         logger (_type_): _description_
         system_command_lst (_type_): _description_
     """
-    extender_csv_file_list = []
     csv_header = []
     
     #Create CSV Header file
@@ -837,16 +836,16 @@ def main(argv):
     else:
         for option ,arg in opts:
             if option in ('-c', '--config'):
-                logger.info("config file {}".format(arg))
+                logger.info("config file %s", arg)
                 #network_list = openConfigFile(arg.strip(), logger)
                 network_list = []
                 try:
                     with open (arg.strip(), 'r+') as configFile:
                         config_jsonlist = json.load(configFile)
                 except IOError:
-                    logger.error("File {} does not exist".format(arg.strip()))
+                    logger.error("File %s does not exist", arg.strip())
                 else :
-                    logger.debug("DUMP config file {} ".format(network_list))
+                    logger.debug("DUMP config file %s", network_list)
 
             if option in ('-h', '--help'):
                 usage(argv)
@@ -855,10 +854,10 @@ def main(argv):
                 try :
                     polling_frequency = int(arg)
                 except ValueError:
-                    logger.debug("Bad value for frequency parameter {}, force default value {}".format(arg, DEFAULT_POLLING_FREQUENCY))
+                    logger.debug("Bad value for frequency parameter %s, force default value %d", arg, DEFAULT_POLLING_FREQUENCY)
                     polling_frequency = DEFAULT_POLLING_FREQUENCY
                 else:
-                    logger.info("Polling frequency {}".format(arg))
+                    logger.info("Polling frequency %s", arg)
                 finally:
                     pass
 
@@ -879,9 +878,9 @@ def main(argv):
                     #To manage debugger issue with path management
                     if (len (path.split(" ")) > 1):
                         index_path = 1
-                    print ("{} {} {}".format(index_path, len (path.split(" ")), path.split(" ")))
+                    print ("%s %d %s %s", index_path, len (path.split(" ")), path.split(" "), file)
 
-                    print ("{} {} {}".format(index_path, path.split(" ")[index_path], os.path.isdir(path.split(" ")[index_path])))
+                    print ("%s %s %s", index_path, path.split(" ")[index_path], os.path.isdir(path.split(" ")[index_path]))
                     if (os.path.isdir(path.split(" ")[index_path]) == False):
                         os.mkdir(path.split(" ")[index_path])
                 logger.info("Destination file is : {}".format(dest_file))
@@ -907,7 +906,7 @@ def main(argv):
             usage (argv)
             return -1
 
-        logger.info("Start monitoring with config file {}, destination file will be {}, polling frequency is {} network type {}".format(config_jsonlist["network_config"], dest_file, config_jsonlist["Frequency"], config_jsonlist["network_type"]))
+        logger.info("Start monitoring with config file %S, destination file will be %s, polling frequency is %s network type %s", config_jsonlist["network_config"], dest_file, config_jsonlist["Frequency"], config_jsonlist["network_type"])
         monitoring_extenders(config_jsonlist["network_config"], config_jsonlist["network_setup"],config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
     finally:
 
