@@ -98,7 +98,7 @@ def check_xpath(disc_list_json, xpath2check_json, logger):
         return False
 
     for disc in disc_list_json:
-        logger.debug("Disc %s".format(disc))
+        logger.debug("Disc %s",disc)
         for xpath2check in xpath2check_json:
             xpath_check = check_xpath_class(xpath2check['xpath'], xpath2check['expected_value'])
             if (xpath_check.check_xpath(disc) is False):
@@ -136,16 +136,16 @@ def main(argv):
     else:
         for option ,arg in opts:
             if option in ('-c', '--config'):
-                logger.info("config file %s".format(arg))
+                logger.info("config file %s", arg)
                 #network_list = openConfigFile(arg.strip(), logger)
                 try:
                     with open (arg, 'r+') as config_file:
                         config_jsonlist = json.load(config_file)
                         run = True
                 except IOError:
-                    logger.error("File %s does not exist".format(arg.strip()))
+                    logger.error("File %s does not exist", arg.strip())
                 else :
-                    logger.debug("DUMP config file %s".format(network_list))
+                    logger.debug("DUMP config file %s", network_list)
 
             if option in ('-h', '--help'):
                 usage(argv)

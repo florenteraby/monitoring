@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+
 import sys
 import getopt
 import logging
@@ -16,7 +17,7 @@ else :
     import influxdb_client
     from influxdb_client import InfluxDBClient, Point
     from influxdb_client.client.write_api import SYNCHRONOUS
-    
+
 
 from subprocess import STDOUT
 #Local packages
@@ -97,7 +98,7 @@ system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulRSSI", "BACKHAUL_AP_RSSI"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device[ConnectionType=\\'WL\\'] | grep -e MACAddress -e RSSI -e Layer1Interface -e Name -e Active -e Connected -e Band", "DEVICE_STATUS"],
 ["du -s /opt/conf/datausage.db", "DATA_USAGE_FS_SIZE"]
-]  
+]
 
 system_command_list_F266GEN = common_command_list + [
 ["xmo-client -p Device/DeviceInfo/TemperatureStatus/TemperatureSensors/TemperatureSensor/Value", "TEMPERATURE"],
@@ -116,7 +117,7 @@ system_command_list_F266GEN = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/WSHDServices/WSHDDiscsMgt/Discs/Disc/Topology/BackhaulConnexionType", "BACKHAUL_AP_TYPE"],
 ["/usr/bin/xmo-client -p Device/Services/WSHDServices/WSHDDiscsMgt/Discs/Disc/Topology/BackhaulRSSI", "BACKHAUL_AP_RSSI"],
 ["/usr/bin/xmo-client -p Device/Services/WSHDServices/WSHDDevicesMgt/Devices/Device[ConnectionType=\\'NONE\\'] | grep -e MACAddress -e RSSI -e Layer1Interface -e Name -e Active -e Band", "DEVICE_STATUS"]
-]  
+]
 
 chanim_info = ["chanspec", "tx", "inbss","obss","nocat","nopkt","doze","txop","goodtx","badtx","glitch","badplcp","knoise","idle","timestamp"]
 vmstat_info = ["nb_process_running", "nb_process_sleep", "swap", "free", "buff", "cache", "si", "so", "bi", "bo", "interrupt", "context_switch", "user", "system", "idle","wait"]
@@ -130,8 +131,8 @@ def usage(argv):
     print ("[-c, --config]: \tMandatory Config file with the format")
     print ("\t\t\t@IP, ROLE, PLACE, LOGIN, PASSWORD")
     print ("[-f, --frequency]: \tOptional Polling frequency (default:{}s)".format(DEFAULT_POLLING_FREQUENCY))
-    print ("[-d, --destfile]: \tMandatory root name of the CSV destination file") 
-    print ("[-v, --verbose]: \tOptional set debug level mode") 
+    print ("[-d, --destfile]: \tMandatory root name of the CSV destination file")
+    print ("[-v, --verbose]: \tOptional set debug level mode")
 
 def parseElecState(to_parse):
     myListe = to_parse.split(",")
@@ -251,7 +252,7 @@ def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
     timestamp = datetime.datetime.utcnow().isoformat()
 
     if len(to_parse) == 0:
-        return 
+        return
     else:
         serie = []
         fields = {}
@@ -279,7 +280,7 @@ def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
                 toSendToInfluxDevice = {}
                 DeviceTags = {}
                 fields['Band'] = elt.split("   Band : ")[1].replace("'", "")
-                
+
                 DeviceTags = {
                 'MACAddress'    : macAddress,
                 'DeviceName'    : fields['Name'],
@@ -295,13 +296,13 @@ def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
                 'fields' : fields,
                 }
                 serie.append(toSendToInfluxDevice)
-                
+
                 # for myInflux in serie:
                 #     print ("Envoie de la serie {}".format(myInflux))
                 client.write_points(serie, time_precision='s',database="myDBExample")
-                fields = {}            
+                fields = {}
 
-    return 
+    return
 # assoclist 10:D7:B0:1A:96:6F
 # assoclist 10:D7:B0:1A:96:7B
 def parseBHAssoclist(to_parse, row, command_type, success_command):
@@ -313,7 +314,7 @@ def parseBHAssoclist(to_parse, row, command_type, success_command):
         del myList[-1]
         row[command_type] = len(myList)
         return (myList)
-    
+
 def chanimAddValue(to_parse, row, command_type, success_command):
     if success_command == True:
         chanim_answer = to_parse.split("\n")[2].split("\t")
@@ -326,7 +327,7 @@ def chanimAddValue(to_parse, row, command_type, success_command):
             return
         for chanim in chanim_info:
             try :
-                chanim_answer[i].isdigit() 
+                chanim_answer[i].isdigit()
             except IndexError:
                 print ("Index Error {} {}".format(i, chanim_answer))
             else:
@@ -492,7 +493,7 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif "BACKHAUL_AP_" in command_type:
             myresultlst = to_parse.split("\n")
             for item in myresultlst:
-                if 'value' in item: 
+                if 'value' in item:
                     row[command_type] = item.split(":")[1].replace("'", "").strip()
                     break
         elif "FS_SIZE" in command_type:
@@ -555,7 +556,7 @@ def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst
 
     timestamp = datetime.datetime.utcnow().isoformat()
     serie = []
-    
+
     #Parse the list of extenders
     for extender in network_list:
         rows = {}
@@ -572,8 +573,8 @@ def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst
                 myRow = getAssoclistInfo(extender['ip'], extender['username'], extender['password'], BHAssocList, logger)
                 rows.update(myRow)
             rows.update(updateRow(output, success_command, command_type, logger))
-        
-        
+
+
         deviceParseResult(rows.pop("DEVICE_STATUS"), extender['name'].strip(), rows['FIRMWARE_VERSION'], rows['MODELE_NAME'], client)
 
         #extender['CSVWriter'].writerow(rows)
@@ -587,7 +588,7 @@ def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst
 
         #print("EXTENDER NAME {} {}".format(extender.name, rows.items()))
         fields = {}
-        
+
         # for key in rows.keys():
         #     if (key != 'DATE'):
         #         fields[key] = rows[key]
@@ -607,7 +608,7 @@ def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst
 def monitoringExtenders(network_list, network_setup, polling_frequency, influxServer, dest_file, logger, system_command_lst):
     extender_csv_file_list = []
     csv_header = []
-    """Monitoring Extender poll for polling_frequency all the extender part of the network_list. Then will store the 
+    """Monitoring Extender poll for polling_frequency all the extender part of the network_list. Then will store the
     results into the dest_file in csv format.
     A dest_file will be created per extender, to allow to have different follow up"""
     #Create CSV Header file
@@ -634,17 +635,16 @@ def monitoringExtenders(network_list, network_setup, polling_frequency, influxSe
         csv_writer = csv.DictWriter(extender['CSVFile'], fieldnames=csv_header)
         extender['CSVWriter'] = csv_writer
         extender['CSVWriter'].writeheader()
-    
         logger.info("Creating file {:20} mode {:2}".format(extender['CSVFile'].name, extender['CSVFile'].mode))
 
     logger.info("Creating Data Base {}".format(influxServer["Server_name"])
     )
     os.environ['NO_PROXY'] = influxServer["Server_name"]
-    client = InfluxDBClient(host=influxServer["Server_name"],port=influxServer["Server_port"], 
+    client = InfluxDBClient(host=influxServer["Server_name"],port=influxServer["Server_port"],
                             ssl=False, proxies=None)
     client.create_database(influxServer["DB_name"])
     logger.info("Creation of Data Base {} {}".format(influxServer["Server_name"], client.get_list_database()))
-    
+
     #Start looping for monitoring extender
     while 1:
         try:
@@ -652,7 +652,7 @@ def monitoringExtenders(network_list, network_setup, polling_frequency, influxSe
             DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst, client)
             #Sleep for polling frequency
             time.sleep(int(polling_frequency))
-            
+
         except KeyboardInterrupt:
             #If Keyboard interruption then stop polling
             logger.info("KEYBOARD interrupt stop monitoring")
@@ -665,7 +665,7 @@ def monitoringExtenders(network_list, network_setup, polling_frequency, influxSe
     for extender in network_list:
         logger.info("Closing file {}".format(extender['CSVFile'].name))
         extender['CSVFile'].close()
-        
+
     return
 
 
@@ -683,10 +683,10 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "c:hf:d:vt:", ["config=","help", "frequency=", "destfile=", "verbose", "type="])
     except getopt.GetoptError:
-        logger.error("Option error");
+        logger.error("Option error")
         print ("Option error")
         usage(argv)
-        sys.exit(2)    
+        sys.exit(2)
     else:
         for option ,arg in opts:
             if option in ('-c', '--config'):
@@ -725,7 +725,6 @@ def main(argv):
                     dest_file = arg.split(".")[0]
                 else:
                     dest_file = arg
-                
                 if ("/" in dest_file):           
                     #Extract path and file name. If directory does not exist then create directory if needed
                     path, file = os.path.split(os.path.abspath(dest_file))
@@ -747,7 +746,7 @@ def main(argv):
             system_command_list = system_command_list_F398BT
         elif (config_jsonlist["network_type"] == "F266GEN"):
             system_command_list = system_command_list_F266GEN
- 
+
         if (len(config_jsonlist["network_config"]) == 0):
             print ("Config file is emty or not compliant")
             usage(argv)
@@ -768,4 +767,4 @@ def main(argv):
         pass
 
 if __name__ == "__main__":
-        main(sys.argv[1:])
+    main(sys.argv[1:])
