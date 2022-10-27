@@ -1,6 +1,6 @@
 import pytest
 import logging
-from monitor import parsePingWODNS
+from monitor import parse_ping_wodns
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 
@@ -28,11 +28,11 @@ ping_result_ko = """PING 255.255.255.255 (255.255.255.255): 56 data bytes
 1 packets transmitted, 0 packets received, 100% packet loss
 """
 def test_parse_ping_OK(supply_logger):
-    round_trip = parsePingWODNS(ping_result_ok)
+    round_trip = parse_ping_wodns(ping_result_ok)
     assert round_trip == 13.199
 
 def test_parse_ping_KO(supply_logger):
-    round_trip = parsePingWODNS(ping_result_ko)
+    round_trip = parse_ping_wodns(ping_result_ko)
     assert round_trip == -1.0
     assert type(round_trip) == float
 

@@ -1,6 +1,6 @@
 import pytest
 import os
-from monitor import parseBHAssoclist
+from monitor import parse_BH_assoclist
 
 BH2ENTRIESANSWER =  """assoclist 80:20:DA:EE:89:A7
 assoclist E8:AD:A6:EA:1D:B1
@@ -19,7 +19,7 @@ def test_parseBHEmptyAnswer():
     row = {}
     success_command = True
 
-    myList = parseBHAssoclist(to_parse, row, command_type, success_command)
+    myList = parse_BH_assoclist(to_parse, row, command_type, success_command)
     for STA in myList:
         macSta = STA.split(" ")[1]
         assert macSta in ["80:20:DA:EE:89:A7", "E8:AD:A6:EA:1D:B1", "10:D7:B0:1A:96:6F", "10:D7:B0:1A:96:7B"]
@@ -32,7 +32,7 @@ def test_parseBH1EntriesAnswer():
     row = {}
     success_command = True
 
-    myList = parseBHAssoclist(to_parse, row, command_type, success_command)
+    myList = parse_BH_assoclist(to_parse, row, command_type, success_command)
     assert row['WIFI_BH_ASSOCLIST'] == 1
     assert len(myList) != 0
     ONEANSWER = BH1ENTRIESANSWER.split("\n")
@@ -48,7 +48,7 @@ def test_parseBH2EntriesAnswer():
     row = {}
     success_command = True
 
-    myList = parseBHAssoclist(to_parse, row, command_type, success_command)
+    myList = parse_BH_assoclist(to_parse, row, command_type, success_command)
     assert row['WIFI_BH_ASSOCLIST'] == 2
     assert len(myList) != 0
     ONEANSWER = BH2ENTRIESANSWER.split("\n")
@@ -64,7 +64,7 @@ def test_parseBH3EntriesAnswer():
     row = {}
     success_command = True
 
-    myList = parseBHAssoclist(to_parse, row, command_type, success_command)
+    myList = parse_BH_assoclist(to_parse, row, command_type, success_command)
     assert row['WIFI_BH_ASSOCLIST'] == 3
     assert len(myList) != 0
     ONEANSWER = BH3ENTRIESANSWER.split("\n")

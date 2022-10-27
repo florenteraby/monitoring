@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+#Local packages
+from tools.config_file import *
+from tools.tools import prepareCommand, runCommand
 
 import sys
 import getopt
@@ -20,9 +23,6 @@ else :
 
 
 from subprocess import STDOUT
-#Local packages
-from tools.config_file import *
-from tools.tools import prepareCommand, runCommand
 
 import json
 
@@ -122,7 +122,9 @@ system_command_list_F266GEN = common_command_list + [
 chanim_info = ["chanspec", "tx", "inbss","obss","nocat","nopkt","doze","txop","goodtx","badtx","glitch","badplcp","knoise","idle","timestamp"]
 vmstat_info = ["nb_process_running", "nb_process_sleep", "swap", "free", "buff", "cache", "si", "so", "bi", "bo", "interrupt", "context_switch", "user", "system", "idle","wait"]
 loadavg_info = ["1MN", "5MN", "15MN"]
+
 def usage(argv):
+    print("Usage ù %s", argv)
     print ("[-h, --help]: \t\tthis Message")
     print ("[-t, --type]: \tSystem type")
     print ("\t\t Supported type :")
@@ -130,19 +132,19 @@ def usage(argv):
     print ("\t\t F266GEN --> GENERIC F266")
     print ("[-c, --config]: \tMandatory Config file with the format")
     print ("\t\t\t@IP, ROLE, PLACE, LOGIN, PASSWORD")
-    print ("[-f, --frequency]: \tOptional Polling frequency (default:{}s)".format(DEFAULT_POLLING_FREQUENCY))
+    print ("[-f, --frequency]: \tOptional Polling frequency (default:%ds)", DEFAULT_POLLING_FREQUENCY)
     print ("[-d, --destfile]: \tMandatory root name of the CSV destination file")
     print ("[-v, --verbose]: \tOptional set debug level mode")
 
-def parseElecState(to_parse):
-    myListe = to_parse.split(",")
-    elecState = myListe[0].split(" ")[1].strip("<").strip(">")
-    return elecState
+def parse_election_state(to_parse):
+    my_liste = to_parse.split(",")
+    election_state = my_liste[0].split(" ")[1].strip("<").strip(">")
+    return election_state
 
-def getVMZ(ps_result, logger):
+def get_VMZ(ps_result, logger):
     try :
         index_status = ps_result.split(" ").index("R")
-        logger.debug("{} -> Detect process in R")
+        logger.debug("-> Detect process in R")
     except ValueError:
         try :
             index_status = ps_result.split(" ").index("S")
@@ -162,25 +164,25 @@ def getVMZ(ps_result, logger):
         return int(vmz_size)
 
 
-def parseProcessVMZ2(output, row, logger):
+def parse_process_VMZ(output, row, logger):
     ps_list = output.split("\n")
     for ps_result in ps_list:
         if "hg6d" in ps_result:
-            row["VMZ_HG6D"] = getVMZ(ps_result, logger)
+            row["VMZ_HG6D"] = get_VMZ(ps_result, logger)
         if "wshd" in ps_result:
-            row["VMZ_WSHD"] = getVMZ(ps_result, logger)
+            row["VMZ_WSHD"] = get_VMZ(ps_result, logger)
         if "wstd" in ps_result:
-            row["VMZ_WSTD"] = getVMZ(ps_result, logger)
+            row["VMZ_WSTD"] = get_VMZ(ps_result, logger)
         if "dhclient" in ps_result:
-            row["VMZ_DHCLIENT"] = getVMZ(ps_result, logger)
+            row["VMZ_DHCLIENT"] = get_VMZ(ps_result, logger)
         if "dhcrelay" in ps_result:
-            row["VMZ_DHRELAY"] = getVMZ(ps_result, logger)
+            row["VMZ_DHRELAY"] = get_VMZ(ps_result, logger)
         if "ismd" in ps_result:
-            row["VMZ_ISMD"] = getVMZ(ps_result, logger)
+            row["VMZ_ISMD"] = get_VMZ(ps_result, logger)
         if "dnsmasq" in ps_result:
-            row["VMZ_DNSMASQ"] = getVMZ(ps_result, logger)
+            row["VMZ_DNSMASQ"] = get_VMZ(ps_result, logger)
         if "hal_wifi" in ps_result:
-            row["VMZ_HALWIFI"] = getVMZ(ps_result, logger)
+            row["VMZ_HALWIFI"] = get_VMZ(ps_result, logger)
 
 ''' deviceParseResult example of result
 We can see on F@ST266 the foloowing result
@@ -248,7 +250,7 @@ field (active)
 field (RSSI)
 field (ConnectedDisc(only the UID of the DISC)
 '''
-def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
+def device_parse_result(to_parse, extender_name, fw_version, model_name, client):
     timestamp = datetime.datetime.utcnow().isoformat()
 
     if len(to_parse) == 0:
@@ -263,8 +265,8 @@ def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
                 break
 
             if "MACAddress" in elt:
-                macAddress = (elt.split("   MACAddress : ")[1].replace("'", ""))
-                fields['MACAddress'] = macAddress
+                mac_address = (elt.split("   MACAddress : ")[1].replace("'", ""))
+                fields['MACAddress'] = mac_address
             if "Name" in elt:
                 fields['Name'] = elt.split("   Name : ")[1].replace("'", "")
             if "Active" in elt:
@@ -277,25 +279,25 @@ def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
             if "RSSI" in elt:
                 fields['RSSI'] = elt.split("   RSSI : ")[1].replace("'", "")
             if "Band" in elt:
-                toSendToInfluxDevice = {}
-                DeviceTags = {}
+                to_send_to_influx_db = {}
+                device_tags = {}
                 fields['Band'] = elt.split("   Band : ")[1].replace("'", "")
 
-                DeviceTags = {
-                'MACAddress'    : macAddress,
+                device_tags = {
+                'MACAddress'    : mac_address,
                 'DeviceName'    : fields['Name'],
-                'name'          : extName,
-                'fw_version'    : fwVersion,
-                'model_name'    : ModelName
+                'name'          : extender_name,
+                'fw_version'    : fw_version,
+                'model_name'    : model_name
                 }
 
-                toSendToInfluxDevice = {
+                to_send_to_influx_db = {
                 'time' : timestamp,
                 'measurement' : "DEVICE",
-                'tags' : DeviceTags,
+                'tags' : device_tags,
                 'fields' : fields,
                 }
-                serie.append(toSendToInfluxDevice)
+                serie.append(to_send_to_influx_db)
 
                 # for myInflux in serie:
                 #     print ("Envoie de la serie {}".format(myInflux))
@@ -305,17 +307,17 @@ def deviceParseResult(to_parse, extName, fwVersion, ModelName, client):
     return
 # assoclist 10:D7:B0:1A:96:6F
 # assoclist 10:D7:B0:1A:96:7B
-def parseBHAssoclist(to_parse, row, command_type, success_command):
+def parse_BH_assoclist(to_parse, row, command_type, success_command):
     if (len(to_parse) == 0):
         row[command_type] = 0
         return ""
     else:
-        myList = to_parse.split("\n")
-        del myList[-1]
-        row[command_type] = len(myList)
-        return (myList)
+        my_list = to_parse.split("\n")
+        del my_list[-1]
+        row[command_type] = len(my_list)
+        return my_list
 
-def chanimAddValue(to_parse, row, command_type, success_command):
+def chanim_add_value(to_parse, row, command_type, success_command):
     if success_command == True:
         chanim_answer = to_parse.split("\n")[2].split("\t")
         i = 0
@@ -342,7 +344,7 @@ def chanimAddValue(to_parse, row, command_type, success_command):
             row[command_type + "-" + chanim] = -1
             i = i + 1
 
-def vmstatAddValue(to_parse, row, command_type, success_command):
+def vm_stat_add_value(to_parse, row, command_type, success_command):
     if success_command == True:
         vmstat_list = filter(lambda x: x != "", to_parse.split("\n")[2].split(" "))
         i = 0
@@ -355,7 +357,7 @@ def vmstatAddValue(to_parse, row, command_type, success_command):
             row[command_type + "-" + vmstat] = -1
             i = i + 1
 
-def loadavgAddValue(to_parse, row, command_type, success_command):
+def loadavg_add_value(to_parse, row, command_type, success_command):
     if success_command == True:
         i = 0
         for loadavg in loadavg_info:
@@ -380,30 +382,30 @@ PING 255.255.255.255 (255.255.255.255): 56 data bytes
 --- 255.255.255.255 ping statistics ---
 1 packets transmitted, 0 packets received, 100% packet loss
  """
-def parsePingWODNS(to_parse):
+def parse_ping_wodns(to_parse):
     round_trip = -1.0
-    pingParsed = to_parse.split("\n")
-    for elt in pingParsed:
+    ping_parsed = to_parse.split("\n")
+    for elt in ping_parsed:
         if "round-trip" in elt:
             round_trip = elt.split("=")[1].split("/")[0].strip(" ")
 
     return float(round_trip)
 
-def parseDNSResolution(to_parse):
-    queryIPv4 = -1
-    queryIPv6 = -1
+def parse_dns_resolution(to_parse):
+    query_ipv4 = -1
+    qurey_ipv6 = -1
 
-    return (queryIPv4, queryIPv6)
+    return (query_ipv4, qurey_ipv6)
 
-def updateRow(to_parse, success_command, command_type, logger):
+def update_row(to_parse, success_command, command_type, logger):
     row = {}
     if success_command ==  False:
         if "WIFI_CHANIM" in command_type:
-            chanimAddValue(to_parse, row, command_type, success_command)
+            chanim_add_value(to_parse, row, command_type, success_command)
         elif "VMSTAT" in command_type:
-            vmstatAddValue(to_parse, row, command_type, success_command)
+            vm_stat_add_value(to_parse, row, command_type, success_command)
         elif "LOADAVG" in command_type:
-            loadavgAddValue(to_parse, row, command_type, success_command)
+            loadavg_add_value(to_parse, row, command_type, success_command)
         elif "BACKHAUL_AP_ID" in command_type :
             row[command_type] = "NA"
         elif "BACKHAUL_AP_TYPE" in command_type :
@@ -434,7 +436,7 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] = float(to_parse.split(" ")[0])
             pass
         elif "ELEC_STATE" in command_type:
-            row[command_type] = parseElecState(to_parse)
+            row[command_type] = parse_election_state(to_parse)
             pass
         elif "MEMINFO" in command_type :
             if to_parse.split(":")[1].strip().split(" ")[0].strip().isalnum() == True:
@@ -453,7 +455,7 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] = int(to_parse.strip())
             pass
         elif command_type == "VMSTAT":
-            vmstatAddValue(to_parse, row, command_type, success_command)
+            vm_stat_add_value(to_parse, row, command_type, success_command)
             pass
         elif command_type == "TEMPERATURE":
             row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
@@ -471,7 +473,7 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] = to_parse.split("\n")[1].split(":")[1].replace("'", "").strip()
             pass
         elif command_type == "VMZ_PS":
-            parseProcessVMZ2(to_parse, row, logger)
+            parse_process_VMZ(to_parse, row, logger)
         elif "CONNECTEDCLIENT" in command_type:
             row[command_type] = int(to_parse.split("\n")[0])
             pass
@@ -485,9 +487,9 @@ def updateRow(to_parse, success_command, command_type, logger):
             row[command_type] = int(to_parse.split("\n")[1].split("\t")[1])
             pass
         elif command_type == "WIFI_BH_ASSOCLIST":
-            parseBHAssoclist(to_parse, row, command_type, success_command)
+            parse_BH_assoclist(to_parse, row, command_type, success_command)
         elif "WIFI_CHANIM" in command_type:
-            chanimAddValue(to_parse, row, command_type, success_command)
+            chanim_add_value(to_parse, row, command_type, success_command)
         elif command_type == "NB_CLIENT_WIFI_CONNECTED":
             row[command_type] = to_parse.split(" ")[0]
         elif "BACKHAUL_AP_" in command_type:
@@ -499,7 +501,7 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif "FS_SIZE" in command_type:
             row[command_type] = int(to_parse.split("\t")[0])
         elif "LOADAVG" in command_type:
-            loadavgAddValue(to_parse, row, command_type, success_command)
+            loadavg_add_value(to_parse, row, command_type, success_command)
         elif "DEVICE_STATUS" in command_type:
             row[command_type] =  to_parse.split("\n")
         elif "NB_HOSTAPD" in command_type:
@@ -512,42 +514,42 @@ def updateRow(to_parse, success_command, command_type, logger):
         elif "WIFI_BH_ASSOCLIST" == command_type:
             pass
         elif ("PING_WO_DNS" in command_type):
-            row[command_type] = parsePingWODNS(to_parse)
+            row[command_type] = parse_ping_wodns(to_parse)
 
         else :
             logger.error("Unknown command type {}".format(command_type))
 
     return row
 
-def parseStaInfo(to_parse, macSta):
+def parse_sta_info(to_parse, sta_mac):
     row = {}
-    staInfoList = to_parse.split("\n")
-    for item in staInfoList:
+    sta_info_list = to_parse.split("\n")
+    for item in sta_info_list:
         if ("tx failures:" in item):
-            row['BH_STA_INFO_TX_FAILURES_'+macSta] = int(item.split(":")[1].strip(" "))
+            row['BH_STA_INFO_TX_FAILURES_'+sta_mac] = int(item.split(":")[1].strip(" "))
         if ("link bandwidth =" in item):
-            row['BH_STA_INFO_BANDWIDTH_'+macSta] = int(item.split("=")[1].split(" ")[1])
+            row['BH_STA_INFO_BANDWIDTH_'+sta_mac] = int(item.split("=")[1].split(" ")[1])
         if ("in network " in item):
             uptime = item.strip(" ").split(" ")
-            row['BH_STA_INFO_UPTIME_'+macSta] = int(item.strip(" ").split(" ")[3])
+            row['BH_STA_INFO_UPTIME_'+sta_mac] = int(item.strip(" ").split(" ")[3])
         if ("rx decrypt failures:" in item):
-            row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] = int(item.split(":")[1].strip(" "))
+            row['BH_STA_INFO_DECRYPT_FAILURE_'+sta_mac] = int(item.split(":")[1].strip(" "))
     return row
 
-def getAssoclistInfo(ip, username, password, BHAssoclist, logger):
+def get_assoc_list_info(ip, username, password, bh_assoc_list, logger):
     row = {}
-    if (len(BHAssoclist) == 0):
+    if (len(bh_assoc_list) == 0):
         return row
-    for STA in BHAssoclist:
-        macSta = STA.split(" ")[1]
-        command = "/usr/sbin/wlctl -i wl0.2 sta_info "+ macSta
+    for STA in bh_assoc_list:
+        sta_mac = STA.split(" ")[1]
+        command = "/usr/sbin/wlctl -i wl0.2 sta_info "+ sta_mac
         myCommand = prepareCommand(command, ip, username, password, logger)
         output, result = runCommand(myCommand, logger)
-        row.update(parseStaInfo(output, macSta))
+        row.update(parse_sta_info(output, sta_mac))
     return row
 
 
-def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst, client):
+def do_extender_monitoring(network_list, network_setup, logger, system_command_lst, client):
     """This function launch per exender the list of commands. Then store the result into the file link to the extedner
     the system commande list is global.
     #TODO Don't forget to use the WiFi command too. Ands check how to deal with 2 differents lists
@@ -568,14 +570,14 @@ def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst
             output, success_command = runCommand(command_to_execute, logger)
             if (command_type == 'WIFI_BH_ASSOCLIST'):
                 myRow = {}
-                BHAssocList = parseBHAssoclist(output, myRow, command_type, success_command)
+                BHAssocList = parse_BH_assoclist(output, myRow, command_type, success_command)
                 rows.update(myRow)
-                myRow = getAssoclistInfo(extender['ip'], extender['username'], extender['password'], BHAssocList, logger)
+                myRow = get_assoc_list_info(extender['ip'], extender['username'], extender['password'], BHAssocList, logger)
                 rows.update(myRow)
-            rows.update(updateRow(output, success_command, command_type, logger))
+            rows.update(update_row(output, success_command, command_type, logger))
 
 
-        deviceParseResult(rows.pop("DEVICE_STATUS"), extender['name'].strip(), rows['FIRMWARE_VERSION'], rows['MODELE_NAME'], client)
+        device_parse_result(rows.pop("DEVICE_STATUS"), extender['name'].strip(), rows['FIRMWARE_VERSION'], rows['MODELE_NAME'], client)
 
         #extender['CSVWriter'].writerow(rows)
         logger.info("Write row {} in filen {}".format(rows, extender['CSVFile'].name))
@@ -593,19 +595,19 @@ def DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst
         #     if (key != 'DATE'):
         #         fields[key] = rows[key]
 
-        extInfluxDB = {
+        extender_infux_DB = {
             'time': timestamp,
             'measurement' : "MONITORING",
             'tags': tags,
             'fields' : rows,
         }
         #print ("TAGS {} FIELDS : {}".format(tags['name'], fields))
-        serie.append(extInfluxDB)
+        serie.append(extender_infux_DB)
 
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")
 
-def monitoringExtenders(network_list, network_setup, polling_frequency, influxServer, dest_file, logger, system_command_lst):
+def monitoring_extenders(network_list, network_setup, polling_frequency, influxdb_server, dest_file, logger, system_command_lst):
     extender_csv_file_list = []
     csv_header = []
     """Monitoring Extender poll for polling_frequency all the extender part of the network_list. Then will store the
@@ -637,19 +639,19 @@ def monitoringExtenders(network_list, network_setup, polling_frequency, influxSe
         extender['CSVWriter'].writeheader()
         logger.info("Creating file {:20} mode {:2}".format(extender['CSVFile'].name, extender['CSVFile'].mode))
 
-    logger.info("Creating Data Base {}".format(influxServer["Server_name"])
+    logger.info("Creating Data Base {}".format(influxdb_server["Server_name"])
     )
-    os.environ['NO_PROXY'] = influxServer["Server_name"]
-    client = InfluxDBClient(host=influxServer["Server_name"],port=influxServer["Server_port"],
+    os.environ['NO_PROXY'] = influxdb_server["Server_name"]
+    client = InfluxDBClient(host=influxdb_server["Server_name"],port=influxdb_server["Server_port"],
                             ssl=False, proxies=None)
-    client.create_database(influxServer["DB_name"])
-    logger.info("Creation of Data Base {} {}".format(influxServer["Server_name"], client.get_list_database()))
+    client.create_database(influxdb_server["DB_name"])
+    logger.info("Creation of Data Base {} {}".format(influxdb_server["Server_name"], client.get_list_database()))
 
     #Start looping for monitoring extender
     while 1:
         try:
             #Launch the command
-            DoExtenderMonitoring(network_list, network_setup, logger, system_command_lst, client)
+            do_extender_monitoring(network_list, network_setup, logger, system_command_lst, client)
             #Sleep for polling frequency
             time.sleep(int(polling_frequency))
 
@@ -725,7 +727,7 @@ def main(argv):
                     dest_file = arg.split(".")[0]
                 else:
                     dest_file = arg
-                if ("/" in dest_file):           
+                if ("/" in dest_file):
                     #Extract path and file name. If directory does not exist then create directory if needed
                     path, file = os.path.split(os.path.abspath(dest_file))
                     index_path = 0
@@ -761,7 +763,7 @@ def main(argv):
             return -1
 
         logger.info("Start monitoring with config file {}, destination file will be {}, polling frequency is {} network type {}".format(config_jsonlist["network_config"], dest_file, config_jsonlist["Frequency"], config_jsonlist["network_type"]))
-        monitoringExtenders(config_jsonlist["network_config"], config_jsonlist["network_setup"],config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
+        monitoring_extenders(config_jsonlist["network_config"], config_jsonlist["network_setup"],config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
     finally:
 
         pass

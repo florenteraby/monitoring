@@ -1,6 +1,6 @@
 import pytest
 import os
-from monitor import parseStaInfo
+from monitor import parse_sta_info
 
 sta_info = """[VER 8] STA 10:D7:B0:1A:96:6F:
     chanspec 116/80 (0xe07a)
@@ -75,7 +75,7 @@ RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 def test_parseStaInfo():
     row = {}
     macSta = "10:D7:B0:1A:96:6F"
-    row = parseStaInfo(sta_info, macSta)
+    row = parse_sta_info(sta_info, macSta)
     assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 11
     assert row['BH_STA_INFO_BANDWIDTH_'+macSta] == 80
     assert row['BH_STA_INFO_UPTIME_'+macSta] == 13416
@@ -84,7 +84,7 @@ def test_parseStaInfo():
 def test_parseStaInfoEmpty():
     row = {}
     macSta = "10:D7:B0:1A:96:6F"
-    row = parseStaInfo("", macSta)
+    row = parse_sta_info("", macSta)
     assert len(row) == 0
 
 sta_info_missingBandwidth = """[VER 8] STA 10:D7:B0:1A:96:6F:
@@ -160,7 +160,7 @@ RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 def test_parseStaInfoMissingParam():
     row = {}
     macSta = "10:D7:B0:1A:96:6F"
-    row = parseStaInfo(sta_info_missingBandwidth, macSta)
+    row = parse_sta_info(sta_info_missingBandwidth, macSta)
     assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 11
     assert 'BH_STA_INFO_BANDWIDTH_'+macSta not in row
     assert row['BH_STA_INFO_UPTIME_'+macSta] == 13416
@@ -238,7 +238,7 @@ RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 def test_parseStaInfoMissingParam():
     row = {}
     macSta = "10:D7:B0:1A:96:6F"
-    row = parseStaInfo(sta_info_UptimeFloat, macSta)
+    row = parse_sta_info(sta_info_UptimeFloat, macSta)
     assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 11
     assert row['BH_STA_INFO_BANDWIDTH_'+macSta] == 80
     assert row['BH_STA_INFO_UPTIME_'+macSta] == 13416333333
@@ -318,7 +318,7 @@ RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 def test_parseStaInfoKOInField():
     row = {}
     macSta = "80:20:DA:EE:89:A7"
-    row = parseStaInfo(sta_info_KOinField, macSta)
+    row = parse_sta_info(sta_info_KOinField, macSta)
     assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 6
     assert row['BH_STA_INFO_BANDWIDTH_'+macSta] == 80
     assert row['BH_STA_INFO_UPTIME_'+macSta] == 339317

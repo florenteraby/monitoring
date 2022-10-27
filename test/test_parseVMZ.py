@@ -1,6 +1,6 @@
 import pytest
 import logging
-from monitor import parseProcessVMZ2
+from monitor import parse_process_VMZ
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 
@@ -250,7 +250,7 @@ output_hg6d_13 = """"""
 
 def test_parseVMZ2(supply_logger):
     row = {}
-    parseProcessVMZ2(outpout_psaux, row, supply_logger)
+    parse_process_VMZ(outpout_psaux, row, supply_logger)
     assert row["VMZ_HG6D"] == 50596
     assert row["VMZ_WSHD"] == 10196
     assert row["VMZ_WSTD"] == 10188
@@ -261,7 +261,7 @@ def test_parseVMZ2(supply_logger):
 
 def test_parseVMZ2_m(supply_logger):
     row = {}
-    parseProcessVMZ2(outpout_psaux_m, row, supply_logger)
+    parse_process_VMZ(outpout_psaux_m, row, supply_logger)
     assert row["VMZ_HG6D"] == 120000000
     assert row["VMZ_WSHD"] == 10196
     assert row["VMZ_WSTD"] == 10188
