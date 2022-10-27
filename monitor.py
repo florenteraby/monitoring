@@ -10,6 +10,8 @@ import logging
 import csv
 import time
 import subprocess
+from subprocess import STDOUT
+import json
 import datetime
 import os
 from sys import version_info
@@ -22,9 +24,6 @@ else :
     from influxdb_client.client.write_api import SYNCHRONOUS
 
 
-from subprocess import STDOUT
-
-import json
 
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
@@ -124,6 +123,11 @@ vmstat_info = ["nb_process_running", "nb_process_sleep", "swap", "free", "buff",
 loadavg_info = ["1MN", "5MN", "15MN"]
 
 def usage(argv):
+    """_summary_
+
+    Args:
+        argv (_type_): _description_
+    """
     print("Usage ù %s", argv)
     print ("[-h, --help]: \t\tthis Message")
     print ("[-t, --type]: \tSystem type")
@@ -137,11 +141,28 @@ def usage(argv):
     print ("[-v, --verbose]: \tOptional set debug level mode")
 
 def parse_election_state(to_parse):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     my_liste = to_parse.split(",")
     election_state = my_liste[0].split(" ")[1].strip("<").strip(">")
     return election_state
 
 def get_VMZ(ps_result, logger):
+    """_summary_
+
+    Args:
+        ps_result (_type_): _description_
+        logger (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     try :
         index_status = ps_result.split(" ").index("R")
         logger.debug("-> Detect process in R")
@@ -165,6 +186,13 @@ def get_VMZ(ps_result, logger):
 
 
 def parse_process_VMZ(output, row, logger):
+    """_summary_
+
+    Args:
+        output (_type_): _description_
+        row (_type_): _description_
+        logger (_type_): _description_
+    """
     ps_list = output.split("\n")
     for ps_result in ps_list:
         if "hg6d" in ps_result:
@@ -251,6 +279,15 @@ field (RSSI)
 field (ConnectedDisc(only the UID of the DISC)
 '''
 def device_parse_result(to_parse, extender_name, fw_version, model_name, client):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+        extender_name (_type_): _description_
+        fw_version (_type_): _description_
+        model_name (_type_): _description_
+        client (_type_): _description_
+    """
     timestamp = datetime.datetime.utcnow().isoformat()
 
     if len(to_parse) == 0:
@@ -308,6 +345,17 @@ def device_parse_result(to_parse, extender_name, fw_version, model_name, client)
 # assoclist 10:D7:B0:1A:96:6F
 # assoclist 10:D7:B0:1A:96:7B
 def parse_BH_assoclist(to_parse, row, command_type, success_command):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+        row (_type_): _description_
+        command_type (_type_): _description_
+        success_command (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     if (len(to_parse) == 0):
         row[command_type] = 0
         return ""
@@ -318,6 +366,14 @@ def parse_BH_assoclist(to_parse, row, command_type, success_command):
         return my_list
 
 def chanim_add_value(to_parse, row, command_type, success_command):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+        row (_type_): _description_
+        command_type (_type_): _description_
+        success_command (_type_): _description_
+    """
     if success_command == True:
         chanim_answer = to_parse.split("\n")[2].split("\t")
         i = 0
@@ -345,6 +401,14 @@ def chanim_add_value(to_parse, row, command_type, success_command):
             i = i + 1
 
 def vm_stat_add_value(to_parse, row, command_type, success_command):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+        row (_type_): _description_
+        command_type (_type_): _description_
+        success_command (_type_): _description_
+    """
     if success_command == True:
         vmstat_list = filter(lambda x: x != "", to_parse.split("\n")[2].split(" "))
         i = 0
@@ -358,6 +422,14 @@ def vm_stat_add_value(to_parse, row, command_type, success_command):
             i = i + 1
 
 def loadavg_add_value(to_parse, row, command_type, success_command):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     if success_command == True:
         i = 0
         for loadavg in loadavg_info:
@@ -369,20 +441,28 @@ def loadavg_add_value(to_parse, row, command_type, success_command):
             row[command_type + "-" + loadavg] = float("0")
             i = i + 1
 
-""" PING 8.8.8.8 (8.8.8.8): 56 data bytes
-64 bytes from 8.8.8.8: seq=0 ttl=115 time=13.199 ms
-
---- 8.8.8.8 ping statistics ---
-1 packets transmitted, 1 packets received, 0% packet loss
-round-trip min/avg/max = 13.199/13.199/13.199 ms
-
-root@ftr-3140:~# ping -c1 255.255.255.255
-PING 255.255.255.255 (255.255.255.255): 56 data bytes
-
---- 255.255.255.255 ping statistics ---
-1 packets transmitted, 0 packets received, 100% packet loss
- """
+#""" PING 8.8.8.8 (8.8.8.8): 56 data bytes
+#64 bytes from 8.8.8.8: seq=0 ttl=115 time=13.199 ms
+#
+#--- 8.8.8.8 ping statistics ---
+#1 packets transmitted, 1 packets received, 0% packet loss
+#round-trip min/avg/max = 13.199/13.199/13.199 ms
+#
+#root@ftr-3140:~# ping -c1 255.255.255.255
+#PING 255.255.255.255 (255.255.255.255): 56 data bytes
+#
+#--- 255.255.255.255 ping statistics ---
+#1 packets transmitted, 0 packets received, 100% packet loss
+#"""
 def parse_ping_wodns(to_parse):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     round_trip = -1.0
     ping_parsed = to_parse.split("\n")
     for elt in ping_parsed:
@@ -392,12 +472,31 @@ def parse_ping_wodns(to_parse):
     return float(round_trip)
 
 def parse_dns_resolution(to_parse):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     query_ipv4 = -1
     qurey_ipv6 = -1
 
     return (query_ipv4, qurey_ipv6)
 
 def update_row(to_parse, success_command, command_type, logger):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+        success_command (_type_): _description_
+        command_type (_type_): _description_
+        logger (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     row = {}
     if success_command ==  False:
         if "WIFI_CHANIM" in command_type:
@@ -522,6 +621,15 @@ def update_row(to_parse, success_command, command_type, logger):
     return row
 
 def parse_sta_info(to_parse, sta_mac):
+    """_summary_
+
+    Args:
+        to_parse (_type_): _description_
+        sta_mac (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     row = {}
     sta_info_list = to_parse.split("\n")
     for item in sta_info_list:
@@ -537,6 +645,18 @@ def parse_sta_info(to_parse, sta_mac):
     return row
 
 def get_assoc_list_info(ip, username, password, bh_assoc_list, logger):
+    """_summary_
+
+    Args:
+        ip (_type_): _description_
+        username (_type_): _description_
+        password (_type_): _description_
+        bh_assoc_list (_type_): _description_
+        logger (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     row = {}
     if (len(bh_assoc_list) == 0):
         return row
@@ -548,11 +668,17 @@ def get_assoc_list_info(ip, username, password, bh_assoc_list, logger):
         row.update(parse_sta_info(output, sta_mac))
     return row
 
-
 def do_extender_monitoring(network_list, network_setup, logger, system_command_lst, client):
     """This function launch per exender the list of commands. Then store the result into the file link to the extedner
     the system commande list is global.
     #TODO Don't forget to use the WiFi command too. Ands check how to deal with 2 differents lists
+
+    Args:
+        network_list (_type_): _description_
+        network_setup (_type_): _description_
+        logger (_type_): _description_
+        system_command_lst (_type_): _description_
+        client (_type_): _description_
     """
     command_to_execute = ""
 
@@ -608,11 +734,22 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
     client.write_points(serie, time_precision='s',database="myDBExample")
 
 def monitoring_extenders(network_list, network_setup, polling_frequency, influxdb_server, dest_file, logger, system_command_lst):
-    extender_csv_file_list = []
-    csv_header = []
     """Monitoring Extender poll for polling_frequency all the extender part of the network_list. Then will store the
     results into the dest_file in csv format.
-    A dest_file will be created per extender, to allow to have different follow up"""
+    A dest_file will be created per extender, to allow to have different follow up
+
+    Args:
+        network_list (_type_): _description_
+        network_setup (_type_): _description_
+        polling_frequency (_type_): _description_
+        influxdb_server (_type_): _description_
+        dest_file (_type_): _description_
+        logger (_type_): _description_
+        system_command_lst (_type_): _description_
+    """
+    extender_csv_file_list = []
+    csv_header = []
+    
     #Create CSV Header file
     csv_header.append('DATE')
     for command, command_type in system_command_lst:
@@ -672,6 +809,14 @@ def monitoring_extenders(network_list, network_setup, polling_frequency, influxd
 
 
 def main(argv):
+    """_summary_
+
+    Args:
+        argv (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     logging.basicConfig(filename = "monitoring.log",
     level = logging.ERROR,
     format = LOG_FORMAT,
