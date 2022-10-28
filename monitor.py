@@ -13,7 +13,7 @@ import json
 import datetime
 import os
 
-from tools.config_file import *
+#from tools.config_file import *
 from tools.tools import prepareCommand, runCommand
 
 if version_info[0] > 3:
@@ -819,7 +819,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "c:hf:d:vt:", ["config=","help", "frequency=", "destfile=", "verbose", "type="])
     except getopt.GetoptError:
-        logger.error("Option error")
+        logger.error("Option error %s", args)
         print ("Option error")
         usage(argv)
         sys.exit(2)
@@ -830,8 +830,8 @@ def main(argv):
                 #network_list = openConfigFile(arg.strip(), logger)
                 network_list = []
                 try:
-                    with open (arg.strip(), 'r+') as configFile:
-                        config_jsonlist = json.load(configFile)
+                    with open (arg.strip(), 'r+') as config_file:
+                        config_jsonlist = json.load(config_file)
                 except IOError:
                     logger.error("File %s does not exist", arg.strip())
                 else :
@@ -871,9 +871,9 @@ def main(argv):
                     print ("%s %d %s %s", index_path, len (path.split(" ")), path.split(" "), file)
 
                     print ("%s %s %s", index_path, path.split(" ")[index_path], os.path.isdir(path.split(" ")[index_path]))
-                    if (os.path.isdir(path.split(" ")[index_path]) == False):
+                    if (os.path.isdir(path.split(" ")[index_path]) is False):
                         os.mkdir(path.split(" ")[index_path])
-                logger.info("Destination file is : {}".format(dest_file))
+                logger.info("Destination file is : %s", dest_file)
 
             if option in ('-v','--verbose'):
                 logger.setLevel(logging.DEBUG)
@@ -896,11 +896,11 @@ def main(argv):
             usage (argv)
             return -1
 
-        logger.info("Start monitoring with config file %S, destination file will be %s, polling frequency is %s network type %s", config_jsonlist["network_config"], dest_file, config_jsonlist["Frequency"], config_jsonlist["network_type"])
+        logger.info("Start monitoring with config file %s, destination file will be %s, polling frequency is %s network type %s", config_jsonlist["network_config"], dest_file, config_jsonlist["Frequency"], config_jsonlist["network_type"])
         monitoring_extenders(config_jsonlist["network_config"], config_jsonlist["network_setup"],config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
     finally:
-
         pass
+    return 0
 
 if __name__ == "__main__":
     main(sys.argv[1:])
