@@ -164,6 +164,7 @@ def get_VMZ(ps_result, logger):
     Returns:
         _type_: _description_
     """
+    index_status = 0
     try :
         index_status = ps_result.split(" ").index("R")
         logger.debug("-> Detect process in R")
@@ -412,6 +413,7 @@ def vm_stat_add_value(to_parse, row, command_type, success_command):
         command_type (_type_): _description_
         success_command (_type_): _description_
     """
+    vmstat_list = []
     if success_command is True:
         vmstat_list = filter(lambda x: x != "", to_parse.split("\n")[2].split(" "))
         i = 0
@@ -652,6 +654,9 @@ def get_assoc_list_info(ip, username, password, bh_assoc_list, logger):
         command = "/usr/sbin/wlctl -i wl0.2 sta_info "+ sta_mac
         my_command = prepareCommand(command, ip, username, password, logger)
         output, result = runCommand(my_command, logger)
+        if result is False:
+            logger.error("Command : %s return %d : %S", my_command, result, output)
+
         row.update(parse_sta_info(output, sta_mac))
     return row
 
