@@ -1,13 +1,6 @@
 #!/usr/bin/python
 
 from sys import version_info
-if version_info[0] < 3:
-#    from influxdb import InfluxDBClient
-    print ("{}".format(version_info))
-else :
-    import influxdb_client
-    from influxdb_client import InfluxDBClient, Point
-    from influxdb_client.client.write_api import SYNCHRONOUS
 
 #Local packages
 
@@ -22,6 +15,14 @@ import os
 
 from tools.config_file import *
 from tools.tools import prepareCommand, runCommand
+
+if version_info[0] > 3:
+    import influxdb_client
+    from influxdb_client import InfluxDBClient, Point
+    from influxdb_client.client.write_api import SYNCHRONOUS
+else :
+    from influxdb import InfluxDBClient
+    print ("{}".format(version_info))
 
 
 
@@ -500,7 +501,7 @@ def update_row(to_parse, success_command, command_type, logger):
         _type_: _description_
     """
     row = {}
-    if success_command ==  False:
+    if success_command is  False:
         if "WIFI_CHANIM" in command_type:
             chanim_add_value(to_parse, row, command_type, success_command)
         elif "VMSTAT" in command_type:
@@ -535,58 +536,42 @@ def update_row(to_parse, success_command, command_type, logger):
     else :
         if command_type == "UPTIME":
             row[command_type] = float(to_parse.split(" ")[0])
-            pass
         elif "ELEC_STATE" in command_type:
             row[command_type] = parse_election_state(to_parse)
-            pass
         elif "MEMINFO" in command_type :
             if to_parse.split(":")[1].strip().split(" ")[0].strip().isalnum() is True:
                 row[command_type] = float(to_parse.split(":")[1].strip().split(" ")[0].strip())
             else :
                 logger.error("Command type return non digit %s %s", to_parse.split(":")[1].strip().split(" ")[0].strip(),to_parse)
                 row[command_type] = -1
-            pass
         elif "MAX_EC" in command_type:
             row[command_type] = int(to_parse.strip())
-            pass
         elif "BAD_PEB_COUNT" in command_type:
             row[command_type] = int(to_parse.strip())
-            pass
         elif "TOTAL_ERASE_BLOCKS" in command_type:
             row[command_type] = int(to_parse.strip())
-            pass
         elif command_type == "VMSTAT":
             vm_stat_add_value(to_parse, row, command_type, success_command)
-            pass
         elif command_type == "TEMPERATURE":
             row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
-            pass
         elif  "WIFI_CONFIG_CHANNEL" in command_type:
             row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
-            pass
         elif command_type == "REBOOT":
             row[command_type] = int(to_parse.split("\n")[1].split(":")[1].replace("'", "").strip())
-            pass
         elif command_type == "FIRMWARE_VERSION":
             row[command_type] = to_parse.split("\n")[1].split(":")[1].replace("'", "").strip()
-            pass
         elif command_type == "MODELE_NAME":
             row[command_type] = to_parse.split("\n")[1].split(":")[1].replace("'", "").strip()
-            pass
         elif command_type == "VMZ_PS":
             parse_process_VMZ(to_parse, row, logger)
         elif "CONNECTEDCLIENT" in command_type:
             row[command_type] = int(to_parse.split("\n")[0])
-            pass
         elif command_type == "WIFI_CHANNEL_BH":
             row[command_type] = int(to_parse.split("\n")[1].split("\t")[1])
-            pass
         elif command_type == "WIFI_CHANNEL_5G":
             row[command_type] = int(to_parse.split("\n")[1].split("\t")[1])
-            pass
         elif command_type == "WIFI_CHANNEL_24G":
             row[command_type] = int(to_parse.split("\n")[1].split("\t")[1])
-            pass
         elif command_type == "WIFI_BH_ASSOCLIST":
             parse_BH_assoclist(to_parse, row, command_type, success_command)
         elif "WIFI_CHANIM" in command_type:
