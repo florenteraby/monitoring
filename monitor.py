@@ -395,7 +395,7 @@ def chanim_add_value(to_parse, row, command_type, success_command):
             try :
                 chanim_answer[i].isdigit()
             except IndexError:
-                print ("Index Error {} {}".format(i, chanim_answer))
+                print ("Index Error %d %s", i, chanim_answer)
             else:
                 if (chanim_answer[i].isdigit()):
                     row[command_type + "-" + chanim] = int(chanim_answer[i])
@@ -492,6 +492,7 @@ def parse_dns_resolution(to_parse):
     query_ipv4 = -1
     qurey_ipv6 = -1
 
+    
     return (query_ipv4, qurey_ipv6)
 
 def update_row(to_parse, success_command, command_type, logger):
@@ -726,6 +727,7 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
 
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")
+    return True
 
 def monitoring_extenders(network_list, network_setup, polling_frequency, influxdb_server, dest_file, logger, system_command_lst):
     """Monitoring Extender poll for polling_frequency all the extender part of the network_list. Then will store the
@@ -769,13 +771,12 @@ def monitoring_extenders(network_list, network_setup, polling_frequency, influxd
         extender['CSVWriter'].writeheader()
         logger.info("Creating file {:20} mode {:2}".format(extender['CSVFile'].name, extender['CSVFile'].mode))
 
-    logger.info("Creating Data Base {}".format(influxdb_server["Server_name"])
-    )
+    logger.info("Creating Data Base %s", influxdb_server["Server_name"])
     os.environ['NO_PROXY'] = influxdb_server["Server_name"]
-    client = InfluxDBClient(host=influxdb_server["Server_name"],port=influxdb_server["Server_port"],
+    client = InfluxDBClient(url=influxdb_server["Server_name"], host=influxdb_server["Server_name"],port=influxdb_server["Server_port"],
                             ssl=False, proxies=None)
     client.create_database(influxdb_server["DB_name"])
-    logger.info("Creation of Data Base {} {}".format(influxdb_server["Server_name"], client.get_list_database()))
+    logger.info("Creation of Data Base %s %s", influxdb_server["Server_name"], client.get_list_database())
 
     #Start looping for monitoring extender
     while 1:
@@ -795,7 +796,7 @@ def monitoring_extenders(network_list, network_setup, polling_frequency, influxd
 
     #End of monitoring close opened files
     for extender in network_list:
-        logger.info("Closing file {}".format(extender['CSVFile'].name))
+        logger.info("Closing file %s", extender['CSVFile'].name)
         extender['CSVFile'].close()
 
     return
@@ -820,6 +821,7 @@ def main(argv):
     system_command_list = []
     dest_file = ""
     polling_frequency = DEFAULT_POLLING_FREQUENCY
+    args = ""
     try:
         opts, args = getopt.getopt(argv, "c:hf:d:vt:", ["config=","help", "frequency=", "destfile=", "verbose", "type="])
     except getopt.GetoptError:
