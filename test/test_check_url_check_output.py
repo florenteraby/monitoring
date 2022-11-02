@@ -1,11 +1,8 @@
 #!/usr/bin/python
 
-import sys 
-
 import pytest
 
 import logging
-from check_xpath import check_xpath_class
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 
@@ -28,7 +25,7 @@ disc = {"ip":"192.168.10.11", "role": "MASTER", "name":"STUDY", "username":"root
 
 
 @pytest.fixture
-#Creates the test logger 
+#Creates the test logger
 def supply_logger_test():
     logging.basicConfig(filename = "./check_xpath_test.log",
         level = logging.DEBUG,
@@ -39,12 +36,19 @@ def supply_logger_test():
 
 
 def test_check_output_1(supply_logger_test ):
+    """_summary_
+
+    Args:
+        supply_logger_test (_type_): _description_
+    """
     # mocker.patch('tools.tools.runCommand', return_value = (URL_LOCAL_SUOTA_OK.encode('utf8'),True))
     # xpath_check = check_xpath_class(XPATH, EXPECTED_VALUE)
     # assert xpath_check.check_xpath(disc) == 
     assert True
 
 def test_check_output_2():
+    """_summary_
+    """
     # mocker.patch('tools.tools.runCommand', return_value = (URL_LOCAL_SUOTA_OK.encode('utf8'),False))
 
     # xpath_check = check_xpath_class(XPATH, EXPECTED_VALUE)
@@ -52,6 +56,8 @@ def test_check_output_2():
     assert True
 
 def test_check_output_3():
+    """_summary_
+    """
     # mocker.patch('tools.tools.runCommand', return_value = (URL_LOCAL_SUOTA_KO.encode('utf8'),True))
 
     # xpath_check = check_xpath_class(XPATH, EXPECTED_VALUE)
