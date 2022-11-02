@@ -1,8 +1,8 @@
-    """_summary_
+"""_summary_
 
     Returns:
         _type_: _description_
-    """
+"""
 #!/usr/bin/python
 
 from sys import version_info
