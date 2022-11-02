@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
-import pytest
-
 import logging
+import pytest
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 
@@ -27,6 +26,11 @@ disc = {"ip":"192.168.10.11", "role": "MASTER", "name":"STUDY", "username":"root
 @pytest.fixture
 #Creates the test logger
 def supply_logger_test():
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
     logging.basicConfig(filename = "./check_xpath_test.log",
         level = logging.DEBUG,
         format = LOG_FORMAT,
@@ -43,7 +47,7 @@ def test_check_output_1(supply_logger_test ):
     """
     # mocker.patch('tools.tools.runCommand', return_value = (URL_LOCAL_SUOTA_OK.encode('utf8'),True))
     # xpath_check = check_xpath_class(XPATH, EXPECTED_VALUE)
-    # assert xpath_check.check_xpath(disc) == 
+    # assert xpath_check.check_xpath(disc) == True
     assert True
 
 def test_check_output_2():
