@@ -16,6 +16,8 @@ assoclist 10:D7:B0:1A:96:7B
 
 
 def test_parse_bh_empty_answer():
+    """_summary_
+    """
     to_parse = ""
     command_type = "WIFI_BH_ASSOCLIST"
     row = {}
@@ -29,6 +31,8 @@ def test_parse_bh_empty_answer():
     assert len(my_list) == 0
 
 def test_parse_bh_entries_answer():
+    """_summary_
+    """
     to_parse = BH_1_ENTRIES_ANSWER
     command_type = "WIFI_BH_ASSOCLIST"
     row = {}
@@ -45,6 +49,8 @@ def test_parse_bh_entries_answer():
         assert mac_sta in ["80:20:DA:EE:89:A7", "E8:AD:A6:EA:1D:B1", "10:D7:B0:1A:96:6F", "10:D7:B0:1A:96:7B"]
 
 def test_parse_bh_2_entries_answer():
+    """_summary_
+    """
     to_parse = BH_2_ENTRIES_ANSWER
     command_type = "WIFI_BH_ASSOCLIST"
     row = {}
@@ -61,6 +67,8 @@ def test_parse_bh_2_entries_answer():
         assert mac_sta in ["80:20:DA:EE:89:A7", "E8:AD:A6:EA:1D:B1", "10:D7:B0:1A:96:6F", "10:D7:B0:1A:96:7B"]
 
 def test_parse_bh_3_entries_answer():
+    """_summary_
+    """
     to_parse = BH_3_ENTRIES_ANSWER
     command_type = "WIFI_BH_ASSOCLIST"
     row = {}
