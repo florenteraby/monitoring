@@ -1,3 +1,8 @@
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
 #!/usr/bin/python
 
 from sys import version_info
@@ -22,7 +27,7 @@ if version_info[0] > 3:
     from influxdb_client.client.write_api import SYNCHRONOUS
 else :
     from influxdb import InfluxDBClient
-    print ("{}".format(version_info))
+    print ("%s", version_info)
 
 
 
@@ -178,13 +183,13 @@ def get_VMZ(ps_result, logger):
                 logger.debug("{} -> Detect process in D")
             except ValueError:
                 logger.error("Cannot find index %s", ps_result)
-                return -1
+                vmz_size = -1
     finally:
         vmz_size = ps_result.split(" ")[index_status - 1]
         if "m" in vmz_size:
             vmz_size = vmz_size.replace("m", "000000")
         logger.debug("VMZ is %d", int(vmz_size))
-        return int(vmz_size)
+
     return int(vmz_size)
 
 
@@ -343,7 +348,6 @@ def device_parse_result(to_parse, extender_name, fw_version, model_name, client)
                 #     print ("Envoie de la serie {}".format(myInflux))
                 client.write_points(serie, time_precision='s',database="myDBExample")
                 fields = {}
-
     return
 # assoclist 10:D7:B0:1A:96:6F
 # assoclist 10:D7:B0:1A:96:7B
@@ -359,7 +363,7 @@ def parse_BH_assoclist(to_parse, row, command_type, success_command):
     Returns:
         _type_: _description_
     """
-    if success_command is True:    
+    if success_command is True:   
         if (len(to_parse) == 0):
             row[command_type] = 0
             return ""
@@ -738,7 +742,7 @@ def monitoring_extenders(network_list, network_setup, polling_frequency, influxd
         system_command_lst (_type_): _description_
     """
     csv_header = []
-    
+
     #Create CSV Header file
     csv_header.append('DATE')
     for command, command_type in system_command_lst:
