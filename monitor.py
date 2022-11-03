@@ -21,7 +21,7 @@ import os
 #from tools.config_file import *
 from tools.tools import prepareCommand, runCommand
 
-if version_info[0] > 3:
+if version_info[0] >=3:
     import influxdb_client
     from influxdb_client import InfluxDBClient, Point
     from influxdb_client.client.write_api import SYNCHRONOUS
