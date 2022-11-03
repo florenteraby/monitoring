@@ -7,20 +7,24 @@ class NetworkConfig:
         self.name = config.split(",")[2]
         self.login = config.split(",")[3]
         self.password = config.split(",")[4]
+        self.csv_file = ""
+        self.csv_writer = ""
+
     def set_csv_file(self, csv_file):
         """_summary_
 
         Args:
             csv_file (_type_): _description_
         """
-        self.csvfile = csv_file
-    def set_csv_writter(self, csv_writer):
+        self.csv_file = csv_file
+
+    def set_csv_writer(self, csv_writer):
         """_summary_
 
         Args:
             csv_writer (_type_): _description_
         """
-        self.csvWriter = csv_writer
+        self.csv_writer = csv_writer
 
     def display(self):
         """_summary_
@@ -32,7 +36,7 @@ class NetworkConfig:
         Args:
             logger (_type_): _description_
         """
-        logger.debug("Name {:12}\tRole {} \tIP {:15} \tLogin {}\tCSV {}".format(self.name, self.role, self.ip, self.login, self.csvfile.name))
+        logger.debug("Name {:12}\tRole {} \tIP {:15} \tLogin {}\tCSV {}".format(self.name, self.role, self.ip, self.login, self.csv_file.name))
 
 
 def config_log_list(config_list, logger):

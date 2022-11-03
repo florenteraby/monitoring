@@ -19,7 +19,7 @@ import datetime
 import os
 
 #from tools.config_file import *
-from tools.tools import prepareCommand, runCommand
+from tools.tools import prepare_command, run_command
 
 if version_info[0] >=3:
     import influxdb_client
@@ -657,8 +657,8 @@ def get_assoc_list_info(ip, username, password, bh_assoc_list, logger):
     for STA in bh_assoc_list:
         sta_mac = STA.split(" ")[1]
         command = "/usr/sbin/wlctl -i wl0.2 sta_info "+ sta_mac
-        my_command = prepareCommand(command, ip, username, password, logger)
-        output, result = runCommand(my_command, logger)
+        my_command = prepare_command(command, ip, username, password, logger)
+        output, result = run_command(my_command, logger)
         if result is False:
             logger.error("Command : %s return %d : %S", my_command, result, output)
 
@@ -689,8 +689,8 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
         #For each extender launch the commands
         for command, command_type in system_command_lst:
             # For each command connect to extender and launch it
-            command_to_execute = prepareCommand(command, extender['ip'], extender['username'], extender['password'], logger)
-            output, success_command = runCommand(command_to_execute, logger)
+            command_to_execute = prepare_command(command, extender['ip'], extender['username'], extender['password'], logger)
+            output, success_command = run_command(command_to_execute, logger)
             if (command_type == 'WIFI_BH_ASSOCLIST'):
                 my_row = {}
                 bh_assoc_list = parse_BH_assoclist(output, my_row, command_type, success_command)

@@ -31,9 +31,9 @@ class check_xpath_class:
         """
         check_command = CHECK_COMMAND + self.xpath
         #"""Prepare the command to run, should contain xmo-client -p then add the expected xpath """
-        cmd = tools.tools.prepareCommand(check_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
+        cmd = tools.tools.prepare_command(check_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
         #""""Call the prepare command fonction to get the fulll sshpass"""
-        output_cmd, success_cmd = tools.tools.runCommand(cmd, logging.getLogger())
+        output_cmd, success_cmd = tools.tools.run_command(cmd, logging.getLogger())
         #""""Run the command"""
         if (success_cmd is True):
             #""""if the command success we can parse the result"""
@@ -60,9 +60,9 @@ class check_xpath_class:
         """
         set_command = CHECK_COMMAND + self.xpath +" -s " + self.expected_value
         #Prepare the command to set the expected value
-        cmd = tools.tools.prepareCommand(set_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
+        cmd = tools.tools.prepare_command(set_command, disc["ip"],disc["username"], disc["password"], logging.getLogger())
 
-        output_cmd, success_cmd = tools.tools.runCommand(cmd, logging.getLogger())
+        output_cmd, success_cmd = tools.tools.run_command(cmd, logging.getLogger())
         #Execute the command
         if (success_cmd is False):
             #Log if the command is not successfull
