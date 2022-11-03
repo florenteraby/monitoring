@@ -1,5 +1,5 @@
-import pytest
 import logging
+import pytest
 from monitor import parse_process_VMZ
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
@@ -249,6 +249,11 @@ OUTPUT_HG6D_12 = """17098 root      3244 S    grep -w hg6d
 OUTPUT_HG6D_13 = """"""
 
 def test_parse_vmz(supply_logger):
+    """_summary_
+
+    Args:
+        supply_logger (_type_): _description_
+    """
     row = {}
     parse_process_VMZ(OUTPUT_PSAUX, row, supply_logger)
     assert row["VMZ_HG6D"] == 50596
@@ -260,6 +265,11 @@ def test_parse_vmz(supply_logger):
     assert row["VMZ_DNSMASQ"] == 3420
 
 def test_parse_vmz2_m(supply_logger):
+    """_summary_
+
+    Args:
+        supply_logger (_type_): _description_
+    """
     row = {}
     parse_process_VMZ(OUTPUT_PSAUX_M, row, supply_logger)
     assert row["VMZ_HG6D"] == 120000000

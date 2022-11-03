@@ -1,5 +1,4 @@
 import pytest
-import os
 from monitor import parse_sta_info
 
 STA_INFO = """[VER 8] STA 10:D7:B0:1A:96:6F:
@@ -72,7 +71,9 @@ link bandwidth = 80 MHZ
 RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
 
-def test_parse_staInfo():
+def test_parse_sta_info():
+    """_summary_
+    """
     row = {}
     mac_sta = "10:D7:B0:1A:96:6F"
     row = parse_sta_info(STA_INFO, mac_sta)
@@ -82,6 +83,8 @@ def test_parse_staInfo():
     assert row['BH_STA_INFO_DECRYPT_FAILURE_'+mac_sta] == 0
 
 def test_parse_sta_info_empty():
+    """ _summary_
+    """
     row = {}
     mac_sta = "10:D7:B0:1A:96:6F"
     row = parse_sta_info("", mac_sta)
@@ -158,6 +161,8 @@ RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 
 
 def test_parse_sta_info_missing_param():
+    """_summary_
+    """
     row = {}
     mac_sta = "10:D7:B0:1A:96:6F"
     row = parse_sta_info(STA_INFO_MISSING_BANDWIDTH, mac_sta)
@@ -236,6 +241,8 @@ link bandwidth = 80 MHZ
 RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
 def test_parse_sta_info_missing_param():
+    """_summary_
+    """
     row = {}
     mac_sta = "10:D7:B0:1A:96:6F"
     row = parse_sta_info(STA_INFO_UPTIME_FLOAT, mac_sta)
@@ -316,6 +323,8 @@ RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
 
 def test_parse_sta_info_ko_in_field():
+    """_summary_
+    """
     row = {}
     mac_sta = "80:20:DA:EE:89:A7"
     row = parse_sta_info(SAT_INFO_KO_IN_FILED, mac_sta)
