@@ -15,7 +15,7 @@ def supply_logger():
     logger = logging.getLogger()
     return logger
 
-outpout_psaux = """  PID USER       VSZ STAT COMMAND
+OUTPUT_PSAUX = """  PID USER       VSZ STAT COMMAND
     1 root      3244 S    init
     2 root         0 SW   [kthreadd]
     3 root         0 SW   [ksoftirqd/0]
@@ -109,7 +109,7 @@ outpout_psaux = """  PID USER       VSZ STAT COMMAND
 32136 root      4944 S    dhcrelay 192.168.1.1 -i BR_LAN --option6 192.168.1.9
 """
 
-outpout_psaux_m = """  PID USER       VSZ STAT COMMAND
+OUTPUT_PSAUX_M = """  PID USER       VSZ STAT COMMAND
     1 root      3244 S    init
     2 root         0 SW   [kthreadd]
     3 root         0 SW   [ksoftirqd/0]
@@ -203,54 +203,54 @@ outpout_psaux_m = """  PID USER       VSZ STAT COMMAND
 32136 root      4944 S    dhcrelay 192.168.1.1 -i BR_LAN --option6 192.168.1.9
 """
 
-output_hg6d_2 = """17098 root      3244 R    grep -w hg6d
+OUTPUT_HG6D_2 = """17098 root      3244 R    grep -w hg6d
 1202 root     43168 S    hg6d
 """
-output_hg6d_6 = """17098 root      3244 R    grep -w hg6d
+OUTPUT_HG6D_6 = """17098 root      3244 R    grep -w hg6d
 1202 root     43168 S    hg6d
 """
 
-output_hg6d_10 = """17098 root      3244 R    grep -w hg6d
+OUTPUT_HG6D_10 = """17098 root      3244 R    grep -w hg6d
 1202 root     43168 R    hg6d
 """
 
-output_hg6d_7 = """17098 root      3244 R    grep -w hg6d
+OUTPUT_HG6D_7 = """17098 root      3244 R    grep -w hg6d
 1202 root     143m S    hg6d
 """
 
-output_hg6d_8 = """17098 root      3244 R    grep -w hg6d
+OUTPUT_HG6D_8 = """17098 root      3244 R    grep -w hg6d
 1202 root     143m R    hg6d
 """
 
-output_hg6d_1 = """1202 root     43168 S    hg6d
+OUTPUT_HG6D_1 = """1202 root     43168 S    hg6d
 17098 root      3244 R    grep -w hg6d
 """
-output_hg6d_5 = """1202 root     43168 S    hg6d
+OUTPUT_HG6D_5 = """1202 root     43168 S    hg6d
 17098 root      3244 S    grep -w hg6d
 """
 
-output_hg6d_9 = """1202 root     43168 R    hg6d
+OUTPUT_HG6D_9 = """1202 root     43168 R    hg6d
 17098 root      3244 S    grep -w hg6d
 """
 
-output_hg6d_3 = """1202 root     143m S    hg6d
+OUTPUT_HG6D_3 = """1202 root     143m S    hg6d
 17098 root      3244 R    grep -w hg6d
 """
-output_hg6d_4 = """1202 root     143m R    hg6d
+OUTPUT_HG6D_4 = """1202 root     143m R    hg6d
 17098 root      3244 R    grep -w hg6d
 """
 
-output_hg6d_11 = """17098 root      3244 R    grep -w hg6d
+OUTPUT_HG6D_11 = """17098 root      3244 R    grep -w hg6d
 """
 
-output_hg6d_12 = """17098 root      3244 S    grep -w hg6d
+OUTPUT_HG6D_12 = """17098 root      3244 S    grep -w hg6d
 """
 
-output_hg6d_13 = """"""
+OUTPUT_HG6D_13 = """"""
 
-def test_parseVMZ2(supply_logger):
+def test_parse_vmz(supply_logger):
     row = {}
-    parse_process_VMZ(outpout_psaux, row, supply_logger)
+    parse_process_VMZ(OUTPUT_PSAUX, row, supply_logger)
     assert row["VMZ_HG6D"] == 50596
     assert row["VMZ_WSHD"] == 10196
     assert row["VMZ_WSTD"] == 10188
@@ -259,9 +259,9 @@ def test_parseVMZ2(supply_logger):
     assert row["VMZ_ISMD"] == 7888
     assert row["VMZ_DNSMASQ"] == 3420
 
-def test_parseVMZ2_m(supply_logger):
+def test_parse_vmz2_m(supply_logger):
     row = {}
-    parse_process_VMZ(outpout_psaux_m, row, supply_logger)
+    parse_process_VMZ(OUTPUT_PSAUX_M, row, supply_logger)
     assert row["VMZ_HG6D"] == 120000000
     assert row["VMZ_WSHD"] == 10196
     assert row["VMZ_WSTD"] == 10188

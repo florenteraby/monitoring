@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import pytest
-import os
 from monitor import parse_BH_assoclist
 
 BH_2_ENTRIES_ANSWER =  """assoclist 80:20:DA:EE:89:A7
@@ -25,8 +24,8 @@ def test_parse_bh_empty_answer():
 
     my_list = parse_BH_assoclist(to_parse, row, command_type, success_command)
     for STA in my_list:
-        macSta = STA.split(" ")[1]
-        assert macSta in ["80:20:DA:EE:89:A7", "E8:AD:A6:EA:1D:B1", "10:D7:B0:1A:96:6F", "10:D7:B0:1A:96:7B"]
+        mac_sta = STA.split(" ")[1]
+        assert mac_sta in ["80:20:DA:EE:89:A7", "E8:AD:A6:EA:1D:B1", "10:D7:B0:1A:96:6F", "10:D7:B0:1A:96:7B"]
     assert row['WIFI_BH_ASSOCLIST'] == 0
     assert len(my_list) == 0
 
