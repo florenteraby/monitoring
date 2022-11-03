@@ -6,7 +6,7 @@ LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 
 @pytest.fixture
 #Creates the default cermony files
-def supply_logger():
+def supply_test_parsing_ping_logger():
     """_summary_
     """
     logging.basicConfig(filename = "monitoring_test.log",
@@ -29,7 +29,7 @@ PING_RESULT_KO = """PING 255.255.255.255 (255.255.255.255): 56 data bytes
 --- 255.255.255.255 ping statistics ---
 1 packets transmitted, 0 packets received, 100% packet loss
 """
-def test_parse_ping_ok(supply_logger):
+def test_parse_ping_ok(supply_test_parsing_ping_logger):
     """_summary_
 
     Args:
@@ -38,11 +38,9 @@ def test_parse_ping_ok(supply_logger):
     round_trip = parse_ping_wodns(PING_RESULT_OK)
     assert round_trip == 13.199
 
-def test_parse_ping_ko(supply_logger):
+def test_parse_ping_ko(supply_test_parsing_ping_logger):
     """_summary_
     """
     round_trip = parse_ping_wodns(PING_RESULT_KO)
     assert round_trip == -1.0
     assert isinstance(round_trip, float)
-
-
