@@ -6,12 +6,33 @@ import logging
 from subprocess import STDOUT
 
 
-def prepareCommand(command, ip, login, password, logger):
+def prepare_command(command, ip, login, password, logger):
+    """_summary_
+
+    Args:
+        command (_type_): _description_
+        ip (_type_): _description_
+        login (_type_): _description_
+        password (_type_): _description_
+        logger (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     command_to_execute = "/usr/bin/sshpass -p"+password.strip()+" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 -o ConnectionAttempts=2 "+login.strip()+"@"+ip.strip()+" "+command
     logger.debug("Command to execute {}".format(command_to_execute))
     return command_to_execute
 
-def runCommand(command, logger):
+def run_command(command, logger):
+    """_summary_
+
+    Args:
+        command (_type_): _description_
+        logger (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     success_command = False
     try:
         # output = subprocess.check_output(command.split(" "), stderr=STDOUT, timeout=30)
@@ -31,6 +52,5 @@ def runCommand(command, logger):
 def main(argv):
     return True
 
-    
 if __name__ == "__main__":
-        main(sys.argv[1:])
+    main(sys.argv[1:])
