@@ -9,20 +9,20 @@ MASTER_OUTPUT = "ElecState <ELECTION_STATE_MASTER>, MasterState <NO_OPTION_102>,
 SLAVE_OUTPUT = "ElecState <ELECTION_STATE_SLAVE>, MasterState <OPTION_102_WITH_SCORE>, Option 102 <+105601+NQ04800384>, GwState<GATEWAY_FOUND>, GwRtrF<1>, MyScore <-1>, Buffer <> GwPortFound <false>"
 
 
-def test_parse_elecState_slave_root():
+def test_parse_elec_state_slave_root():
     """_summary_
     """
-    elecState = parse_election_state(SLAVEROOT_OUTPUT)
-    assert elecState == "ELECTION_STATE_SLAVEROOT"
+    elec_state = parse_election_state(SLAVEROOT_OUTPUT)
+    assert elec_state == "ELECTION_STATE_SLAVEROOT"
 
 def test_parse_elec_state_master():
     """_summary_
     """
-    elecState = parse_election_state(MASTER_OUTPUT)
-    assert elecState == "ELECTION_STATE_MASTER"
+    elec_state = parse_election_state(MASTER_OUTPUT)
+    assert elec_state == "ELECTION_STATE_MASTER"
 
 def test_parse_elec_state_slave():
     """_summary_
     """
-    elecState = parse_election_state(SLAVE_OUTPUT)
-    assert elecState == "ELECTION_STATE_SLAVE"
+    elec_state = parse_election_state(SLAVE_OUTPUT)
+    assert elec_state == "ELECTION_STATE_SLAVE"

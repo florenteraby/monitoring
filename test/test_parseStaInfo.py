@@ -2,7 +2,7 @@ import pytest
 import os
 from monitor import parse_sta_info
 
-sta_info = """[VER 8] STA 10:D7:B0:1A:96:6F:
+STA_INFO = """[VER 8] STA 10:D7:B0:1A:96:6F:
     chanspec 116/80 (0xe07a)
     aid:13
     rateset [ 6 9 12 18 24 36 48 54 ]
@@ -72,22 +72,22 @@ link bandwidth = 80 MHZ
 RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
 
-def test_parseStaInfo():
+def test_parse_staInfo():
     row = {}
-    macSta = "10:D7:B0:1A:96:6F"
-    row = parse_sta_info(sta_info, macSta)
-    assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 11
-    assert row['BH_STA_INFO_BANDWIDTH_'+macSta] == 80
-    assert row['BH_STA_INFO_UPTIME_'+macSta] == 13416
-    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] == 0
+    mac_sta = "10:D7:B0:1A:96:6F"
+    row = parse_sta_info(STA_INFO, mac_sta)
+    assert row['BH_STA_INFO_TX_FAILURES_'+mac_sta] == 11
+    assert row['BH_STA_INFO_BANDWIDTH_'+mac_sta] == 80
+    assert row['BH_STA_INFO_UPTIME_'+mac_sta] == 13416
+    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+mac_sta] == 0
 
-def test_parseStaInfoEmpty():
+def test_parse_sta_info_empty():
     row = {}
-    macSta = "10:D7:B0:1A:96:6F"
-    row = parse_sta_info("", macSta)
+    mac_sta = "10:D7:B0:1A:96:6F"
+    row = parse_sta_info("", mac_sta)
     assert len(row) == 0
 
-sta_info_missingBandwidth = """[VER 8] STA 10:D7:B0:1A:96:6F:
+STA_INFO_MISSING_BANDWIDTH = """[VER 8] STA 10:D7:B0:1A:96:6F:
     chanspec 116/80 (0xe07a)
     aid:13
     rateset [ 6 9 12 18 24 36 48 54 ]
@@ -157,16 +157,16 @@ RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
 
 
-def test_parseStaInfoMissingParam():
+def test_parse_sta_info_missing_param():
     row = {}
-    macSta = "10:D7:B0:1A:96:6F"
-    row = parse_sta_info(sta_info_missingBandwidth, macSta)
-    assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 11
-    assert 'BH_STA_INFO_BANDWIDTH_'+macSta not in row
-    assert row['BH_STA_INFO_UPTIME_'+macSta] == 13416
-    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] == 0
+    mac_sta = "10:D7:B0:1A:96:6F"
+    row = parse_sta_info(STA_INFO_MISSING_BANDWIDTH, mac_sta)
+    assert row['BH_STA_INFO_TX_FAILURES_'+mac_sta] == 11
+    assert 'BH_STA_INFO_BANDWIDTH_'+mac_sta not in row
+    assert row['BH_STA_INFO_UPTIME_'+mac_sta] == 13416
+    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+mac_sta] == 0
 
-sta_info_UptimeFloat = """[VER 8] STA 10:D7:B0:1A:96:6F:
+STA_INFO_UPTIME_FLOAT = """[VER 8] STA 10:D7:B0:1A:96:6F:
     chanspec 116/80 (0xe07a)
     aid:13
     rateset [ 6 9 12 18 24 36 48 54 ]
@@ -235,17 +235,17 @@ VENDOR OUI VALUE[2] 00:50:F2
 link bandwidth = 80 MHZ 
 RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
-def test_parseStaInfoMissingParam():
+def test_parse_sta_info_missing_param():
     row = {}
-    macSta = "10:D7:B0:1A:96:6F"
-    row = parse_sta_info(sta_info_UptimeFloat, macSta)
-    assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 11
-    assert row['BH_STA_INFO_BANDWIDTH_'+macSta] == 80
-    assert row['BH_STA_INFO_UPTIME_'+macSta] == 13416333333
-    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] == 0
+    mac_sta = "10:D7:B0:1A:96:6F"
+    row = parse_sta_info(STA_INFO_UPTIME_FLOAT, mac_sta)
+    assert row['BH_STA_INFO_TX_FAILURES_'+mac_sta] == 11
+    assert row['BH_STA_INFO_BANDWIDTH_'+mac_sta] == 80
+    assert row['BH_STA_INFO_UPTIME_'+mac_sta] == 13416333333
+    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+mac_sta] == 0
 
 
-sta_info_KOinField = """[VER 8] STA 80:20:DA:EE:89:A7:
+SAT_INFO_KO_IN_FILED = """[VER 8] STA 80:20:DA:EE:89:A7:
 	 chanspec 136/80 (0xe18a)
 	 aid:13 
 	 rateset [ 6 9 12 18 24 36 48 54 ]
@@ -315,11 +315,11 @@ link bandwidth = 80 MHZ
 RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
 
-def test_parseStaInfoKOInField():
+def test_parse_sta_info_ko_in_field():
     row = {}
-    macSta = "80:20:DA:EE:89:A7"
-    row = parse_sta_info(sta_info_KOinField, macSta)
-    assert row['BH_STA_INFO_TX_FAILURES_'+macSta] == 6
-    assert row['BH_STA_INFO_BANDWIDTH_'+macSta] == 80
-    assert row['BH_STA_INFO_UPTIME_'+macSta] == 339317
-    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+macSta] == 0
+    mac_sta = "80:20:DA:EE:89:A7"
+    row = parse_sta_info(SAT_INFO_KO_IN_FILED, mac_sta)
+    assert row['BH_STA_INFO_TX_FAILURES_'+mac_sta] == 6
+    assert row['BH_STA_INFO_BANDWIDTH_'+mac_sta] == 80
+    assert row['BH_STA_INFO_UPTIME_'+mac_sta] == 339317
+    assert row['BH_STA_INFO_DECRYPT_FAILURE_'+mac_sta] == 0
