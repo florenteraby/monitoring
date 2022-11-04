@@ -363,7 +363,7 @@ def parse_BH_assoclist(to_parse, row, command_type, success_command):
     Returns:
         _type_: _description_
     """
-    if success_command is True:   
+    if success_command is True:
         if (len(to_parse) == 0):
             row[command_type] = 0
             return ""
@@ -492,7 +492,6 @@ def parse_dns_resolution(to_parse):
     query_ipv4 = -1
     qurey_ipv6 = -1
 
-    
     return (query_ipv4, qurey_ipv6)
 
 def update_row(to_parse, success_command, command_type, logger):
@@ -633,8 +632,6 @@ def parse_sta_info(to_parse, sta_mac):
             row['BH_STA_INFO_BANDWIDTH_'+sta_mac] = int(item.split("=")[1].split(" ")[1])
         if ("in network " in item):
             #uptime = item.strip(" ").split(" ")
-            uptime_sta = int(item.strip(" ").split(" ")[2])
-            print("{}\n".format(uptime_sta))
             row['BH_STA_INFO_UPTIME_'+sta_mac] = int(item.strip(" ").split(" ")[2])
         if ("rx decrypt failures:" in item):
             row['BH_STA_INFO_DECRYPT_FAILURE_'+sta_mac] = int(item.split(":")[1].strip(" "))
