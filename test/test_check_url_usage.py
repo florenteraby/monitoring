@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import pytest
+
 from check_xpath import usage
 
 def test_usage_1():

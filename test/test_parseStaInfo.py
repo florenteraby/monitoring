@@ -6,7 +6,7 @@ STA_INFO = """[VER 8] STA 10:D7:B0:1A:96:6F:
     aid:13
     rateset [ 6 9 12 18 24 36 48 54 ]
     idle 0 seconds
-	 in network 13416 seconds
+    in network 13416 seconds
     state: AUTHENTICATED ASSOCIATED AUTHORIZED
     connection: SECURED
     auth: WPA2-PSK
@@ -95,7 +95,7 @@ STA_INFO_MISSING_BANDWIDTH = """[VER 8] STA 10:D7:B0:1A:96:6F:
     aid:13
     rateset [ 6 9 12 18 24 36 48 54 ]
     idle 0 seconds
-     in network 13416 seconds
+    in network 13416 seconds
     state: AUTHENTICATED ASSOCIATED AUTHORIZED
     connection: SECURED
     auth: WPA2-PSK
@@ -176,7 +176,7 @@ STA_INFO_UPTIME_FLOAT = """[VER 8] STA 10:D7:B0:1A:96:6F:
     aid:13
     rateset [ 6 9 12 18 24 36 48 54 ]
     idle 0 seconds
-	 in network 13416333333 seconds
+    in network 13416333333 seconds
     : AUTHENTICATED ASSOCIATED AUTHORIZED
     ction: SECURED
     WPA2-PSK
@@ -257,7 +257,7 @@ SAT_INFO_KO_IN_FILED = """[VER 8] STA 80:20:DA:EE:89:A7:
 	 aid:13 
 	 rateset [ 6 9 12 18 24 36 48 54 ]
 	 idle 0 seconds
-	 in network 339317 seconds
+	in network 339317 seconds
 	 state: AUTHENTICATED ASSOCIATED AUTHORIZED
 	 connection: SECURED
 	 auth: WPA2-PSK
