@@ -139,7 +139,7 @@ def main(argv):
                 logger.info("config file %s", arg)
                 #network_list = openConfigFile(arg.strip(), logger)
                 try:
-                    with open (arg, 'r+') as config_file:
+                    with open (arg, 'r+', encoding="utf-8") as config_file:
                         config_jsonlist = json.load(config_file)
                         run = True
                 except IOError:

@@ -2,7 +2,6 @@
 
 import sys
 import subprocess
-import logging
 from subprocess import STDOUT
 
 
@@ -50,6 +49,14 @@ def run_command(command, logger):
         return output, success_command
 
 def main(argv):
+    """_summary_
+
+    Args:
+        argv (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     return True
 
 if __name__ == "__main__":

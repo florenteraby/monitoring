@@ -763,7 +763,7 @@ def monitoring_extenders(network_list, network_setup, polling_frequency, influxd
     for extender in network_list:
         extender_csv_name = dest_file +'-' + extender['name'].strip(" ") + ".csv"
         #Open the file
-        extender_csv_file =  open(extender_csv_name, 'w+')
+        extender_csv_file =  open(extender_csv_name, 'w+', encoding="utf-8")
         extender['CSVFile'] = extender_csv_file
         #Write header into csv files and define dictionary to manage and check row
         csv_writer = csv.DictWriter(extender['CSVFile'], fieldnames=csv_header)
@@ -836,7 +836,7 @@ def main(argv):
                 #network_list = openConfigFile(arg.strip(), logger)
                 network_list = []
                 try:
-                    with open (arg.strip(), 'r+') as config_file:
+                    with open (arg.strip(), 'r+', encoding="utf-8") as config_file:
                         config_jsonlist = json.load(config_file)
                 except IOError:
                     logger.error("File %s does not exist", arg.strip())

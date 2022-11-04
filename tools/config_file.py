@@ -1,6 +1,8 @@
 
 
 class NetworkConfig:
+    """_summary_
+    """
     def __init__(self, config):
         self.ip = config.split(",")[0]
         self.role = config.split(",")[1]
@@ -60,7 +62,7 @@ def open_config_file(filename, logger):
     All separated by comma"""
     network_list = []
     try:
-        config = open(filename,'r+')
+        config = open(filename,'r+', encoding="utf-8")
 
     except IOError:
         print ("File {} does not exist".format(filename))
