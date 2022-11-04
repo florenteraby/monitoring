@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os
+
 import pytest
 from monitor import parse_election_state
 

@@ -160,7 +160,7 @@ RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
 
 
-def test_parse_sta_info_missing_param():
+def test_parse_sta_info_missing_param_1():
     """_summary_
     """
     row = {}
@@ -240,7 +240,7 @@ VENDOR OUI VALUE[2] 00:50:F2
 link bandwidth = 80 MHZ 
 RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
 """
-def test_parse_sta_info_missing_param():
+def test_parse_sta_info_missing_param_2():
     """_summary_
     """
     row = {}
