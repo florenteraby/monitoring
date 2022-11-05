@@ -18,7 +18,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade pytest
-        python -p pip install --upgrade pylint
+        python -m pip install --upgrade pylint
         if [ python-version eq "3.10" ] 
         then 
           python -m pip install --upgrade influxdb_client
