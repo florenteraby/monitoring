@@ -1,9 +1,11 @@
+#!/usr/bin/python
+# coding: utf-8
+
 """_summary_
 
     Returns:
         _type_: _description_
 """
-#!/usr/bin/python
 
 from sys import version_info
 
@@ -762,7 +764,11 @@ def monitoring_extenders(network_list, network_setup, polling_frequency, influxd
     for extender in network_list:
         extender_csv_name = dest_file +'-' + extender['name'].strip(" ") + ".csv"
         #Open the file
-        extender_csv_file =  open(extender_csv_name, 'w+', encoding="utf-8")
+        if sys.version_info[0] == 2:
+            extender_csv_file =  open(extender_csv_name, 'w+')
+        else :
+            extender_csv_file =  open(extender_csv_name, 'w+', encoding="utf-8")
+
         extender['CSVFile'] = extender_csv_file
         #Write header into csv files and define dictionary to manage and check row
         csv_writer = csv.DictWriter(extender['CSVFile'], fieldnames=csv_header)
@@ -834,13 +840,22 @@ def main(argv):
                 logger.info("config file %s", arg)
                 #network_list = openConfigFile(arg.strip(), logger)
                 network_list = []
-                try:
-                    with open (arg.strip(), 'r+', encoding="utf-8") as config_file:
-                        config_jsonlist = json.load(config_file)
-                except IOError:
-                    logger.error("File %s does not exist", arg.strip())
-                else :
-                    logger.debug("DUMP config file %s", network_list)
+                if sys.version_info[0] == 2:
+                    try:
+                        with open (arg.strip(), 'r+') as config_file:
+                            config_jsonlist = json.load(config_file)
+                    except IOError:
+                        logger.error("File %s does not exist", arg.strip())
+                    else :
+                        logger.debug("DUMP config file %s", network_list)
+                else:
+                    try:
+                        with open (arg.strip(), 'r+', encoding="utf-8") as config_file:
+                            config_jsonlist = json.load(config_file)
+                    except IOError:
+                        logger.error("File %s does not exist", arg.strip())
+                    else :
+                        logger.debug("DUMP config file %s", network_list)
 
             if option in ('-h', '--help'):
                 usage(argv)
