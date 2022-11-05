@@ -778,11 +778,11 @@ def monitoring_extenders(network_list, network_setup, polling_frequency, influxd
 
     logger.info("Creating Data Base %s", influxdb_server["Server_name"])
     os.environ['NO_PROXY'] = influxdb_server["Server_name"]
-    if sys.version_info[0] == "3":
-        client = InfluxDBClient(url=influxdb_server["Server_name"], host=influxdb_server["Server_name"],port=influxdb_server["Server_port"],
+    if sys.version_info[0] == "2":
+        client = InfluxDBClient(host=influxdb_server["Server_name"],port=influxdb_server["Server_port"],
                                 ssl=False, proxies=None)
     else:
-        client = InfluxDBClient(host=influxdb_server["Server_name"],port=influxdb_server["Server_port"],
+        client = InfluxDBClient(url=influxdb_server["Server_name"], host=influxdb_server["Server_name"],port=influxdb_server["Server_port"],
                                 ssl=False, proxies=None)
 
     client.create_database(influxdb_server["DB_name"])
