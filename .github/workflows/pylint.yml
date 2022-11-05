@@ -33,10 +33,6 @@ jobs:
         then 
           pylint --fail-under=8 --max-line-length=250 --max-args=10 --max-statements=110 --max-branches=60 $(git ls-files '*.py')
         fi
-        if [ "${{ matrix.python-version }}" = "2.7" ] 
-        then 
-          pylint $(git ls-files '*.py')
-        fi
     - name: Test with pytest
       run: |
         pytest -v test/
