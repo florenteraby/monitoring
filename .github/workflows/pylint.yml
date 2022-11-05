@@ -25,7 +25,7 @@ jobs:
         fi
         if [ "${{ matrix.python-version }}" = "2.7" ] 
         then 
-          python -m pip install --upgrade influxdb_client
+          python -m pip install --upgrade influxdb
         fi
         
     - name: Analysing the code with pylint
