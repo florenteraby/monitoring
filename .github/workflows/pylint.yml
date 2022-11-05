@@ -19,11 +19,11 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade pytest
         python -m pip install --upgrade pylint
-        if [ python-version eq "3.10" ] 
+        if [ $python-version eq "3.10" ] 
         then 
           python -m pip install --upgrade influxdb_client
         fi
-        if [ python-version eq "2.7" ] 
+        if [ $python-version eq "2.7" ] 
         then 
           python -m pip install --upgrade influxdb_client
         fi
