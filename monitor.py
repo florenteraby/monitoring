@@ -634,7 +634,7 @@ def parse_sta_info(to_parse, sta_mac):
             row['BH_STA_INFO_BANDWIDTH_'+sta_mac] = int(item.split("=")[1].split(" ")[1])
         if ("in network " in item):
             #uptime = item.strip(" ").split(" ")
-            row['BH_STA_INFO_UPTIME_'+sta_mac] = int(item.strip(" ").split(" ")[2])
+            row['BH_STA_INFO_UPTIME_'+sta_mac] = int(item.strip(" ").split(" ")[3])
         if ("rx decrypt failures:" in item):
             row['BH_STA_INFO_DECRYPT_FAILURE_'+sta_mac] = int(item.split(":")[1].strip(" "))
     return row
