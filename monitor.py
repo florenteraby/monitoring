@@ -77,6 +77,7 @@ common_command_list = [
 # ["nslookup -debug www.lemonde.fr", "DNS_RESOLUTION_LEMONDE"],
 ["/usr/sbin/infos-cli -t OSM_MASTER_ELECTION -c all | grep ElecState", "ELEC_STATE"]
 ]
+
 system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTGlobalState/TemperatureMonitoring/Temperature", "TEMPERATURE"],
 #TODO Add hg6d, wshd VM SIZE command add data usage file size monitoring
@@ -125,6 +126,19 @@ system_command_list_F266GEN = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/WSHDServices/WSHDDiscsMgt/Discs/Disc/Topology/BackhaulRSSI", "BACKHAUL_AP_RSSI"],
 ["/usr/bin/xmo-client -p Device/Services/WSHDServices/WSHDDevicesMgt/Devices/Device[ConnectionType=\\'NONE\\'] | grep -e MACAddress -e RSSI -e Layer1Interface -e Name -e Active -e Band", "DEVICE_STATUS"]
 ]
+
+system_command_list_F266GENEMEXT = common_command_list + [
+["xmo-client -p Device/DeviceInfo/TemperatureStatus/TemperatureSensors/TemperatureSensor/Value", "TEMPERATURE"],
+["ps | grep -w data-collector", "VMZ_DATACOLLECTOR"],
+["ps | grep -w halwifi", "VMZ_HALWIFI"],
+#TODO Add wshd PID monitoring
+["/usr/sbin/wlctl -i wl0 channel", "WIFI_CHANNEL_5G"],
+["/usr/sbin/wlctl -i wl1 channel", "WIFI_CHANNEL_24G"],
+["/usr/sbin/wlctl -i wl0 chanim_stats", "WIFI_CHANIM_5G"],
+["/usr/sbin/wlctl -i wl1 chanim_stats", "WIFI_CHANIM_24G"],
+["/usr/sbin/wlctl -i wl1 assoclist > /tmp/assoc | /usr/sbin/wlctl -i wl0.1 assoclist >> /tmp/assoc ; wc -l /tmp/assoc", "NB_CLIENT_WIFI_CONNECTED"]
+]
+
 
 chanim_info = ["chanspec", "tx", "inbss","obss","nocat","nopkt","doze","txop","goodtx","badtx","glitch","badplcp","knoise","idle","timestamp"]
 vmstat_info = ["nb_process_running", "nb_process_sleep", "swap", "free", "buff", "cache", "si", "so", "bi", "bo", "interrupt", "context_switch", "user", "system", "idle","wait"]
@@ -907,6 +921,8 @@ def main(argv):
             system_command_list = system_command_list_F398BT
         elif (config_jsonlist["network_type"] == "F266GEN"):
             system_command_list = system_command_list_F266GEN
+        elif (config_jsonlist["network_type"] == "F266GENEMEXT"):
+            system_command_list = system_command_list_F266GENEMEXT
 
         if (len(config_jsonlist["network_config"]) == 0):
             print ("Config file is emty or not compliant")
