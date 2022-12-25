@@ -58,7 +58,7 @@ common_command_list = [
 ["cat /sys/class/ubi/ubi2*/total_eraseblocks", "TOTAL_ERASE_BLOCKS_UBI2"],
 ["cat /proc/loadavg", "LOADAVG"],
 ["vmstat", "VMSTAT"],
-["ps -aux", "VMZ_PS"],
+["ps", "VMZ_PS"],
 # ["ps | grep -w hg6d", "VMZ_HG6D"],
 # ["ps | grep -w wshd", "VMZ_WSHD"],
 # ["ps | grep -w wstd", "VMZ_WSTPD"],
