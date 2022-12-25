@@ -71,11 +71,9 @@ common_command_list = [
 ["du -s /opt/data/", "DATA_FS_SIZE"],
 ["ps | grep hostapd | wc -l", "NB_HOSTAPD"],
 ["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"],
-["ping -c1 8.8.8.8", "PING_WO_DNS"],
+["ping -c1 8.8.8.8", "PING_WO_DNS"]
 # ["nslookup -debug www.microsoft.com", "DNS_RESOLUTION_MICROSOFT"],
 # ["nslookup -debug www.google.com", "DNS_RESOLUTION_GOOGLE"],
-# ["nslookup -debug www.lemonde.fr", "DNS_RESOLUTION_LEMONDE"],
-["/usr/sbin/infos-cli -t OSM_MASTER_ELECTION -c all | grep ElecState", "ELEC_STATE"]
 ]
 
 system_command_list_F398BT = common_command_list + [
@@ -105,7 +103,8 @@ system_command_list_F398BT = common_command_list + [
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulConnexionType", "BACKHAUL_AP_TYPE"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDiscsMgt/Discs/Disc/Topology/BackhaulRSSI", "BACKHAUL_AP_RSSI"],
 ["/usr/bin/xmo-client -p Device/Services/BTServices/BTDevicesMgt/Devices/Device[ConnectionType=\\'WL\\'] | grep -e MACAddress -e RSSI -e Layer1Interface -e Name -e Active -e Connected -e Band", "DEVICE_STATUS"],
-["du -s /opt/conf/datausage.db", "DATA_USAGE_FS_SIZE"]
+["du -s /opt/conf/datausage.db", "DATA_USAGE_FS_SIZE"],
+["/usr/sbin/infos-cli -t OSM_MASTER_ELECTION -c all | grep ElecState", "ELEC_STATE"]
 ]
 
 system_command_list_F266GEN = common_command_list + [
