@@ -714,7 +714,10 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
             rows.update(update_row(output, success_command, command_type, logger))
 
 
-        device_parse_result(rows.pop("DEVICE_STATUS"), extender['name'].strip(), rows['FIRMWARE_VERSION'], rows['MODELE_NAME'], client)
+        try:
+            device_parse_result(rows.pop("DEVICE_STATUS"), extender['name'].strip(), rows['FIRMWARE_VERSION'], rows['MODELE_NAME'], client)
+        except KeyError:
+            logger.debug("No Device Status")
 
         #extender['CSVWriter'].writerow(rows)
         logger.info("Write row %s in filen %S", rows, extender['CSVFile'].name)
