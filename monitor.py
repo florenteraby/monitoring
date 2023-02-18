@@ -186,7 +186,6 @@ def parse_top(top_cmd : str, row):
                         top_line.index("Load")
                     except ValueError:
                         if len(top_line) != 0:
-                            print("%s", top_line)
                             row["TOP_PROCESS"+"_"+top_line[7]] = int(top_line[6].strip("%"))
             else:
                 for i in range (1, len (top_line), 2) :
