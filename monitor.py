@@ -59,6 +59,7 @@ common_command_list = [
 ["cat /proc/loadavg", "LOADAVG"],
 ["vmstat", "VMSTAT"],
 ["ps", "VMZ_PS"],
+["top -bn 1", "TOP"],
 # ["ps | grep -w hg6d", "VMZ_HG6D"],
 # ["ps | grep -w wshd", "VMZ_WSHD"],
 # ["ps | grep -w wstd", "VMZ_WSTPD"],
@@ -160,6 +161,35 @@ def usage(argv):
     print ("[-f, --frequency]: \tOptional Polling frequency (default:%ds)", DEFAULT_POLLING_FREQUENCY)
     print ("[-d, --destfile]: \tMandatory root name of the CSV destination file")
     print ("[-v, --verbose]: \tOptional set debug level mode")
+
+def parse_top(top_cmd : str, row):
+    """parse the top command result to separate each procee and provide at list the cpu load per process
+
+
+    Args:
+        top_cmd (str): result of the command in string
+    """
+    top_lines = top_cmd.splitlines()
+    for line in top_lines:
+        top_result = line.split(" ")
+        top_line = [elt for elt in top_result if elt.strip()]
+        try :
+            top_line.index("Mem:")
+        except ValueError:
+            try :
+                top_line.index("CPU:")
+            except ValueError:
+                try:
+                    top_line.index("PID")
+                except ValueError:
+                    try :
+                        top_line.index("Load")
+                    except ValueError:
+                        print("%s", top_line)
+                        row["TOP_PROCESS"+"_"+top_line[7]] = int(top_line[6].strip("%"))
+            else:
+                for i in range (1, len (top_line), 2) :
+                    row["TOP_CPU"+"_"+top_line[i+1]] = int(top_line[i].strip("%"))
 
 def parse_election_state(to_parse):
     """_summary_
@@ -620,9 +650,10 @@ def update_row(to_parse, success_command, command_type, logger):
                 row[command_type] =  int(to_parse)
         elif "WIFI_BH_ASSOCLIST" == command_type:
             pass
-        elif ("PING_WO_DNS" in command_type):
+        elif "PING_WO_DNS" in command_type:
             row[command_type] = parse_ping_wodns(to_parse)
-
+        elif "TOP" in command_type:
+            parse_top(to_parse, row)
         else :
             logger.error("Unknown command type %s", command_type)
 
