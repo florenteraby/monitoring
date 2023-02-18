@@ -386,3 +386,110 @@ def test_parse_top_cmd():
     parse_top(OUTPUT_TOP_CMD, row)
     assert row["TOP_PROCESS_hg6d"] == 0
     assert row["TOP_PROCESS_swand"] == 0
+
+OUTPUT_TOP_CMD_BLANK_LINE = """Mem: 352032K used, 147752K free, 0K shrd, 22932K buff, 84676K cached
+CPU:   0% usr   3% sys   0% nic  96% idle   0% io   0% irq   0% sirq
+Load average: 0.80 0.56 0.65 2/110 6360
+  PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+  959   957 root     S    36512   7%   0% hg6d
+ 2020   959 root     S    30008   6%   0% /opt/prplmesh/bin/beerocks_agent
+ 2114     1 root     S    25272   5%   0% /opt/prplmesh/bin/beerocks_fronthaul -i wl0
+ 2116     1 root     S    25268   5%   0% /opt/prplmesh/bin/beerocks_fronthaul -i wl1
+ 1548   959 root     S    23624   5%   0% swand -n gtw
+ 1723   959 root     S    22532   5%   0% /opt/prplmesh/bin/beerocks_controller
+ 1416  1415 root     S    22524   5%   0% /usr/sbin/syslog-ng -p /var/run/syslog-ng.pid
+ 1021   959 root     S    20832   4%   0% /usr/sbin/halwifi
+ 1717   959 root     S    16136   3%   0% /opt/prplmesh/bin/ieee1905_transport controller_uds_broker
+ 2017   959 root     S    16136   3%   0% /opt/prplmesh/bin/ieee1905_transport agent_uds_broker
+  934     1 ism      S     9280   2%   0% /usr/sbin/ismd -b QR22133GR000240
+  849     1 root     S     9124   2%   0% firewall-app
+ 1045   959 root     S     8640   2%   0% icmpv6d
+ 1544   959 root     S     8572   2%   0% /usr/bin/selfhealing
+ 2022   959 root     S     7884   2%   0% dhclient -d -cf /tmp/etc/dhclient_extender.conf -pf /tmp/etc/dhclient_extender.pid -lf /opt/data/dhclient_extender.leases BR_LAN
+ 1415     1 root     S     7704   2%   0% {syslog-ng} supervising syslog-ng
+ 2117   959 root     S     7648   2%   0% /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf -D
+17826  1021 root     S     6520   1%   0% hostapd -s /tmp/wl0.3_hapd.conf
+17815  1021 root     S     6520   1%   0% hostapd -s /tmp/wl1_hapd.conf
+17818  1021 root     S     6520   1%   0% hostapd -s /tmp/wl0.1_hapd.conf
+23393 23379 root     S     5068   1%   0% -ash
+    1     0 root     S     4940   1%   0% /sbin/init
+  957     1 root     S     4940   1%   0% {hg6d_start} /bin/sh /usr/bin/hg6d_start
+  437     1 root     S     4940   1%   0% /sbin/getty 115200 ttyAMA0
+ 6360 23393 root     R     4940   1%   0% top -bn1
+18055  1021 root     S     4912   1%   0% hspotap
+ 1370   959 nobody   S     3288   1%   0% dnsmasq -k -u nobody -g ism --bogus-priv -i lo --bind-dynamic -c100 -r/tmp/dnsconf/relayresolv.conf --min-port=1024 -o --dns-retransmission-timeout=800 --do-retrans --hostsdir=/tmp/dnshosts/ --dynconf-server /tmp/dnsconf/dnsqueriesredirect.sgc --stop-dns-rebind --dynamic-dnsrebind=/tmp/dnsconf/dns_rebind.sgc
+ 3124  1021 root     S     2988   1%   0% acsd2 -F
+17819  1021 root     S     2632   1%   0% eapd -F
+23379 26013 root     S     2424   0%   0% dropbear -F -j -k -U root -p [192.168.1.89]:22 -P /var/run/dropbear.pid.pid..192.168.1.89
+26013   959 root     S     2296   0%   0% dropbear -F -j -k -U root -p [192.168.1.89]:22 -P /var/run/dropbear.pid.pid..192.168.1.89
+ 1011   959 root     S     2004   0%   0% mcpd
+ 1154     2 root     SW       0   0%   0% [wl1-kthrd]
+  816     2 root     SW       0   0%   0% [fc_timer]
+  884     2 root     SW       0   0%   0% [bcmsw_rx]
+   14     2 root     SW       0   0%   0% [ksoftirqd/1]
+ 1123     2 root     SW       0   0%   0% [dhd_watchdog_th]
+    7     2 root     SW       0   0%   0% [rcu_preempt]
+  871     2 root     SW       0   0%   0% [bcm_archer_us]
+  815     2 root     SW       0   0%   0% [fc_evt]
+  186     2 root     SW       0   0%   0% [skb_free_task]
+  885     2 root     SW       0   0%   0% [bcmsw_recycle]
+  872     2 root     SW       0   0%   0% [bcm_archer_wlan]
+  274     2 root     SW       0   0%   0% [hwrng]
+   10     2 root     SW       0   0%   0% [migration/0]
+   13     2 root     SW       0   0%   0% [migration/1]
+  390     2 root     SW       0   0%   0% [kworker/2:1]
+  518     2 root     SW       0   0%   0% [ubi_bgt2d]
+    3     2 root     SW       0   0%   0% [ksoftirqd/0]
+  817     2 root     SW       0   0%   0% [bcmFlwStatsTask]
+13973     2 root     SW       0   0%   0% [kworker/1:1]
+24798     2 root     SW       0   0%   0% [kworker/0:1]
+   17     2 root     SW       0   0%   0% [watchdog/2]
+   11     2 root     SW       0   0%   0% [watchdog/0]
+   12     2 root     SW       0   0%   0% [watchdog/1]
+10094     2 root     SW       0   0%   0% [kworker/0:0]
+18353     2 root     SW       0   0%   0% [kworker/u6:2]
+23856     2 root     SW       0   0%   0% [kworker/u6:0]
+    2     0 root     SW       0   0%   0% [kthreadd]
+  461     2 root     SW       0   0%   0% [ubi_bgt1d]
+  394     2 root     SW       0   0%   0% [ubi_bgt0d]
+  415     2 root     SW<      0   0%   0% [kworker/0:1H]
+  590     2 root     SW       0   0%   0% [ubifs_bgt2_1]
+    5     2 root     SW<      0   0%   0% [kworker/0:0H]
+    8     2 root     SW       0   0%   0% [rcu_sched]
+    9     2 root     SW       0   0%   0% [rcu_bh]
+   16     2 root     SW<      0   0%   0% [kworker/1:0H]
+   18     2 root     SW       0   0%   0% [migration/2]
+   19     2 root     SW       0   0%   0% [ksoftirqd/2]
+   20     2 root     SW       0   0%   0% [kworker/2:0]
+   21     2 root     SW<      0   0%   0% [kworker/2:0H]
+   22     2 root     SW<      0   0%   0% [khelper]
+   23     2 root     SW       0   0%   0% [kdevtmpfs]
+   24     2 root     SW<      0   0%   0% [netns]
+   27     2 root     SW<      0   0%   0% [perf]
+  162     2 root     SW<      0   0%   0% [writeback]
+  164     2 root     SW<      0   0%   0% [crypto]
+  166     2 root     SW<      0   0%   0% [bioset]
+  168     2 root     SW<      0   0%   0% [kblockd]
+  187     2 root     SW<      0   0%   0% [linkwatch]
+  200     2 root     SW<      0   0%   0% [mptcp_wq]
+  201     2 root     SW<      0   0%   0% [rpciod]
+  214     2 root     SWN      0   0%   0% [kswapd0]
+  215     2 root     SW       0   0%   0% [fsnotify_mark]
+  216     2 root     SW<      0   0%   0% [nfsiod]
+  236     2 root     SW<      0   0%   0% [kthrotld]
+  371     2 root     SW       0   0%   0% [bpm_monitor]
+  373     2 root     SW<      0   0%   0% [ipv6_addrconf]
+  387     2 root     SW<      0   0%   0% [deferwq]
+  416     2 root     SW<      0   0%   0% [kworker/1:1H]
+  886     2 root     SW       0   0%   0% [enet-kthrd]
+ 1102     2 root     SW<      0   0%   0% [cfg80211]
+27267     2 root     SW       0   0%   0% [kworker/1:2]
+
+"""
+def test_parse_top_cmd_balnk_line():
+    """_summary_
+    """
+    row = {}
+    parse_top(OUTPUT_TOP_CMD_BLANK_LINE, row)
+    assert row["TOP_PROCESS_hg6d"] == 0
+    assert row["TOP_PROCESS_swand"] == 0
