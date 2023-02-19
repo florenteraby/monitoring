@@ -183,7 +183,6 @@ def parse_wl_status(wl_status_result):
         except ValueError:
             pass
         else:
-            print ("%s", wl_status[rssi_index + 1])
             return wl_status[rssi_index + 1]
 
 def parse_top(top_cmd, row):
