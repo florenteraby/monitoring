@@ -132,6 +132,7 @@ system_command_list_F266GENEMEXT = common_command_list + [
 ["ps | grep -w data-collector", "VMZ_DATACOLLECTOR"],
 ["ps | grep -w halwifi", "VMZ_HALWIFI"],
 #TODO Add wshd PID monitoring
+["/usr/sbin/wlctl -i wl0 status", "BACKHAUL_AP_RSSI_GENEMEXT"],
 ["/usr/sbin/wlctl -i wl0 channel", "WIFI_CHANNEL_5G"],
 ["/usr/sbin/wlctl -i wl1 channel", "WIFI_CHANNEL_24G"],
 ["/usr/sbin/wlctl -i wl0 chanim_stats", "WIFI_CHANIM_5G"],
@@ -162,7 +163,29 @@ def usage(argv):
     print ("[-d, --destfile]: \tMandatory root name of the CSV destination file")
     print ("[-v, --verbose]: \tOptional set debug level mode")
 
-def parse_top(top_cmd : str, row):
+def parse_wl_status(wl_status_result):
+    """Parse the wl -i wl0 command to retubr the backhaul rssi if connected, 0 if not
+
+    Args:
+        wl_status_result (str): the result of the command to parse
+
+    Returns:
+        int: rssi value, or 0 if not connected
+    """
+    wl_status_line= wl_status_result.splitlines()
+    for line in wl_status_line :
+        wl_status_result = line.split(" ")
+        wl_status = [elt for elt in wl_status_result if elt.strip()]
+        if "Not" in wl_status:
+            return "0"
+        try:
+            rssi_index = wl_status.index("Managed\tRSSI:")
+        except ValueError:
+            pass
+        else:
+            return wl_status[rssi_index + 1]
+
+def parse_top(top_cmd, row):
     """parse the top command result to separate each procee and provide at list the cpu load per process
 
 
@@ -629,6 +652,8 @@ def update_row(to_parse, success_command, command_type, logger):
             chanim_add_value(to_parse, row, command_type, success_command)
         elif command_type == "NB_CLIENT_WIFI_CONNECTED":
             row[command_type] = to_parse.split(" ")[0]
+        elif "BACKHAUL_AP_RSSI_GENEMEXT" in command_type:
+            row[command_type] = parse_wl_status(to_parse)
         elif "BACKHAUL_AP_" in command_type:
             myresultlst = to_parse.split("\n")
             for item in myresultlst:
