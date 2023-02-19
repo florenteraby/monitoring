@@ -163,7 +163,7 @@ def usage(argv):
     print ("[-d, --destfile]: \tMandatory root name of the CSV destination file")
     print ("[-v, --verbose]: \tOptional set debug level mode")
 
-def parse_wl_status(wl_status_result:str) -> str:
+def parse_wl_status(wl_status_result):
     """Parse the wl -i wl0 command to retubr the backhaul rssi if connected, 0 if not
 
     Args:
