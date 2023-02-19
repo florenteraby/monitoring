@@ -2,6 +2,7 @@ import logging
 import pytest
 from monitor import parse_process_VMZ
 from monitor import parse_top
+from monitor import parse_wl_status
 
 LOG_FORMAT = "%(levelname)s %(asctime)s %(funcName)s- %(message)s"
 
@@ -493,3 +494,59 @@ def test_parse_top_cmd_balnk_line():
     parse_top(OUTPUT_TOP_CMD_BLANK_LINE, row)
     assert row["TOP_PROCESS_hg6d"] == 0
     assert row["TOP_PROCESS_swand"] == 0
+
+
+WL_STATUS_CMD_NOT_CONNECTED = """Not associated. Last associated with SSID: ""
+"""
+
+WL_STATUS_CMD_CONNECTED = """SSID: "WiFiBoosterV2-default-F2A0_BH"
+Mode: Managed	RSSI: -64 dBm	SNR: 24 dB	noise: -88 dBm	Flags: RSSI on-channel 	Channel: 44/160
+BSSID: 36:53:D2:FC:F2:A6	Capability: ESS WEP RRM 
+Beacon Interval: 100 msecs	
+Supported Rates: [ 6(b) 9 12 18 24(b) 36 48 54 ]
+RSN (WPA2):
+	multicast cipher: AES-CCMP
+	unicast ciphers(1): AES-CCMP 
+	AKM Suites(1): WPA2-PSK 
+	Capabilities(0x000c): No Pre-Auth, Pairwise, 16 PTK Replay Ctrs1 GTK Replay Ctr, MFP: Disabled
+Extended Capabilities: IW BSS_Transition
+HE Capable:
+	Chanspec: 5GHz channel 50 160MHz (0xea32)
+	Primary channel: 44
+	HT Capabilities: 40MHz SGI20 SGI40 
+	Supported HT MCS : 0-31
+	Negotiated VHT MCS:
+		NSS1 : 0-9  
+		NSS2 : 0-9  
+		NSS3 : 0-9  
+		NSS4 : 0-9  
+	Negotiated HE MCS:
+	    20/40/80 MHz:
+		NSS1 Tx: 0-11        Rx: 0-11
+		NSS2 Tx: 0-11        Rx: 0-11
+		NSS3 Tx: 0-11        Rx: 0-11
+		NSS4 Tx: 0-11        Rx: 0-11
+	    160 MHz:
+		NSS1 Tx: 0-11        Rx: 0-11
+		NSS2 Tx: 0-11        Rx: 0-11
+		NSS3 Tx: 0-11        Rx: 0-11
+		NSS4 Tx: 0-11        Rx: 0-11
+VS_IE:dd090010180200009c0000
+VS_IE:dd180050f2020101880003a4000027a4000042435e0062322f00
+VS_IE:dd07506f9a16010100
+QBSS Channel Utilization: 0x10 (6 %)
+
+"""
+
+def test_parse_wl_status_cmd_not_connected():
+    """_summary_
+    """
+    rssi = parse_wl_status(WL_STATUS_CMD_NOT_CONNECTED)
+    assert rssi == "0"
+
+def test_parse_wl_status_cmd_connected():
+    """_summary_
+    """
+
+    rssi = parse_wl_status(WL_STATUS_CMD_CONNECTED)
+    assert rssi == "-64"
