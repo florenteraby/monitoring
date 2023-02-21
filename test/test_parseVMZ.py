@@ -1,6 +1,6 @@
 import logging
 import pytest
-from monitor import parse_process_VMZ
+from monitor import parse_process_vmz
 from monitor import parse_top
 from monitor import parse_wl_status
 
@@ -257,7 +257,7 @@ def test_parse_vmz(supply_logger):
         supply_logger (_type_): _description_
     """
     row = {}
-    parse_process_VMZ(OUTPUT_PSAUX, row, supply_logger)
+    parse_process_vmz(OUTPUT_PSAUX, row, supply_logger)
     assert row["VMZ_HG6D"] == 50596
     assert row["VMZ_WSHD"] == 10196
     assert row["VMZ_WSTD"] == 10188
@@ -273,7 +273,7 @@ def test_parse_vmz2_m(supply_logger):
         supply_logger (_type_): _description_
     """
     row = {}
-    parse_process_VMZ(OUTPUT_PSAUX_M, row, supply_logger)
+    parse_process_vmz(OUTPUT_PSAUX_M, row, supply_logger)
     assert row["VMZ_HG6D"] == 120000000
     assert row["VMZ_WSHD"] == 10196
     assert row["VMZ_WSTD"] == 10188

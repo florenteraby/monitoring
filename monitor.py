@@ -261,7 +261,7 @@ def get_vmz(ps_result, logger):
     return int(vmz_size)
 
 
-def parse_process_VMZ(output, row, logger):
+def parse_process_vmz(output, row, logger):
     """_summary_
 
     Args:
@@ -371,7 +371,7 @@ def device_parse_result(to_parse, extender_name, fw_version, model_name, client)
     else:
         serie = []
         fields = {}
-        while (True):
+        while True:
             try :
                 elt = to_parse.pop(0)
             except IndexError :
@@ -639,7 +639,7 @@ def update_row(to_parse, success_command, command_type, logger):
         elif command_type == "MODELE_NAME":
             row[command_type] = to_parse.split("\n")[1].split(":")[1].replace("'", "").strip()
         elif command_type == "VMZ_PS":
-            parse_process_VMZ(to_parse, row, logger)
+            parse_process_vmz(to_parse, row, logger)
         elif "CONNECTEDCLIENT" in command_type:
             row[command_type] = int(to_parse.split("\n")[0])
         elif command_type == "WIFI_CHANNEL_BH":
@@ -763,7 +763,7 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
             # For each command connect to extender and launch it
             command_to_execute = prepare_command(command, extender['ip'], extender['username'], extender['password'], logger)
             output, success_command = run_command(command_to_execute, logger)
-            if (command_type == 'WIFI_BH_ASSOCLIST'):
+            if command_type == 'WIFI_BH_ASSOCLIST':
                 my_row = {}
                 bh_assoc_list = parse_bh_assoclist(output, my_row, command_type, success_command)
                 rows.update(my_row)
@@ -791,14 +791,14 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
         #     if (key != 'DATE'):
         #         fields[key] = rows[key]
 
-        extender_infux_DB = {
+        extender_infux_db = {
             'time': timestamp,
             'measurement' : "MONITORING",
             'tags': tags,
             'fields' : rows,
         }
         #print ("TAGS {} FIELDS : {}".format(tags['name'], fields))
-        serie.append(extender_infux_DB)
+        serie.append(extender_infux_db)
 
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")
