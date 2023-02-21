@@ -227,7 +227,7 @@ def parse_election_state(to_parse):
     election_state = my_liste[0].split(" ")[1].strip("<").strip(">")
     return election_state
 
-def get_VMZ(ps_result, logger):
+def get_vmz(ps_result, logger):
     """_summary_
 
     Args:
@@ -261,7 +261,7 @@ def get_VMZ(ps_result, logger):
     return int(vmz_size)
 
 
-def parse_process_VMZ(output, row, logger):
+def parse_process_vmz(output, row, logger):
     """_summary_
 
     Args:
@@ -272,21 +272,21 @@ def parse_process_VMZ(output, row, logger):
     ps_list = output.split("\n")
     for ps_result in ps_list:
         if "hg6d" in ps_result:
-            row["VMZ_HG6D"] = get_VMZ(ps_result, logger)
+            row["VMZ_HG6D"] = get_vmz(ps_result, logger)
         if "wshd" in ps_result:
-            row["VMZ_WSHD"] = get_VMZ(ps_result, logger)
+            row["VMZ_WSHD"] = get_vmz(ps_result, logger)
         if "wstd" in ps_result:
-            row["VMZ_WSTD"] = get_VMZ(ps_result, logger)
+            row["VMZ_WSTD"] = get_vmz(ps_result, logger)
         if "dhclient" in ps_result:
-            row["VMZ_DHCLIENT"] = get_VMZ(ps_result, logger)
+            row["VMZ_DHCLIENT"] = get_vmz(ps_result, logger)
         if "dhcrelay" in ps_result:
-            row["VMZ_DHRELAY"] = get_VMZ(ps_result, logger)
+            row["VMZ_DHRELAY"] = get_vmz(ps_result, logger)
         if "ismd" in ps_result:
-            row["VMZ_ISMD"] = get_VMZ(ps_result, logger)
+            row["VMZ_ISMD"] = get_vmz(ps_result, logger)
         if "dnsmasq" in ps_result:
-            row["VMZ_DNSMASQ"] = get_VMZ(ps_result, logger)
+            row["VMZ_DNSMASQ"] = get_vmz(ps_result, logger)
         if "hal_wifi" in ps_result:
-            row["VMZ_HALWIFI"] = get_VMZ(ps_result, logger)
+            row["VMZ_HALWIFI"] = get_vmz(ps_result, logger)
 
 # """ ''' deviceParseResult example of result
 # We can see on F@ST266 the foloowing result
@@ -371,7 +371,7 @@ def device_parse_result(to_parse, extender_name, fw_version, model_name, client)
     else:
         serie = []
         fields = {}
-        while (True):
+        while True:
             try :
                 elt = to_parse.pop(0)
             except IndexError :
@@ -385,7 +385,7 @@ def device_parse_result(to_parse, extender_name, fw_version, model_name, client)
             if "Active" in elt:
                 fields['Active'] = elt.split("   Active : ")[1].replace("'", "")
             if "ConnectedDisc" in elt:
-                if (len(elt.split("   ConnectedDisc : ")[1].replace("'", "").split("=")) == 1):
+                if len(elt.split("   ConnectedDisc : ")[1].replace("'", "").split("=")) == 1:
                     fields['ConnectedDisc'] = "NA"
                 else :
                     fields['ConnectedDisc'] = elt.split("   ConnectedDisc : ")[1].replace("'", "").split("=")[1].strip("]")
@@ -419,7 +419,7 @@ def device_parse_result(to_parse, extender_name, fw_version, model_name, client)
     return
 # assoclist 10:D7:B0:1A:96:6F
 # assoclist 10:D7:B0:1A:96:7B
-def parse_BH_assoclist(to_parse, row, command_type, success_command):
+def parse_bh_assoclist(to_parse, row, command_type, success_command):
     """_summary_
 
     Args:
@@ -432,7 +432,7 @@ def parse_BH_assoclist(to_parse, row, command_type, success_command):
         _type_: _description_
     """
     if success_command is True:
-        if (len(to_parse) == 0):
+        if len(to_parse) == 0:
             row[command_type] = 0
             return ""
         else:
@@ -453,7 +453,7 @@ def chanim_add_value(to_parse, row, command_type, success_command):
     if success_command is True:
         chanim_answer = to_parse.split("\n")[2].split("\t")
         i = 0
-        if (len(chanim_answer) < 1):
+        if len(chanim_answer) < 1:
             i = 0
             for chanim in chanim_info:
                 row[command_type + "-" + chanim] = -1
@@ -465,9 +465,9 @@ def chanim_add_value(to_parse, row, command_type, success_command):
             except IndexError:
                 print ("Index Error %d %s", i, chanim_answer)
             else:
-                if (chanim_answer[i].isdigit()):
+                if chanim_answer[i].isdigit():
                     row[command_type + "-" + chanim] = int(chanim_answer[i])
-                elif (chanim_answer[i].isalnum()):
+                elif chanim_answer[i].isalnum():
                     row[command_type + "-" + chanim] = 0 #chanim_answer[i]
                 i = i + 1
     else:
@@ -586,6 +586,8 @@ def update_row(to_parse, success_command, command_type, logger):
             row[command_type] = "NA"
         elif "BACKHAUL_AP_TYPE" in command_type :
             row[command_type] = "NA"
+        elif "BACKHAUL_AP_RSSI_GENEMEXT" in command_type:
+            row[command_type] = "0"
         elif "BACKHAUL_AP_RSSI" in command_type :
             row[command_type] = "0"
         elif "FIRMWARE_VERSION" in command_type :
@@ -602,7 +604,7 @@ def update_row(to_parse, success_command, command_type, logger):
             row[command_type] = "0"
         elif "ELEC_STATE" in command_type:
             row[command_type] = "UNKNOWN"
-        elif ("PING_WO_DNS" in command_type):
+        elif "PING_WO_DNS" in command_type:
             row[command_type] = -1.0
         else:
             row[command_type] = -1
@@ -637,7 +639,7 @@ def update_row(to_parse, success_command, command_type, logger):
         elif command_type == "MODELE_NAME":
             row[command_type] = to_parse.split("\n")[1].split(":")[1].replace("'", "").strip()
         elif command_type == "VMZ_PS":
-            parse_process_VMZ(to_parse, row, logger)
+            parse_process_vmz(to_parse, row, logger)
         elif "CONNECTEDCLIENT" in command_type:
             row[command_type] = int(to_parse.split("\n")[0])
         elif command_type == "WIFI_CHANNEL_BH":
@@ -647,7 +649,7 @@ def update_row(to_parse, success_command, command_type, logger):
         elif command_type == "WIFI_CHANNEL_24G":
             row[command_type] = int(to_parse.split("\n")[1].split("\t")[1])
         elif command_type == "WIFI_BH_ASSOCLIST":
-            parse_BH_assoclist(to_parse, row, command_type, success_command)
+            parse_bh_assoclist(to_parse, row, command_type, success_command)
         elif "WIFI_CHANIM" in command_type:
             chanim_add_value(to_parse, row, command_type, success_command)
         elif command_type == "NB_CLIENT_WIFI_CONNECTED":
@@ -697,14 +699,14 @@ def parse_sta_info(to_parse, sta_mac):
     row = {}
     sta_info_list = to_parse.split("\n")
     for item in sta_info_list:
-        if ("tx failures:" in item):
+        if "tx failures:" in item:
             row['BH_STA_INFO_TX_FAILURES_'+sta_mac] = int(item.split(":")[1].strip(" "))
-        if ("link bandwidth =" in item):
+        if "link bandwidth =" in item:
             row['BH_STA_INFO_BANDWIDTH_'+sta_mac] = int(item.split("=")[1].split(" ")[1])
-        if ("in network " in item):
+        if "in network " in item:
             #uptime = item.strip(" ").split(" ")
             row['BH_STA_INFO_UPTIME_'+sta_mac] = int(item.strip(" ").split(" ")[3])
-        if ("rx decrypt failures:" in item):
+        if "rx decrypt failures:" in item:
             row['BH_STA_INFO_DECRYPT_FAILURE_'+sta_mac] = int(item.split(":")[1].strip(" "))
     return row
 
@@ -722,10 +724,10 @@ def get_assoc_list_info(ip, username, password, bh_assoc_list, logger):
         _type_: _description_
     """
     row = {}
-    if (len(bh_assoc_list) == 0):
+    if len(bh_assoc_list) == 0:
         return row
-    for STA in bh_assoc_list:
-        sta_mac = STA.split(" ")[1]
+    for sta in bh_assoc_list:
+        sta_mac = sta.split(" ")[1]
         command = "/usr/sbin/wlctl -i wl0.2 sta_info "+ sta_mac
         my_command = prepare_command(command, ip, username, password, logger)
         output, result = run_command(my_command, logger)
@@ -761,9 +763,9 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
             # For each command connect to extender and launch it
             command_to_execute = prepare_command(command, extender['ip'], extender['username'], extender['password'], logger)
             output, success_command = run_command(command_to_execute, logger)
-            if (command_type == 'WIFI_BH_ASSOCLIST'):
+            if command_type == 'WIFI_BH_ASSOCLIST':
                 my_row = {}
-                bh_assoc_list = parse_BH_assoclist(output, my_row, command_type, success_command)
+                bh_assoc_list = parse_bh_assoclist(output, my_row, command_type, success_command)
                 rows.update(my_row)
                 my_row = get_assoc_list_info(extender['ip'], extender['username'], extender['password'], bh_assoc_list, logger)
                 rows.update(my_row)
@@ -789,14 +791,14 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
         #     if (key != 'DATE'):
         #         fields[key] = rows[key]
 
-        extender_infux_DB = {
+        extender_infux_db = {
             'time': timestamp,
             'measurement' : "MONITORING",
             'tags': tags,
             'fields' : rows,
         }
         #print ("TAGS {} FIELDS : {}".format(tags['name'], fields))
-        serie.append(extender_infux_DB)
+        serie.append(extender_infux_db)
 
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")
@@ -950,47 +952,47 @@ def main(argv):
 
             if option in ('-d', '--destfile'):
                 #Check if absolute file is use
-                if (".." in arg):
+                if ".." in arg:
                     print ("Use absolute path instead of relative path ")
                     usage(argv)
 
-                if (len(arg.split(".")) > 0):
+                if len(arg.split(".")) > 0:
                     dest_file = arg.split(".")[0]
                 else:
                     dest_file = arg
-                if ("/" in dest_file):
+                if "/" in dest_file:
                     #Extract path and file name. If directory does not exist then create directory if needed
                     path, file = os.path.split(os.path.abspath(dest_file))
                     index_path = 0
                     #To manage debugger issue with path management
-                    if (len (path.split(" ")) > 1):
+                    if len (path.split(" ")) > 1:
                         index_path = 1
                     print ("%s %d %s %s", index_path, len (path.split(" ")), path.split(" "), file)
 
                     print ("%s %s %s", index_path, path.split(" ")[index_path], os.path.isdir(path.split(" ")[index_path]))
-                    if (os.path.isdir(path.split(" ")[index_path]) is False):
+                    if os.path.isdir(path.split(" ")[index_path]) is False:
                         os.mkdir(path.split(" ")[index_path])
                 logger.info("Destination file is : %s", dest_file)
 
             if option in ('-v','--verbose'):
                 logger.setLevel(logging.DEBUG)
 
-        if (config_jsonlist["network_type"] == "F398BT"):
+        if config_jsonlist["network_type"] == "F398BT":
             system_command_list = system_command_list_F398BT
-        elif (config_jsonlist["network_type"] == "F266GEN"):
+        elif config_jsonlist["network_type"] == "F266GEN":
             system_command_list = system_command_list_F266GEN
-        elif (config_jsonlist["network_type"] == "F266GENEMEXT"):
+        elif config_jsonlist["network_type"] == "F266GENEMEXT":
             system_command_list = system_command_list_F266GENEMEXT
 
-        if (len(config_jsonlist["network_config"]) == 0):
+        if len(config_jsonlist["network_config"]) == 0:
             print ("Config file is emty or not compliant")
             usage(argv)
             return -1
-        if (dest_file == ""):
+        if dest_file == "":
             print ("CSV Destination file is missing")
             usage(argv)
             return -1
-        if (len(system_command_list) == 0):
+        if len(system_command_list) == 0:
             print ("Need to define system type")
             usage (argv)
             return -1
