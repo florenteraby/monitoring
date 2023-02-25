@@ -124,7 +124,10 @@ Frequency Bands Supported: 5G
                 nss = 0
             else:
                 mcs = int(rate[2])
-                nss = int(rate[4])
+                try:
+                    nss = int(rate[4])
+                except ValueError:
+                    nss = 0
             if rx_nrate is True:
                 my_station_stats["rx_mcs"] = mcs
                 my_station_stats["rx_nss"] = nss
