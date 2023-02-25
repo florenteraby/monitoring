@@ -10,9 +10,9 @@ import logging
 from tools import tools
 
 device_command_assoclist_list = [
-    ["/usr/bin/wlctl -i wl0.1 assoclist", "wl0.1", "FH"],
-    ["/usr/bin/wlctl -i wl0.3 assoclist", "wl0.3", "BH"],
-    ["/usr/bin/wlctl -i wl1 assoclist", "wl1", "FH"]
+    ["/usr/sbin/wlctl -i wl0.1 assoclist", "wl0.1", "FH"],
+    ["/usr/sbin/wlctl -i wl0.3 assoclist", "wl0.3", "BH"],
+    ["/usr/sbin/wlctl -i wl1 assoclist", "wl1", "FH"]
 ]
 
 def station_stats(sta_info_result):
