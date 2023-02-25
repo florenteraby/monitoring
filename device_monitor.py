@@ -100,9 +100,15 @@ Frequency Bands Supported: 5G
 
     for sta_info_line in sta_info_result.splitlines():
         if "chanspec" in sta_info_line:
-            print(sta_info_line)
-            my_station_stats["chanspec_chan"] = int(sta_info_line.split(" ")[2].split("/")[0])
-            my_station_stats["chanspec_bw"] = int(sta_info_line.split(" ")[2].split("/")[1])
+            try:
+                my_station_stats["chanspec_chan"] = int(sta_info_line.split(" ")[2].split("/")[0])
+            except ValueError:
+                my_station_stats["chanspec_chan"] = int(sta_info_line.split(" ")[2].split("(")[0])
+            try:
+                my_station_stats["chanspec_bw"] = int(sta_info_line.split(" ")[2].split("/")[1])
+            except IndexError:
+                my_station_stats["chanspec_bw"] = 0
+
         to_find = ["tx total", "tx ucast", "tx mcast/bcast", "tx failures", "rx data pkts", "rx data bytes","rx ucast", "rx mcast/bcast", "rx mcast/bcast", "tx pkts", "rx total"]
         for my_string in to_find:
             if my_string in sta_info_line:

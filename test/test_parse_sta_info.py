@@ -177,6 +177,74 @@ def test_parse_station_mcs_nss_legacy():
     stats = list_of_station[0].get("STATS")
     assert stats["tx_mcs"] == 9
 
+SAT_INFO_3 = """[VER 8] STA 7E:BA:8E:9E:62:06:
+	 chanspec 56(0xe13a)
+	 aid:25 
+	 rateset [ 6 9 12 18 24 36 48 54 ]
+	 idle 0 seconds
+	 in network 88767 seconds
+	 state: AUTHENTICATED ASSOCIATED AUTHORIZED
+	 connection: SECURED
+	 auth: WPA2-PSK
+	 crypto: AES_CCM
+	 flags 0x91e13a: WME PS N_CAP VHT_CAP AMPDU AMSDU GBL_RCLASS
+	 HT caps 0x117e: 40MHz GF SGI20 SGI40 STBC-Rx
+	 VHT caps 0x152: SGI80 STBC-Rx SU-BFE MU-BFE
+	 tx total pkts: 2470967
+	 tx total bytes: 1103010483
+	 tx ucast pkts: 143357
+	 tx ucast bytes: 328243799
+	 tx mcast/bcast pkts: 2327610
+	 tx mcast/bcast bytes: 774766684
+	 tx failures: 0
+	 rx data pkts: 160546
+	 rx data bytes: 25842845
+	 rx data dur: 0
+	 rx ucast pkts: 160523
+	 rx ucast bytes: 25839794
+	 rx mcast/bcast pkts: 23
+	 rx mcast/bcast bytes: 3051
+	 rate of last tx pkt: 433333 kbps - 260000 kbps
+	 rate of last rx pkt: 6000 kbps
+	 rx decrypt succeeds: 91517
+	 rx decrypt failures: 0
+	 tx data pkts retried: 0
+	 per antenna rssi of last rx data frame: -32 -30 -41 -27
+	 per antenna average rssi of rx data frames: -32 -30 -42 -27
+	 per antenna noise floor: -89 -88 -88 -89
+	 tx total pkts sent: 145580
+	 tx pkts retries: 426
+	 tx pkts retry exhausted: 0
+	 tx FW total pkts sent: 0
+	 tx FW pkts retries: 0
+	 tx FW pkts retry exhausted: 0
+	 rx total pkts retried: 608
+MCS SET : [ 0 1 2 3 4 5 6 7 ]
+VHT SET : 0x1 1x1 2x1 3x1 4x1 5x1 6x1 7x1 8x1 9x1 
+smoothed rssi: -27
+tx nrate
+vht mcs 9 Nss 1 Tx Exp 3 bw80 sgi auto
+rx nrate
+legacy rate 6 Mbps stf mode 0 auto
+wnm
+0x21:  BSS-Transition  WNM-Sleep-Mode
+VENDOR OUI VALUE[0] 00:00:F0 
+VENDOR OUI VALUE[1] 00:50:F2 
+VENDOR OUI VALUE[2] 00:0C:E7 
+link bandwidth = 80 MHZ 
+RRM capability = 0x2007b  Link_Measurement Neighbor_Report Repeated_Measurement Beacon_Passive Beacon_Active Beacon_Table RM_MIB
+Frequency Bands Supported: 2.4G 5G 
+"""
+def test_parse_station_stats_bw_wrong():
+    """Test if bandwidth and CHannel are well detected
+    """
+    station_list = {}
+    station_list["34:53:D2:FC:E5:12"] = device_monitor.station_stats(SAT_INFO_3)
+    assert station_list["34:53:D2:FC:E5:12"]["chanspec_chan"] == 56
+    assert station_list["34:53:D2:FC:E5:12"]["chanspec_bw"] == 0
+    assert station_list["34:53:D2:FC:E5:12"]["tx_total_pkts"] == 2470967
+
+
 def test_create_device_field_command_error(mocker):
     """test with run command returning an error
 
@@ -253,5 +321,3 @@ def test_create_device_field_two_elts(mocker):
         print (influx.get('fields'))
         print (influx.keys())
         print (influx.get('fields').keys())
-
-
