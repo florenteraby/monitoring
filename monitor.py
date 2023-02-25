@@ -22,6 +22,7 @@ import os
 
 #from tools.config_file import *
 from tools.tools import prepare_command, run_command
+from device_monitor import create_device_serie
 
 if version_info[0] >=3:
     import influxdb_client
@@ -184,6 +185,7 @@ def parse_wl_status(wl_status_result):
             pass
         else:
             return wl_status[rssi_index + 1]
+    return "0"
 
 def parse_top(top_cmd, row):
     """parse the top command result to separate each procee and provide at list the cpu load per process
@@ -440,6 +442,7 @@ def parse_bh_assoclist(to_parse, row, command_type, success_command):
             del my_list[-1]
             row[command_type] = len(my_list)
             return my_list
+    return ""
 
 def chanim_add_value(to_parse, row, command_type, success_command):
     """_summary_
@@ -753,7 +756,7 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
 
     timestamp = datetime.datetime.utcnow().isoformat()
     serie = []
-
+    device_serie = []
     #Parse the list of extenders
     for extender in network_list:
         rows = {}
@@ -771,25 +774,12 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
                 rows.update(my_row)
             rows.update(update_row(output, success_command, command_type, logger))
 
-
-        try:
-            device_parse_result(rows.pop("DEVICE_STATUS"), extender['name'].strip(), rows['FIRMWARE_VERSION'], rows['MODELE_NAME'], client)
-        except KeyError:
-            logger.debug("No Device Status")
-
-        #extender['CSVWriter'].writerow(rows)
-        logger.info("Write row %s in filen %S", rows, extender['CSVFile'].name)
         tags = {'name' : extender['name'].strip(),
             'fw_version' : rows['FIRMWARE_VERSION'],
             'model_name' : rows['MODELE_NAME'],
             'setup': network_setup,
             'role' : extender['role'].strip()
             }
-
-        #print("EXTENDER NAME {} {}".format(extender.name, rows.items()))
-        # for key in rows.keys():
-        #     if (key != 'DATE'):
-        #         fields[key] = rows[key]
 
         extender_infux_db = {
             'time': timestamp,
@@ -799,9 +789,11 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
         }
         #print ("TAGS {} FIELDS : {}".format(tags['name'], fields))
         serie.append(extender_infux_db)
+        device_serie.append(create_device_serie(extender,timestamp))
 
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")
+    client.write_points(device_serie, time_precision='s',database="myDBExample")
     return True
 
 def monitoring_extenders(network_list, network_setup, polling_frequency, influxdb_server, dest_file, logger, system_command_lst):
