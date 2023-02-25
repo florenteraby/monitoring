@@ -145,7 +145,7 @@ def create_device_fields(result_to_parse, interface, ip, username, password):
     stations_list = []
     for line in result_to_parse.splitlines():
         station_mac =  line.split(" ")[1]
-        sta_info_command = f"wlctl -i {interface} sta_info {station_mac}"
+        sta_info_command = "wlctl -i "+interface+" sta_info "+station_mac
         command_to_execute = tools.prepare_command(sta_info_command, ip, username, password, logger)
         output, success = tools.run_command(command_to_execute, logger)
         if success is True:
