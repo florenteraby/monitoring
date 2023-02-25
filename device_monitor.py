@@ -118,6 +118,7 @@ Frequency Bands Supported: 5G
             my_station_stats["smoothed_rssi"] = sta_info_line.split(":")[1].strip()
         if tx_nrate is True or rx_nrate is True:
             rate = sta_info_line.split(" ")
+            print(rate)
             if "legacy" == rate[0]:
                 mcs = 0
                 nss = 0
