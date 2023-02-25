@@ -174,7 +174,7 @@ def create_device_serie(extender, timestamp):
         if success is True:
             stations = create_device_fields(output, interface, extender['ip'], extender['username'], extender['password'],)
         else:
-            stations = []
+            stations = {}
 
         for station in stations:
 

@@ -207,7 +207,6 @@ def test_create_device_field(mocker):
         mocker (_type_): _description_
     """
     mocker.patch('tools.tools.run_command', return_value=(SAT_INFO_1, True))
-    station_list = []
     station_list = device_monitor.create_device_fields(ASSOCLIST_ONE_ELEMENT, "wl0.1", "192.168.1.1", "root", "root")
     assert station_list[0].get('MAC') == "50:84:92:F1:1A:44"
     stats = station_list[0].get('STATS')
@@ -232,3 +231,25 @@ def test_create_device_field_two_elts(mocker):
     assert station_list[1].get('MAC') == "34:53:D2:FC:E8:B2"
     stats = station_list[1].get('STATS')
     assert stats["rx_ucast_pkts"] == 3192332
+    device_influx_db = []
+    for station in station_list:
+        device_tags = {
+            'name' : "TOTO",
+            'interface' : "interface",
+            'FH_BH':  'FH',
+            'MAC' : station.get('MAC')
+        }
+        device_serie = {
+        'time' : 0,
+        'measurement' : "DEVICE_AIRTIME",
+        'tags' : device_tags,
+        'fields' : station.get("STATS")
+        }
+        device_influx_db.append(device_serie)
+    for influx in device_influx_db:
+        print (influx.get('tags'))
+        print (influx.get('fields'))
+        print (influx.keys())
+        print (influx.get('fields').keys())
+
+
