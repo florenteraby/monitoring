@@ -789,7 +789,7 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
         }
         #print ("TAGS {} FIELDS : {}".format(tags['name'], fields))
         serie.append(extender_infux_db)
-        device_serie.append(create_device_serie(extender,timestamp))
+        device_serie.extend(create_device_serie(extender,timestamp))
 
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")

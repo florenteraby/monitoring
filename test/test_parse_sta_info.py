@@ -232,6 +232,7 @@ def test_create_device_field_two_elts(mocker):
     stats = station_list[1].get('STATS')
     assert stats["rx_ucast_pkts"] == 3192332
     device_influx_db = []
+    device_influx_db2 = []
     for station in station_list:
         device_tags = {
             'name' : "TOTO",
@@ -246,7 +247,8 @@ def test_create_device_field_two_elts(mocker):
         'fields' : station.get("STATS")
         }
         device_influx_db.append(device_serie)
-    for influx in device_influx_db:
+    device_influx_db2.extend(device_influx_db)
+    for influx in device_influx_db2:
         print (influx.get('tags'))
         print (influx.get('fields'))
         print (influx.keys())
