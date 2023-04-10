@@ -46,7 +46,7 @@ def run_command(command, logger):
         logger.info("{}\n".format (output))
         success_command = True
     finally:
-        return output, success_command
+        return output.decode('utf8'), success_command
 
 def main(argv):
     """_summary_

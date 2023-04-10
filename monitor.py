@@ -493,7 +493,7 @@ def vm_stat_add_value(to_parse, row, command_type, success_command):
         vmstat_list = filter(lambda x: x != "", to_parse.split("\n")[2].split(" "))
         i = 0
         for vmstats in vmstat_info:
-            row[command_type + "-" + vmstats] = int(vmstat_list[i])
+            row[command_type + "-" + vmstats] = int(next(vmstat_list))
             i = i + 1
     else:
         i = 0
@@ -792,8 +792,10 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
         device_serie.extend(create_device_serie(extender,timestamp))
 
     #print ("SERIE : {} ".format(serie))
-    client.write_points(serie, time_precision='s',database="myDBExample")
-    client.write_points(device_serie, time_precision='s',database="myDBExample")
+    #client.write_points(serie, time_precision='s',database="myDBExample")
+    client.write(bucket="f266-em-controller", org="URDBBSSolution", record=serie)
+    #client.write_points(device_serie, time_precision='s',database="myDBExample")
+    client.write(bucket="f266-em-controller", org="URDBBSSolution", record=device_serie)
     return True
 
 def monitoring_extenders(network_list, network_setup, polling_frequency, influxdb_server, dest_file, logger, system_command_lst):
@@ -844,15 +846,22 @@ def monitoring_extenders(network_list, network_setup, polling_frequency, influxd
 
     logger.info("Creating Data Base %s", influxdb_server["Server_name"])
     os.environ['NO_PROXY'] = influxdb_server["Server_name"]
-    if sys.version_info[0] == 2:
+    if sys.version_info[0] == 3:
+        token = os.environ.get("INFLUXDB_TOKEN")
+        org = influxdb_server["DB_name"]
+        url = influxdb_server["Server_name"] + ":" + influxdb_server["Server_port"]
+        influx_client = InfluxDBClient(url=url, token=token, org=org)
+        client = influx_client.write_api(write_options=SYNCHRONOUS)
+    elif sys.version_info[0] == 2:
         client = InfluxDBClient(host=influxdb_server["Server_name"],port=influxdb_server["Server_port"],
                                 ssl=False, proxies=None)
     else:
         client = InfluxDBClient(url=influxdb_server["Server_name"], host=influxdb_server["Server_name"],port=influxdb_server["Server_port"],
                                 ssl=False, proxies=None)
 
-    client.create_database(influxdb_server["DB_name"])
-    logger.info("Creation of Data Base %s %s", influxdb_server["Server_name"], client.get_list_database())
+    if sys.version_info[0] <= 2:
+        client.create_database(influxdb_server["DB_name"])
+        logger.info("Creation of Data Base %s %s", influxdb_server["Server_name"], client.get_list_database())
 
     #Start looping for monitoring extender
     while 1:
@@ -990,7 +999,7 @@ def main(argv):
             return -1
 
         logger.info("Start monitoring with config file %s, destination file will be %s, polling frequency is %s network type %s", config_jsonlist["network_config"], dest_file, config_jsonlist["Frequency"], config_jsonlist["network_type"])
-        monitoring_extenders(config_jsonlist["network_config"], config_jsonlist["network_setup"],config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
+        monitoring_extenders(config_jsonlist["network_config"], config_jsonlist["network_type"],config_jsonlist["Frequency"], config_jsonlist["Influx_Server"], dest_file, logger, system_command_list)
     finally:
         pass
     return 0
