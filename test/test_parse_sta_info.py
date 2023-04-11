@@ -311,6 +311,133 @@ def test_parse_station_stats_bw_wrong():
     assert station_list["34:53:D2:FC:E5:12"]["chanspec_bw"] == 0
     assert station_list["34:53:D2:FC:E5:12"]["rx_nss"] == 0
 
+STA_INFO_CHANSPEC_1L = """[VER 8] STA B0:4A:39:4A:7E:A6:
+\t chanspec 1l (0x1803)
+\t aid:24 
+\t rateset [ 1 2 5.5 6 9 11 12 18 24 36 48 54 ]
+\t idle 1 seconds
+\t in network 3949 seconds
+\t state: AUTHENTICATED ASSOCIATED AUTHORIZED
+\t connection: SECURED
+\t auth: WPA2-PSK
+\t crypto: AES_CCM
+\t flags 0x1e03a: WME N_CAP AMPDU AMSDU
+\t HT caps 0x16e: 40MHz SGI20 SGI40 STBC-Rx
+\t tx total pkts: 741267
+\t tx total bytes: 250576800
+\t tx ucast pkts: 1514
+\t tx ucast bytes: 127262
+\t tx mcast/bcast pkts: 739753
+\t tx mcast/bcast bytes: 250449538
+\t tx failures: 14
+\t rx data pkts: 1221
+\t rx data bytes: 202480
+\t rx data dur: 0
+\t rx ucast pkts: 403
+\t rx ucast bytes: 58953
+\t rx mcast/bcast pkts: 818
+\t rx mcast/bcast bytes: 143527
+\t rate of last tx pkt: 5500 kbps - 1000 kbps
+\t rate of last rx pkt: 1000 kbps
+\t rx decrypt succeeds: 1132
+\t rx decrypt failures: 0
+\t tx data pkts retried: 366
+\t per antenna rssi of last rx data frame: -86 -87 0 0
+\t per antenna average rssi of rx data frames: -86 -88 0 0
+\t per antenna noise floor: -87 -87 0 0
+\t tx total pkts sent: 1597
+\t tx pkts retries: 1033
+\t tx pkts retry exhausted: 14
+\t tx FW total pkts sent: 0
+\t tx FW pkts retries: 0
+\t tx FW pkts retry exhausted: 0
+\t rx total pkts retried: 327
+MCS SET : [ 0 1 2 3 4 5 6 7 ]
+smoothed rssi: -86
+tx nrate
+legacy rate 5.5 Mbps stf mode 0 auto
+rx nrate
+legacy rate 1 Mbps stf mode 0 auto
+wnm
+0x0:
+VENDOR OUI VALUE[0] 00:50:F2 
+link bandwidth = 40 MHZ 
+RRM capability = 0x0 
+Frequency Bands Supported: 2.4G 
+"""
+def test_parse_station_chan_spec_1l():
+    """Test if bandwidth and CHannel are well detected
+    """
+    station_list = {}
+    station_list["B0:4A:39:4A:7E:A6"] = device_monitor.station_stats(STA_INFO_CHANSPEC_1L)
+    assert station_list["B0:4A:39:4A:7E:A6"]["chanspec_chan"] == 1
+    assert station_list["B0:4A:39:4A:7E:A6"]["chanspec_bw"] == 0
+    assert station_list["B0:4A:39:4A:7E:A6"]["rx_nss"] == 0
+
+STA_INFO_CHANSPEC_1U = """[VER 8] STA B0:4A:39:4A:7E:A6:
+\t chanspec 1u (0x1803)
+\t aid:24 
+\t rateset [ 1 2 5.5 6 9 11 12 18 24 36 48 54 ]
+\t idle 1 seconds
+\t in network 3949 seconds
+\t state: AUTHENTICATED ASSOCIATED AUTHORIZED
+\t connection: SECURED
+\t auth: WPA2-PSK
+\t crypto: AES_CCM
+\t flags 0x1e03a: WME N_CAP AMPDU AMSDU
+\t HT caps 0x16e: 40MHz SGI20 SGI40 STBC-Rx
+\t tx total pkts: 741267
+\t tx total bytes: 250576800
+\t tx ucast pkts: 1514
+\t tx ucast bytes: 127262
+\t tx mcast/bcast pkts: 739753
+\t tx mcast/bcast bytes: 250449538
+\t tx failures: 14
+\t rx data pkts: 1221
+\t rx data bytes: 202480
+\t rx data dur: 0
+\t rx ucast pkts: 403
+\t rx ucast bytes: 58953
+\t rx mcast/bcast pkts: 818
+\t rx mcast/bcast bytes: 143527
+\t rate of last tx pkt: 5500 kbps - 1000 kbps
+\t rate of last rx pkt: 1000 kbps
+\t rx decrypt succeeds: 1132
+\t rx decrypt failures: 0
+\t tx data pkts retried: 366
+\t per antenna rssi of last rx data frame: -86 -87 0 0
+\t per antenna average rssi of rx data frames: -86 -88 0 0
+\t per antenna noise floor: -87 -87 0 0
+\t tx total pkts sent: 1597
+\t tx pkts retries: 1033
+\t tx pkts retry exhausted: 14
+\t tx FW total pkts sent: 0
+\t tx FW pkts retries: 0
+\t tx FW pkts retry exhausted: 0
+\t rx total pkts retried: 327
+MCS SET : [ 0 1 2 3 4 5 6 7 ]
+smoothed rssi: -86
+tx nrate
+legacy rate 5.5 Mbps stf mode 0 auto
+rx nrate
+legacy rate 1 Mbps stf mode 0 auto
+wnm
+0x0:
+VENDOR OUI VALUE[0] 00:50:F2 
+link bandwidth = 40 MHZ 
+RRM capability = 0x0 
+Frequency Bands Supported: 2.4G 
+"""
+def test_parse_station_chan_spec_1u():
+    """Test if bandwidth and CHannel are well detected
+    """
+    station_list = {}
+    station_list["B0:4A:39:4A:7E:A6"] = device_monitor.station_stats(STA_INFO_CHANSPEC_1U)
+    assert station_list["B0:4A:39:4A:7E:A6"]["chanspec_chan"] == 1
+    assert station_list["B0:4A:39:4A:7E:A6"]["chanspec_bw"] == 0
+    assert station_list["B0:4A:39:4A:7E:A6"]["rx_nss"] == 0
+
+
 
 def test_create_device_field_command_error(mocker):
     """test with run command returning an error

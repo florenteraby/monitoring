@@ -103,7 +103,14 @@ Frequency Bands Supported: 5G
             try:
                 my_station_stats["chanspec_chan"] = int(sta_info_line.split(" ")[2].split("/")[0])
             except ValueError:
-                my_station_stats["chanspec_chan"] = int(sta_info_line.split(" ")[2].split("(")[0])
+                try:
+                    my_station_stats["chanspec_chan"] = int(sta_info_line.split(" ")[2].split("(")[0])
+                except ValueError:
+                    try :
+                        my_station_stats["chanspec_chan"] = int(sta_info_line.split(" ")[2].split("l")[0])
+                    except ValueError:
+                        my_station_stats["chanspec_chan"] = int(sta_info_line.split(" ")[2].split("u")[0])
+
             try:
                 my_station_stats["chanspec_bw"] = int(sta_info_line.split(" ")[2].split("/")[1])
             except IndexError:
