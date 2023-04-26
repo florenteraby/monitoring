@@ -105,6 +105,177 @@ def test_parse_station_mcs_nss():
     assert station_list["34:53:D2:FC:E5:12"]["tx_nss"] == 3
     assert station_list["34:53:D2:FC:E5:12"]["rx_nss"] == 3
 
+SAT_INFO_MCS_NOT_INT = """[VER 8] STA 34:53:D2:FC:E5:12:
+	 chanspec 56/160 (0xed32)
+	 aid:16 
+	 rateset [ 6 9 12 18 24 36 48 54 ]
+	 idle 0 seconds
+	 in network 601993 seconds
+	 state: AUTHENTICATED ASSOCIATED AUTHORIZED
+	 connection: SECURED
+	 auth: WPA2-PSK
+	 crypto: AES_CCM
+	 flags 0x7d1e03b: BRCM WME N_CAP VHT_CAP HE_CAP AMPDU AMSDU GBL_RCLASS DWDS_CAP DWDS_ACTIVE MAP
+	 HT caps 0x1ef: LDPC 40MHz SGI20 SGI40 STBC-Tx STBC-Rx
+	 VHT caps 0xff: LDPC SGI80 SGI160 STBC-Tx STBC-Rx SU-BFR SU-BFE MU-BFR
+	 HE caps 0x6639: LDPC HE-HTC SU-BFR SU&MU-BFE
+	 OMI 0x02fb: 160Mhz rx=4ss tx=4ss ER_SU_DISABLE UL_MU_DISABLE 
+	 tx total pkts: 6982449
+	 tx total bytes: 4331833014
+	 tx ucast pkts: 4663215
+	 tx ucast bytes: 3559450749
+	 tx mcast/bcast pkts: 2319234
+	 tx mcast/bcast bytes: 772382265
+	 tx failures: 53
+	 rx data pkts: 3207364
+	 rx data bytes: 813311954
+	 rx data dur: 0
+	 rx ucast pkts: 3192332
+	 rx ucast bytes: 811022794
+	 rx mcast/bcast pkts: 15032
+	 rx mcast/bcast bytes: 2289160
+	 rate of last tx pkt: 2882350 kbps - 1633330 kbps
+	 rate of last rx pkt: 2882350 kbps
+	 rx decrypt succeeds: 3188048
+	 rx decrypt failures: 0
+	 tx data pkts retried: 8
+	 per antenna rssi of last rx data frame: -52 -54 -46 -53
+	 per antenna average rssi of rx data frames: -51 -53 -46 -53
+	 per antenna noise floor: -90 -89 -88 -91
+	 tx total pkts sent: 4662617
+	 tx pkts retries: 1839980
+	 tx pkts retry exhausted: 53
+	 tx FW total pkts sent: 0
+	 tx FW pkts retries: 0
+	 tx FW pkts retry exhausted: 0
+	 rx total pkts retried: 227777
+MCS SET : [ 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+VHT SET : 0x1 1x1 2x1 3x1 4x1 5x1 6x1 7x1 8x1 9x1 
+        : 0x2 1x2 2x2 3x2 4x2 5x2 6x2 7x2 8x2 9x2 
+        : 0x3 1x3 2x3 3x3 4x3 5x3 6x3 7x3 8x3 9x3 
+        : 0x4 1x4 2x4 3x4 4x4 5x4 6x4 7x4 8x4 9x4 
+HE SET  :
+	    20/40/80 MHz:
+		NSS1 Tx: 0-11        Rx: 0-11
+		NSS2 Tx: 0-11        Rx: 0-11
+		NSS3 Tx: 0-11        Rx: 0-11
+		NSS4 Tx: 0-11        Rx: 0-11
+	    160 MHz:
+		NSS1 Tx: 0-11        Rx: 0-11
+		NSS2 Tx: 0-11        Rx: 0-11
+		NSS3 Tx: 0-11        Rx: 0-11
+		NSS4 Tx: 0-11        Rx: 0-11
+smoothed rssi: -46
+tx nrate
+he mcs t Nss 3 Tx Exp 1 bw160 ldpc 2xLTF GI 0.8us auto
+rx nrate
+he mcs l Nss 3 Tx Exp 0 bw160 ldpc 2xLTF GI 0.8us auto
+wnm
+0x1:  BSS-Transition
+VENDOR OUI VALUE[0] 00:90:4C 
+VENDOR OUI VALUE[1] 00:10:18 
+VENDOR OUI VALUE[2] 00:50:F2 
+VENDOR OUI VALUE[3] 50:6F:9A 
+link bandwidth = 160 MHZ 
+RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
+Frequency Bands Supported: 5G 
+"""
+def test_parse_station_mcs_nss_not_int():
+    """Test if bandwidth and CHannel are well detected
+    """
+    station_list = {}
+    station_list["34:53:D2:FC:E5:12"] = device_monitor.station_stats(SAT_INFO_MCS_NOT_INT)
+    assert station_list["34:53:D2:FC:E5:12"]["tx_mcs"] == 0
+    assert station_list["34:53:D2:FC:E5:12"]["rx_mcs"] == 0
+    assert station_list["34:53:D2:FC:E5:12"]["tx_nss"] == 3
+    assert station_list["34:53:D2:FC:E5:12"]["rx_nss"] == 3
+
+SAT_INFO_NSS_NOT_INT = """[VER 8] STA 34:53:D2:FC:E5:12:
+	 chanspec 56/160 (0xed32)
+	 aid:16 
+	 rateset [ 6 9 12 18 24 36 48 54 ]
+	 idle 0 seconds
+	 in network 601993 seconds
+	 state: AUTHENTICATED ASSOCIATED AUTHORIZED
+	 connection: SECURED
+	 auth: WPA2-PSK
+	 crypto: AES_CCM
+	 flags 0x7d1e03b: BRCM WME N_CAP VHT_CAP HE_CAP AMPDU AMSDU GBL_RCLASS DWDS_CAP DWDS_ACTIVE MAP
+	 HT caps 0x1ef: LDPC 40MHz SGI20 SGI40 STBC-Tx STBC-Rx
+	 VHT caps 0xff: LDPC SGI80 SGI160 STBC-Tx STBC-Rx SU-BFR SU-BFE MU-BFR
+	 HE caps 0x6639: LDPC HE-HTC SU-BFR SU&MU-BFE
+	 OMI 0x02fb: 160Mhz rx=4ss tx=4ss ER_SU_DISABLE UL_MU_DISABLE 
+	 tx total pkts: 6982449
+	 tx total bytes: 4331833014
+	 tx ucast pkts: 4663215
+	 tx ucast bytes: 3559450749
+	 tx mcast/bcast pkts: 2319234
+	 tx mcast/bcast bytes: 772382265
+	 tx failures: 53
+	 rx data pkts: 3207364
+	 rx data bytes: 813311954
+	 rx data dur: 0
+	 rx ucast pkts: 3192332
+	 rx ucast bytes: 811022794
+	 rx mcast/bcast pkts: 15032
+	 rx mcast/bcast bytes: 2289160
+	 rate of last tx pkt: 2882350 kbps - 1633330 kbps
+	 rate of last rx pkt: 2882350 kbps
+	 rx decrypt succeeds: 3188048
+	 rx decrypt failures: 0
+	 tx data pkts retried: 8
+	 per antenna rssi of last rx data frame: -52 -54 -46 -53
+	 per antenna average rssi of rx data frames: -51 -53 -46 -53
+	 per antenna noise floor: -90 -89 -88 -91
+	 tx total pkts sent: 4662617
+	 tx pkts retries: 1839980
+	 tx pkts retry exhausted: 53
+	 tx FW total pkts sent: 0
+	 tx FW pkts retries: 0
+	 tx FW pkts retry exhausted: 0
+	 rx total pkts retried: 227777
+MCS SET : [ 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+VHT SET : 0x1 1x1 2x1 3x1 4x1 5x1 6x1 7x1 8x1 9x1 
+        : 0x2 1x2 2x2 3x2 4x2 5x2 6x2 7x2 8x2 9x2 
+        : 0x3 1x3 2x3 3x3 4x3 5x3 6x3 7x3 8x3 9x3 
+        : 0x4 1x4 2x4 3x4 4x4 5x4 6x4 7x4 8x4 9x4 
+HE SET  :
+	    20/40/80 MHz:
+		NSS1 Tx: 0-11        Rx: 0-11
+		NSS2 Tx: 0-11        Rx: 0-11
+		NSS3 Tx: 0-11        Rx: 0-11
+		NSS4 Tx: 0-11        Rx: 0-11
+	    160 MHz:
+		NSS1 Tx: 0-11        Rx: 0-11
+		NSS2 Tx: 0-11        Rx: 0-11
+		NSS3 Tx: 0-11        Rx: 0-11
+		NSS4 Tx: 0-11        Rx: 0-11
+smoothed rssi: -46
+tx nrate
+he mcs 3 Nss L Tx Exp 1 bw160 ldpc 2xLTF GI 0.8us auto
+rx nrate
+he mcs 3 Nss l Tx Exp 0 bw160 ldpc 2xLTF GI 0.8us auto
+wnm
+0x1:  BSS-Transition
+VENDOR OUI VALUE[0] 00:90:4C 
+VENDOR OUI VALUE[1] 00:10:18 
+VENDOR OUI VALUE[2] 00:50:F2 
+VENDOR OUI VALUE[3] 50:6F:9A 
+link bandwidth = 160 MHZ 
+RRM capability = 0x32  Neighbor_Report Beacon_Passive Beacon_Active
+Frequency Bands Supported: 5G 
+"""
+def test_parse_station_nss_not_int():
+    """Test if bandwidth and CHannel are well detected
+    """
+    station_list = {}
+    station_list["34:53:D2:FC:E5:12"] = device_monitor.station_stats(SAT_INFO_NSS_NOT_INT)
+    assert station_list["34:53:D2:FC:E5:12"]["tx_mcs"] == 3
+    assert station_list["34:53:D2:FC:E5:12"]["rx_mcs"] == 3
+    assert station_list["34:53:D2:FC:E5:12"]["tx_nss"] == 0
+    assert station_list["34:53:D2:FC:E5:12"]["rx_nss"] == 0
+
+
 SAT_INFO_2 = """[VER 8] STA 7E:BA:8E:9E:62:06:
 	 chanspec 56/80 (0xe13a)
 	 aid:25 
@@ -302,7 +473,7 @@ link bandwidth = 80 MHZ
 RRM capability = 0x2007b  Link_Measurement Neighbor_Report Repeated_Measurement Beacon_Passive Beacon_Active Beacon_Table RM_MIB
 Frequency Bands Supported: 2.4G 5G 
 """
-def test_parse_station_stats_bw_wrong():
+def test_parse_station_stats_bw_wrong_1():
     """Test if bandwidth and CHannel are well detected
     """
     station_list = {}
