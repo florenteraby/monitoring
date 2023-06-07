@@ -76,7 +76,7 @@ common_command_list = [
 ["ping -c1 8.8.8.8", "PING_WO_DNS"],
 ["lsof | grep beerocks_fronthaul | wc -l", "FD_BEEROCKS_FH"],
 ["lsof | grep beerocks_agent | wc -l", "FD_BEEROCKS_AGENT"],
-["lsof | grep beerocks_CONTROLLER | wc -l", "FD_BEEROCKS_CONTROLLER"],
+["lsof | grep beerocks_controller | wc -l", "FD_BEEROCKS_CONTROLLER"],
 ["lsof | wc -l", "FD_TOTAL_OPEN"]
 
 # ["nslookup -debug www.microsoft.com", "DNS_RESOLUTION_MICROSOFT"],
