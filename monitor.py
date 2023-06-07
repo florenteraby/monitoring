@@ -73,7 +73,12 @@ common_command_list = [
 ["du -s /opt/data/", "DATA_FS_SIZE"],
 ["ps | grep hostapd | wc -l", "NB_HOSTAPD"],
 ["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"],
-["ping -c1 8.8.8.8", "PING_WO_DNS"]
+["ping -c1 8.8.8.8", "PING_WO_DNS"],
+["lsof | grep beerocks_fronthaul | wc -l", "FD_BEEROCKS_FH"],
+["lsof | grep beerocks_agent | wc -l", "FD_BEEROCKS_AGENT"],
+["lsof | grep beerocks_CONTROLLER | wc -l", "FD_BEEROCKS_CONTROLLER"],
+["lsof | wc -l", "FD_TOTAL_OPEN"]
+
 # ["nslookup -debug www.microsoft.com", "DNS_RESOLUTION_MICROSOFT"],
 # ["nslookup -debug www.google.com", "DNS_RESOLUTION_GOOGLE"],
 ]
@@ -672,6 +677,8 @@ def update_row(to_parse, success_command, command_type, logger):
         elif "DEVICE_STATUS" in command_type:
             row[command_type] =  to_parse.split("\n")
         elif "NB_HOSTAPD" in command_type:
+            row[command_type] =  int(to_parse)
+        elif "FD_" in command_type:
             row[command_type] =  int(to_parse)
         elif "NB_DUMPCORE" in command_type:
             if "cat: can't open" in to_parse:
