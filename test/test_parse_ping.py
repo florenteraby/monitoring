@@ -1,3 +1,9 @@
+"""
+
+Returns:
+    _type_: _description_
+"""
+
 import logging
 import pytest
 from monitor import parse_ping_wodns
