@@ -23,6 +23,7 @@ import os
 #from tools.config_file import *
 from tools.tools import prepare_command, run_command
 from device_monitor import create_device_serie
+from pktq_stats import create_pktq_stats_series
 
 if version_info[0] >=3:
     import influxdb_client
@@ -764,6 +765,8 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
     timestamp = datetime.datetime.utcnow().isoformat()
     serie = []
     device_serie = []
+    pktq_stats_serie = []
+
     #Parse the list of extenders
     for extender in network_list:
         rows = {}
@@ -797,10 +800,13 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
         #print ("TAGS {} FIELDS : {}".format(tags['name'], fields))
         serie.append(extender_infux_db)
         device_serie.extend(create_device_serie(extender,timestamp))
+        pktq_stats_serie.extend(create_pktq_stats_series(extender, timestamp))
 
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")
     client.write_points(device_serie, time_precision='s',database="myDBExample")
+    client.write_points(pktq_stats_serie, time_precision='s',database="myDBExample")
+
     return True
 
 def monitoring_extenders(network_list, network_setup, polling_frequency, influxdb_server, dest_file, logger, system_command_lst):
