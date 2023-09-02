@@ -88,7 +88,7 @@ def create_bs_data_series(extender, timestamp):
                 bs_data_serie = {
                     'time' : timestamp,
                     'tag' : bs_data_tags,
-                    'measurement' : "EXTENDER_PKTQ",
+                    'measurement' : "STATION_BSS",
                     'fields' : sample
                 }
                 bs_data_series_list.append(bs_data_serie)
