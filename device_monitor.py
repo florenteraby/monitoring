@@ -214,5 +214,6 @@ def create_device_serie(extender, timestamp):
                 'tags' : device_tags,
                 'fields' : station.get("STATS")
             }
+            logger.debug("%s\n%s", station, device_serie)
             device_serie_list.append(device_serie)
     return device_serie_list
