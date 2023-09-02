@@ -131,13 +131,14 @@ def create_pktq_stats_series(extender, timestamp):
             for sample in pktq_sample:
                 pktq_tags = {
                     'name' : extender['name'].strip(),
-                    'interface' : interface
+                    'interface' : interface,
+                    'queue' : sample.get('QUEUE')
                 }
                 pktq_serie = {
                     'time' : timestamp,
                     'tags' : pktq_tags,
                     'measurement' : "EXTENDER_PKTQ",
-                    'fields' : sample
+                    'fields' : sample.get('STATS')
                 }
                 pktq_stats_logger.debug("%s\n%s\n", sample, pktq_serie)
                 pktq_serie_list.append(pktq_serie)
