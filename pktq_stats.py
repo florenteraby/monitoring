@@ -48,7 +48,7 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
         _type_: _description_
     """
     queue_list = []
-    queue = {}
+    
 
     pktq_stats_lines = result.split("\n")
     for pktq_stats_line in pktq_stats_lines:
@@ -60,32 +60,44 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
                 data = line[1].replace("-", "-1").split(",")
                 bk_q = data[0].split('BK')
                 if len(bk_q) > 1:
+                    queue_bk = {}
+                    queue = {}
                     parse_pktq_stats_logger.debug("Parsing data %s", bk_q)
-                    queue = pktq_stats_update_sample(data, 'bk', index)
+                    queue['STATS'] = pktq_stats_update_sample(data, 'bk', index)
+                    queue_bk['BK'] = queue
                     parse_pktq_stats_logger.debug("Create sample %s", queue)
-                    queue_list.append(queue)
+                    queue_list.append(queue_bk)
                 else:
                     be_q = data[0].split('BE')
                     if len (be_q) > 1 :
+                        queue_be = {}
+                        queue = {}
                         parse_pktq_stats_logger.debug("Parsing data %s", be_q)
-                        queue = pktq_stats_update_sample(data, 'be', index)
+                        queue['STATS'] = pktq_stats_update_sample(data, 'be', index)
+                        queue_be['BE'] = queue
                         parse_pktq_stats_logger.debug("Create sample %s", queue)
-                        queue_list.append(queue)
+                        queue_list.append(queue_be)
                     else:
                         vi_q = data[0].split('VI')
                         if len(vi_q) > 1:
+                            queue_vi = {}
+                            queue = {}
                             parse_pktq_stats_logger.debug("Parsing data %s", vi_q)
-                            queue = pktq_stats_update_sample(data, 'vi', index)
+                            queue['STATS'] = pktq_stats_update_sample(data, 'vi', index)
+                            queue_vi['VI'] = queue
                             parse_pktq_stats_logger.debug("Create sample %s", queue)
-                            queue_list.append(queue)
+                            queue_list.append(queue_vi)
 
                         else :
                             vo_q = data[0].split('VO')
                             if len(vo_q) > 1:
+                                queue_vo = {}
+                                queue = {}
                                 parse_pktq_stats_logger.debug("Parsing data %s", vo_q)
-                                queue = pktq_stats_update_sample(data, 'vo', index)
+                                queue['STATS'] = pktq_stats_update_sample(data, 'vo', index)
+                                queue_vo['VO'] = queue
                                 parse_pktq_stats_logger.debug("Create sample %s", queue)
-                                queue_list.append(queue)
+                                queue_list.append(queue_vo)
 
                             else :
                                 parse_pktq_stats_logger.errot("Nothing to parse %s", data)
