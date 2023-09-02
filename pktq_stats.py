@@ -98,8 +98,8 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
                                 queue = {}
                                 parse_pktq_stats_logger.debug("Parsing data %s", vo_q)
                                 queue = pktq_stats_update_sample(data, 'vo', index)
-                                queue_bk['QUEUE'] = "VO"+index.strip()
-                                queue_bk['STATS'] = queue
+                                queue_vo['QUEUE'] = "VO"+index.strip()
+                                queue_vo['STATS'] = queue
                                 parse_pktq_stats_logger.debug("Create sample %s", queue_vo)
                                 queue_list.append(queue_vo)
 
@@ -132,13 +132,13 @@ def create_pktq_stats_series(extender, timestamp):
                 pktq_tags = {
                     'name' : extender['name'].strip(),
                     'interface' : interface,
-                    'queue' : sample.get('QUEUE')
+                    'queue' : sample.get("QUEUE")
                 }
                 pktq_serie = {
                     'time' : timestamp,
                     'tags' : pktq_tags,
                     'measurement' : "EXTENDER_PKTQ",
-                    'fields' : sample.get('STATS')
+                    'fields' : sample.get("STATS")
                 }
                 pktq_stats_logger.debug("%s\n%s\n", sample, pktq_serie)
                 pktq_serie_list.append(pktq_serie)
