@@ -133,8 +133,9 @@ def create_pktq_stats_series(extender, timestamp):
                     'time' : timestamp,
                     'tags' : pktq_tags,
                     'measurement' : "EXTENDER_PKTQ",
-                    'fields' : sample.get('STATS')
+                    'fields' : sample
                 }
+                pktq_stats_logger.debug("%s\n%s\n", sample, pktq_serie)
                 pktq_serie_list.append(pktq_serie)
         else :
             pktq_stats_logger.error("Cannot get result for command : %s \n Result is %s\n", command, pktq_result)
