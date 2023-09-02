@@ -124,17 +124,18 @@ def create_pktq_stats_series(extender, timestamp):
         pktq_stats_logger.debug("success: %s : result : %s ", success, pktq_result)
         if success is True:
             pktq_sample = parse_pktq_stats(pktq_result, pktq_stats_logger)
-            pktq_tags = {
-                'name' : extender['name'].strip(),
-                'interface' : interface
-            }
-            pktq_serie = {
-                'time' : timestamp,
-                'tag' : pktq_tags,
-                'measurement' : "EXTENDER_PKTQ",
-                'fields' : pktq_sample
-            }
-            pktq_serie_list.append(pktq_serie)
+            for sample in pktq_sample:
+                pktq_tags = {
+                    'name' : extender['name'].strip(),
+                    'interface' : interface
+                }
+                pktq_serie = {
+                    'time' : timestamp,
+                    'tag' : pktq_tags,
+                    'measurement' : "EXTENDER_PKTQ",
+                    'fields' : sample
+                }
+                pktq_serie_list.append(pktq_serie)
         else :
             pktq_stats_logger.error("Cannot get result for command : %s \n Result is %s\n", command, pktq_result)
 
