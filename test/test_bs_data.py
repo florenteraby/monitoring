@@ -69,6 +69,3 @@ def test_bs_data_2(supply_logger):
     assert bs_data[0]['retries'] == 15.0
     assert bs_data[1]['station'] == "50:84:92:F1:1A:44"
     assert bs_data[1]['retries'] == 1.0
-
-
-
