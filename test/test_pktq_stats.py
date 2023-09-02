@@ -59,10 +59,11 @@ def test_pktq_stats_1(supply_logger):
     queue = parse_pktq_stats(PKTQ_STATS_OUTPUT_1, supply_logger)
     assert len(queue) == 16
     assert queue[0].get("queue") == "bk"
-    assert queue[0].get("retried") == '0'
+    assert queue[0].get("retried") == 0
+    assert queue[9].get("retried") == -1
     assert queue[14].get("queue") == "vo"
-    assert queue[14].get("retried") == '42'
-    assert queue[14].get("rtrydrop") == '6'
+    assert queue[14].get("retried") == 42
+    assert queue[14].get("rtrydrop") == 6
 
 PKTQ_STATS_OUTPUT_2 = """
 common queue
@@ -77,5 +78,3 @@ def test_pktq_stats_2(supply_logger):
     """
     queue = parse_pktq_stats(PKTQ_STATS_OUTPUT_2, supply_logger)
     assert len(queue) == 0
-
-

@@ -14,26 +14,29 @@ pktq_stats_command_list = [
     ["/usr/sbin/wlctl -i wl1 pktq_stats", "wl1"]
 ]
 
-"""
-common queue
-prec:(AC)    rqstd,  stored, dropped, retried, rtsfail,rtrydrop, psretry,    acked,utlsn,data Mbits, phy Mbits,%nss 1/2/3/4,  %air, %effcy  (v6)
-  00: BK         0,       0,       0,       0,       0,       0,       0,        0,    0,      0.00,      0.00,  -/ -/ -/ -,   0.0,    0.0
-  01: BK         0,       0,       0,       -,       -,       0,       0,        0,    0,         -,         -,           -,     -,      -
-  02: BK         0,       0,       0,       0,       0,       0,       0,        0,    0,      0.00,      0.00,  -/ -/ -/ -,   0.0,    0.0
-  03: BK         0,       0,       0,       -,       -,       0,       0,        0,    0,         -,         -,           -,     -,      -
-  04: BE    285087,  285087,       0,       0,       0,       0,       0,        0,   56,      0.00,      0.00,  -/ -/ -/ -,   0.0,    0.0
-  05: BE         0,       0,       0,       -,       -,       0,       0,        0,    0,         -,         -,           -,     -,      -
-  06: BE         0,       0,       0,       0,       0,       0,       0,        0,    0,      0.00,      0.00,  -/ -/ -/ -,   0.0,    0.0
-  07: BE         0,       0,       0,       -,       -,       0,       0,        0,    0,         -,         -,           -,     -,      -
-  08: VI         0,       0,       0,       0,       0,       0,       0,        0,    0,      0.00,      0.00,  -/ -/ -/ -,   0.0,    0.0
-  09: VI         0,       0,       0,       -,       -,       0,       0,        0,    0,         -,         -,           -,     -,      -
-  10: VI         0,       0,       0,       0,       0,       0,       0,        0,    0,      0.00,      0.00,  -/ -/ -/ -,   0.0,    0.0
-  11: VI         0,       0,       0,       -,       -,       0,       0,        0,    0,         -,         -,           -,     -,      -
-  12: VO    230157,  230157,       0,       0,       0,       0,       0,        0,    2,      0.00,      0.00,  -/ -/ -/ -,   0.0,    0.0
-  13: VO         0,       0,       0,       -,       -,       0,       0,        0,    0,         -,         -,           -,     -,      -
-  14: VO         0,       0,       0,      42,       0,       6,       0,        1,    0,      0.00,      6.00,  -/ -/ -/ -,   0.0,    1.9
-  15: VO        60,      60,       0,       -,       -,       0,       0,        0,    0,         -,         -,           -,     -,      -
-"""
+def pktq_stats_update_sample(data, queue, index):
+    """Fill the sample data to prepare InfluxDB
+
+    Args:
+        data (list): Data 
+        queue (string): String of the queue
+        index (_type_): Index of the queue
+
+    Returns:
+        _type_: the sample
+    """
+
+    sample = {
+        'queue' : queue,
+        'index' : int(index),
+        'dropped' : int(data[2].strip()),
+        'retried' : int(data[3].strip()),
+        'rtsfail' : int(data[4].strip()), 
+        'rtrydrop' : int(data[5].strip()),
+        'psretry' : int(data[6].strip())
+    }
+    return sample
+
 def parse_pktq_stats(result, parse_pktq_stats_logger):
     """_summary_
 
@@ -54,65 +57,33 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
             parse_pktq_stats_logger.debug("Proceed the parsing of %s", line)
             index = line[0]
             if index != 'prec':
-                data = line[1].split(",")
-                bk = data[0].split('BK')
-                if len(bk) > 1:
-                    parse_pktq_stats_logger.debug("Parsing data %s", bk)
-                    queue = {
-                        'queue' : 'bk',
-                        'index' : int(index),
-                        'dropped' : data[2].strip(),
-                        'retried' : data[3].strip(),
-                        'rtsfail' : data[4].strip(), 
-                        'rtrydrop' : data[5].strip(),
-                        'psretry' : data[6].strip()
-                    }
+                data = line[1].replace("-", "-1").split(",")
+                bk_q = data[0].split('BK')
+                if len(bk_q) > 1:
+                    parse_pktq_stats_logger.debug("Parsing data %s", bk_q)
+                    queue = pktq_stats_update_sample(data, 'bk', index)
                     parse_pktq_stats_logger.debug("Create sample %s", queue)
                     queue_list.append(queue)
                 else:
-                    be = data[0].split('BE')
-                    if len (be) > 1 :
-                        parse_pktq_stats_logger.debug("Parsing data %s", be)
-                        queue = {
-                            'queue' : 'be',
-                            'index' : int(index),
-                            'dropped' : data[2].strip(),
-                            'retried' : data[3].strip(),
-                            'rtsfail' : data[4].strip(), 
-                            'rtrydrop' : data[5].strip(),
-                            'psretry' : data[6].strip()
-                        }
+                    be_q = data[0].split('BE')
+                    if len (be_q) > 1 :
+                        parse_pktq_stats_logger.debug("Parsing data %s", be_q)
+                        queue = pktq_stats_update_sample(data, 'be', index)
                         parse_pktq_stats_logger.debug("Create sample %s", queue)
                         queue_list.append(queue)
                     else:
-                        vi = data[0].split('VI')
-                        if len(vi) > 1:
-                            parse_pktq_stats_logger.debug("Parsing data %s", vi)
-                            queue = {
-                                'queue' : 'vi',
-                                'index' : int(index),
-                                'dropped' : data[2].strip(),
-                                'retried' : data[3].strip(),
-                                'rtsfail' : data[4].strip(), 
-                                'rtrydrop' : data[5].strip(),
-                                'psretry' : data[6].strip()
-                            }
+                        vi_q = data[0].split('VI')
+                        if len(vi_q) > 1:
+                            parse_pktq_stats_logger.debug("Parsing data %s", vi_q)
+                            queue = pktq_stats_update_sample(data, 'vi', index)
                             parse_pktq_stats_logger.debug("Create sample %s", queue)
                             queue_list.append(queue)
 
                         else :
-                            vo = data[0].split('VO')
-                            if len(vo) > 1:
-                                parse_pktq_stats_logger.debug("Parsing data %s", vi)
-                                queue = {
-                                    'queue' : 'vo',
-                                    'index' : int(index),
-                                    'dropped' : data[2].strip(),
-                                    'retried' : data[3].strip(),
-                                    'rtsfail' : data[4].strip(), 
-                                    'rtrydrop' : data[5].strip(),
-                                    'psretry' : data[6].strip()
-                                }
+                            vo_q = data[0].split('VO')
+                            if len(vo_q) > 1:
+                                parse_pktq_stats_logger.debug("Parsing data %s", vo_q)
+                                queue = pktq_stats_update_sample(data, 'vo', index)
                                 parse_pktq_stats_logger.debug("Create sample %s", queue)
                                 queue_list.append(queue)
 
@@ -120,7 +91,6 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
                                 parse_pktq_stats_logger.errot("Nothing to parse %s", data)
             else:
                 parse_pktq_stats_logger.debug("Skip the 1st line of the table %s", line[1])
-
         else:
             parse_pktq_stats_logger.debug("Should be the 1st line %s drop it", line)
 

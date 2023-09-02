@@ -1,4 +1,9 @@
 #!/usr/bin/python
+"""_summary_
+
+    Returns:
+        _type_: _description_
+"""
 
 import sys
 import subprocess
@@ -19,7 +24,7 @@ def prepare_command(command, ip, login, password, logger):
         _type_: _description_
     """
     command_to_execute = "/usr/bin/sshpass -p"+password.strip()+" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=3 -o ConnectionAttempts=2 "+login.strip()+"@"+ip.strip()+" "+command
-    logger.debug("Command to execute {}".format(command_to_execute))
+    logger.debug("Command to execute %s", command_to_execute)
     return command_to_execute
 
 def run_command(command, logger):
@@ -30,23 +35,24 @@ def run_command(command, logger):
         logger (_type_): _description_
 
     Returns:
-        _type_: _description_
+        string : result of the command
+        bool : command success
     """
     success_command = False
     try:
         # output = subprocess.check_output(command.split(" "), stderr=STDOUT, timeout=30)
         output = subprocess.check_output(command.split(" "), stderr=STDOUT)
     except subprocess.CalledProcessError as error_exec:
-        logger.error("{} -> {}".format(error_exec.cmd, error_exec.output))
+        logger.error("%s -> %s",error_exec.cmd, error_exec.output)
         output = error_exec.output
     # except subprocess.TimeoutExpired as error_exec:
     #     logger.error("{} -> {}".format(error_exec.cmd, error_exec.output))
     #     output = error_exec.output
     else:
-        logger.info("{}\n".format (output))
+        logger.info("%s\n",output)
         success_command = True
-    finally:
-        return output, success_command
+
+    return output, success_command
 
 def main(argv):
     """_summary_
@@ -57,7 +63,7 @@ def main(argv):
     Returns:
         _type_: _description_
     """
-    return True
+    return True, argv
 
 if __name__ == "__main__":
     main(sys.argv[1:])
