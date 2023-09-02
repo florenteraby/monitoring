@@ -78,18 +78,20 @@ def create_bs_data_series(extender, timestamp):
             bs_data_logger.debug("command %s : success %s result : %s", to_execute, success, bs_data_result)
 
             bs_data_sample = parse_bs_data(bs_data_result, bs_data_logger)
-            bs_data_tags = {
-                'name' : extender['name'].strip(),
-                'interface' : interface
-            }
+            for sample in bs_data_sample:
+                bs_data_tags = {
+                    'name' : extender['name'].strip(),
+                    'interface' : interface,
+                    'station' : sample.get('station')
+                }
 
-            bs_data_serie = {
-                'time' : timestamp,
-                'tag' : bs_data_tags,
-                'measurement' : "EXTENDER_PKTQ",
-                'fields' : bs_data_sample
-            }
-            bs_data_series_list.append(bs_data_serie)
+                bs_data_serie = {
+                    'time' : timestamp,
+                    'tag' : bs_data_tags,
+                    'measurement' : "EXTENDER_PKTQ",
+                    'fields' : sample
+                }
+                bs_data_series_list.append(bs_data_serie)
         else:
             bs_data_logger.error("Error on collecting the commande : %s : %s", to_execute, bs_data_result)
 
