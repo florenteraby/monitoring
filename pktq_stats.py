@@ -106,7 +106,7 @@ def create_pktq_stats_series(extender, timestamp):
     pktq_serie_list = []
     pktq_stats_logger = logging.getLogger()
     for command, interface in pktq_stats_command_list:
-        to_execute = tools.prepare_command(command, extender['ip'], extender['login'], extender['password'], pktq_stats_logger)
+        to_execute = tools.prepare_command(command, extender['ip'], extender['username'], extender['password'], pktq_stats_logger)
         pktq_stats_logger.debug("%s", to_execute)
         pktq_result, success = tools.run_command(to_execute, pktq_stats_logger)
         pktq_stats_logger.debug("success: %s : result : %s ", success, pktq_result)

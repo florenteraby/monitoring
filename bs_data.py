@@ -72,7 +72,7 @@ def create_bs_data_series(extender, timestamp):
     bs_data_logger = logging.getLogger()
 
     for command, interface in bs_data_command:
-        to_execute = tools.prepare_command(command, extender['ip'], extender['login'], extender['password'], bs_data_logger)
+        to_execute = tools.prepare_command(command, extender['ip'], extender['username'], extender['password'], bs_data_logger)
         bs_data_result, success = tools.run_command(to_execute, bs_data_logger)
         if success is True:
             bs_data_logger.debug("command %s : success %s result : %s", to_execute, success, bs_data_result)
