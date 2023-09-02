@@ -811,6 +811,7 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
     client.write_points(serie, time_precision='s',database="myDBExample")
     client.write_points(device_serie, time_precision='s',database="myDBExample")
     client.write_points(pktq_stats_serie, time_precision='s',database="myDBExample")
+    client.write_points(bs_data_serie, time_precision='s',database="myDBExample")
 
     return True
 
@@ -906,7 +907,7 @@ def main(argv):
         _type_: _description_
     """
     logging.basicConfig(filename = "monitoring.log",
-    level = logging.ERROR,
+    level = logging.DEBUG,
     format = LOG_FORMAT,
     filemode = 'w')
 
