@@ -801,6 +801,7 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
         serie.append(extender_infux_db)
         device_serie.extend(create_device_serie(extender,timestamp))
         pktq_stats_serie.extend(create_pktq_stats_series(extender, timestamp))
+        logger.debug("pktq_series : {}", pktq_stats_serie)
 
     #print ("SERIE : {} ".format(serie))
     client.write_points(serie, time_precision='s',database="myDBExample")
