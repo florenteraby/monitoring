@@ -803,7 +803,7 @@ def do_extender_monitoring(network_list, network_setup, logger, system_command_l
         serie.append(extender_infux_db)
         device_serie.extend(create_device_serie(extender,timestamp))
         pktq_stats_serie.extend(create_pktq_stats_series(extender, timestamp))
-        bs_data_serie.extende(create_bs_data_series(extender, timestamp)
+        bs_data_serie.extend(create_bs_data_series(extender, timestamp)
         logger.debug("pktq_series : {%s}", pktq_stats_serie)
         logger.debug ("bs_data series %s", bs_data_serie)
 
