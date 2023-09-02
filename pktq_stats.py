@@ -131,7 +131,7 @@ def create_pktq_stats_series(extender, timestamp):
                 }
                 pktq_serie = {
                     'time' : timestamp,
-                    'tag' : pktq_tags,
+                    'tags' : pktq_tags,
                     'measurement' : "EXTENDER_PKTQ",
                     'fields' : sample
                 }
