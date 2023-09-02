@@ -902,7 +902,7 @@ def main(argv):
         _type_: _description_
     """
     logging.basicConfig(filename = "monitoring.log",
-    level = logging.DEBUG,
+    level = logging.ERROR,
     format = LOG_FORMAT,
     filemode = 'w')
 
