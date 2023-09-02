@@ -9,9 +9,9 @@ import logging
 from tools import tools
 
 bs_data_command = [
-    "/usr/bin/wlctl -i wl0.1 bs_data", "wl0.1",
-    "/usr/bin/wlctl -i wl0.3 bs_data", "wl0.3", 
-    "/usr/bin/wlctl -i wl1 bs_data", "wl1"
+    ["/usr/bin/wlctl -i wl0.1 bs_data", "wl0.1"],
+    ["/usr/bin/wlctl -i wl0.3 bs_data", "wl0.3"], 
+    ["/usr/bin/wlctl -i wl1 bs_data", "wl1"]
 ]
 
 """ 
