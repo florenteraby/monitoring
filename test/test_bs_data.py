@@ -71,7 +71,7 @@ def test_bs_data_2(supply_logger):
     assert bs_data[0]['air_use'] == 0.0
     assert bs_data[0]['data_use'] == 30.5
     assert bs_data[0]['retries'] == 15.0
-    assert bs_data[0]['bw'] == 80
+    assert bs_data[0]['bandwidth'] == 80
     assert bs_data[0]['mcs'] == 11
     assert bs_data[0]['nss'] == 2
     assert bs_data[1]['station'] == "50:84:92:F1:1A:44"
@@ -80,7 +80,7 @@ def test_bs_data_2(supply_logger):
     assert bs_data[1]['air_use'] == 0.1
     assert bs_data[1]['data_use'] == 69.5
     assert bs_data[1]['retries'] == 1.0
-    assert bs_data[1]['bw'] == 80
+    assert bs_data[1]['bandwidth'] == 80
     assert bs_data[1]['mcs'] == 11
     assert bs_data[1]['nss'] == 2
 
@@ -105,7 +105,7 @@ def test_bs_data_3(supply_logger):
     assert bs_data[0]['air_use'] == 0.0
     assert bs_data[0]['data_use'] == -1
     assert bs_data[0]['retries'] == 15.0
-    assert bs_data[0]['bw'] == 80
+    assert bs_data[0]['bandwidth'] == 80
     assert bs_data[0]['mcs'] == 11
     assert bs_data[0]['nss'] == 2
     assert bs_data[1]['station'] == "50:84:92:F1:1A:44"
@@ -114,6 +114,6 @@ def test_bs_data_3(supply_logger):
     assert bs_data[1]['air_use'] == 0.1
     assert bs_data[1]['data_use'] == 69.5
     assert bs_data[1]['retries'] == 1.0
-    assert bs_data[1]['bw'] == 80
+    assert bs_data[1]['bandwidth'] == 80
     assert bs_data[1]['mcs'] == 11
     assert bs_data[1]['nss'] == 2
