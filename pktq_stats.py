@@ -68,7 +68,7 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
     for pktq_stats_line in pktq_stats_lines:
         line = pktq_stats_line.split(":")
         if len(line) > 1:
-            parse_pktq_stats_logger.debug("Proceed the parsing of %s", line)
+            parse_pktq_stats_logger.info("Proceed the parsing of %s", line)
             index = line[0]
             if index != 'prec':
                 data = line[1].replace("-", "-1").split(",")
@@ -82,7 +82,7 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
                     parse_pktq_stats_logger.debug("Parsing data %s", bk_q)
                     queue = pktq_stats_update_sample(data, 'bk', index)
                     queue_bk = pktq_stats_update("BK", index, queue)
-                    parse_pktq_stats_logger.debug("Create sample %s", queue_bk)
+                    parse_pktq_stats_logger.info("Create sample %s", queue_bk)
                     queue_list.append(queue_bk)
                 elif len (be_q) > 1 :
                     queue_be = {}
@@ -90,7 +90,7 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
                     parse_pktq_stats_logger.debug("Parsing data %s", be_q)
                     queue = pktq_stats_update_sample(data, 'be', index)
                     queue_be = pktq_stats_update("BE", index, queue)
-                    parse_pktq_stats_logger.debug("Create sample %s", queue_be)
+                    parse_pktq_stats_logger.info("Create sample %s", queue_be)
                     queue_list.append(queue_be)
                 elif len(vi_q) > 1:
                     queue_vi = {}
@@ -98,7 +98,7 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
                     parse_pktq_stats_logger.debug("Parsing data %s", vi_q)
                     queue = pktq_stats_update_sample(data, 'vi', index)
                     queue_vi = pktq_stats_update("VI", index, queue)
-                    parse_pktq_stats_logger.debug("Create sample %s", queue_vi)
+                    parse_pktq_stats_logger.info("Create sample %s", queue_vi)
                     queue_list.append(queue_vi)
 
                 elif len(vo_q) > 1:
@@ -107,11 +107,11 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
                     parse_pktq_stats_logger.debug("Parsing data %s", vo_q)
                     queue = pktq_stats_update_sample(data, 'vo', index)
                     queue_vo = pktq_stats_update("VO", index, queue)
-                    parse_pktq_stats_logger.debug("Create sample %s", queue_vo)
+                    parse_pktq_stats_logger.info("Create sample %s", queue_vo)
                     queue_list.append(queue_vo)
 
                 else :
-                    parse_pktq_stats_logger.errot("Nothing to parse %s", data)
+                    parse_pktq_stats_logger.info("Nothing to parse %s", data)
             else:
                 parse_pktq_stats_logger.debug("Skip the 1st line of the table %s", line[1])
         else:
@@ -153,6 +153,6 @@ def create_pktq_stats_series(extender, timestamp):
                 pktq_stats_logger.debug("%s\n%s\n", sample, pktq_serie)
                 pktq_serie_list.append(pktq_serie)
         else :
-            pktq_stats_logger.error("Cannot get result for command : %s \n Result is %s\n", command, pktq_result)
+            pktq_stats_logger.info("Cannot get result for command : %s \n Result is %s\n", command, pktq_result)
 
     return pktq_serie_list
