@@ -296,6 +296,8 @@ def parse_process_vmz(output, row, logger):
             row["VMZ_DNSMASQ"] = get_vmz(ps_result, logger)
         if "hal_wifi" in ps_result:
             row["VMZ_HALWIFI"] = get_vmz(ps_result, logger)
+        if "data-collector" in ps_result :
+            row['VMZ_DATACOLLECTOR'] = get_vmz(ps_result, logger)
 
 # """ ''' deviceParseResult example of result
 # We can see on F@ST266 the foloowing result
