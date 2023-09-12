@@ -41,70 +41,58 @@ def parse_bs_data(bs_data_result, bs_data_logger):
             bs_data_logger.debug("The station to parse : %s", station_stats[0])
 
             try :
-                phy_mbps = float(station_stats[1])
+                sample["phy_mbps"] = float(station_stats[1])
             except ValueError:
                 bs_data_logger.debug("ValueError : %s", station_stats[0])
-                phy_mbps = -1
+                sample["phy_mbps"] = -1
 
             try :
-                data_mbps = float(station_stats[2])
+                sample['data_mbps'] = float(station_stats[2])
             except ValueError:
                 bs_data_logger.debug("ValueError : %s", station_stats[0])
-                data_mbps = -1
+                sample['data_mbps'] = -1
 
             try :
-                air_use = float(station_stats[3].split("%")[0])
+                sample['air_use'] = float(station_stats[3].split("%")[0])
             except ValueError:
                 bs_data_logger.debug("ValueError : %s", station_stats[0])
-                air_use = -1
+                sample['air_use'] = -1
 
             try :
-                data_use = float(station_stats[4].split("%")[0])
+                sample['data_use'] = float(station_stats[4].split("%")[0])
             except ValueError:
                 bs_data_logger.debug("ValueError : %s", station_stats[0])
-                data_use = -1
+                sample['data_use'] = -1
 
             try :
-                retries = float(station_stats[5].split("%")[0])
+                sample['retries'] = float(station_stats[5].split("%")[0])
             except ValueError:
                 bs_data_logger.debug("ValueError : %s", station_stats[0])
-                retries = -1
+                sample['retries'] = -1
 
             try :
-                bandwidth = int(station_stats[6])
+                sample['bandwidth'] = int(station_stats[6])
             except ValueError:
                 bs_data_logger.debug("ValueError : %s", station_stats[0])
-                bandwidth = -1
+                sample['bandwidth'] = -1
 
             try :
-                mcs = int(station_stats[7])
+                sample['mcs'] = int(station_stats[7])
             except ValueError:
                 bs_data_logger.debug("ValueError : %s", station_stats[0])
-                mcs = -1
+                sample['mcs'] = -1
 
             try :
-                nss = int(station_stats[8])
+                sample['nss'] = int(station_stats[8])
             except ValueError:
                 bs_data_logger.debug("ValueError : %s", station_stats[0])
-                nss = -1
+                sample['nss'] = -1
 
 
-            station = station_stats[0]
-            sample = {
-                'station'   : station,
-                'phy_mbps'  : phy_mbps,
-                'data_mbps' : data_mbps,
-                'air_use'   : air_use,
-                'data_use'  : data_use,
-                'retries'   : retries,
-                'bw'        : bandwidth,
-                'mcs'       : mcs,
-                'nss'       : nss
-            }
+            sample['station'] = station_stats[0]
             bs_data_sample.append(sample)
         else:
             bs_data_logger.debug("First line or last line (skip it) : %s", station_stats)
-
 
     return bs_data_sample
 
@@ -143,6 +131,6 @@ def create_bs_data_series(extender, timestamp):
                 }
                 bs_data_series_list.append(bs_data_serie)
         else:
-            bs_data_logger.error("Error on collecting the commande : %s : %s", to_execute, bs_data_result)
+            bs_data_logger.info("Error on collecting the commande : %s : %s", to_execute, bs_data_result)
 
     return bs_data_series_list
