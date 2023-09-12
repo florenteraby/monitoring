@@ -37,19 +37,33 @@ def pktq_stats_update_sample(data, queue, index):
     }
     return sample
 
-def parse_pktq_stats(result, parse_pktq_stats_logger):
-    """_summary_
+def pktq_stats_update(queue_name, index, stats):
+    """update the entry of the sample
 
     Args:
-        result (_type_): _description_
-        parse_pktq_stats_logger (_type_): _description_
+        queue_name (str): Name of the Q, expected BK, BE, VO, VI
+        index (str): Index of the Q
+        stats (dict): Dictionnary of the Q stats
 
     Returns:
-        _type_: _description_
+        dict: The sample to send to InfluxDB
+    """
+    queue = {}
+    queue['QUEUE'] = queue_name+index.strip()
+    queue['STATS'] = stats
+    return queue
+
+def parse_pktq_stats(result, parse_pktq_stats_logger):
+    """Parse the result of pktq stats from the interface. For each queue inside Q stats
+
+    Args:
+        result (str): the result of the command to parse.
+        parse_pktq_stats_logger (logger): logger
+
+    Returns:
+        list : list of Q stats classified per Q
     """
     queue_list = []
-    
-
     pktq_stats_lines = result.split("\n")
     for pktq_stats_line in pktq_stats_lines:
         line = pktq_stats_line.split(":")
@@ -59,52 +73,45 @@ def parse_pktq_stats(result, parse_pktq_stats_logger):
             if index != 'prec':
                 data = line[1].replace("-", "-1").split(",")
                 bk_q = data[0].split('BK')
+                be_q = data[0].split('BE')
+                vi_q = data[0].split('VI')
+                vo_q = data[0].split('VO')
                 if len(bk_q) > 1:
                     queue_bk = {}
                     queue = {}
                     parse_pktq_stats_logger.debug("Parsing data %s", bk_q)
                     queue = pktq_stats_update_sample(data, 'bk', index)
-                    queue_bk['QUEUE'] = "BK"+index.strip()
-                    queue_bk['STATS'] = queue
+                    queue_bk = pktq_stats_update("BK", index, queue)
                     parse_pktq_stats_logger.debug("Create sample %s", queue_bk)
                     queue_list.append(queue_bk)
-                else:
-                    be_q = data[0].split('BE')
-                    if len (be_q) > 1 :
-                        queue_be = {}
-                        queue = {}
-                        parse_pktq_stats_logger.debug("Parsing data %s", be_q)
-                        queue = pktq_stats_update_sample(data, 'be', index)
-                        queue_be['QUEUE'] = "BE"+index.strip()
-                        queue_be['STATS'] = queue
-                        parse_pktq_stats_logger.debug("Create sample %s", queue_be)
-                        queue_list.append(queue_be)
-                    else:
-                        vi_q = data[0].split('VI')
-                        if len(vi_q) > 1:
-                            queue_vi = {}
-                            queue = {}
-                            parse_pktq_stats_logger.debug("Parsing data %s", vi_q)
-                            queue = pktq_stats_update_sample(data, 'vi', index)
-                            queue_vi['QUEUE'] = "VI"+index.strip()
-                            queue_vi['STATS'] = queue
-                            parse_pktq_stats_logger.debug("Create sample %s", queue_vi)
-                            queue_list.append(queue_vi)
+                elif len (be_q) > 1 :
+                    queue_be = {}
+                    queue = {}
+                    parse_pktq_stats_logger.debug("Parsing data %s", be_q)
+                    queue = pktq_stats_update_sample(data, 'be', index)
+                    queue_be = pktq_stats_update("BE", index, queue)
+                    parse_pktq_stats_logger.debug("Create sample %s", queue_be)
+                    queue_list.append(queue_be)
+                elif len(vi_q) > 1:
+                    queue_vi = {}
+                    queue = {}
+                    parse_pktq_stats_logger.debug("Parsing data %s", vi_q)
+                    queue = pktq_stats_update_sample(data, 'vi', index)
+                    queue_vi = pktq_stats_update("VI", index, queue)
+                    parse_pktq_stats_logger.debug("Create sample %s", queue_vi)
+                    queue_list.append(queue_vi)
 
-                        else :
-                            vo_q = data[0].split('VO')
-                            if len(vo_q) > 1:
-                                queue_vo = {}
-                                queue = {}
-                                parse_pktq_stats_logger.debug("Parsing data %s", vo_q)
-                                queue = pktq_stats_update_sample(data, 'vo', index)
-                                queue_vo['QUEUE'] = "VO"+index.strip()
-                                queue_vo['STATS'] = queue
-                                parse_pktq_stats_logger.debug("Create sample %s", queue_vo)
-                                queue_list.append(queue_vo)
+                elif len(vo_q) > 1:
+                    queue_vo = {}
+                    queue = {}
+                    parse_pktq_stats_logger.debug("Parsing data %s", vo_q)
+                    queue = pktq_stats_update_sample(data, 'vo', index)
+                    queue_vo = pktq_stats_update("VO", index, queue)
+                    parse_pktq_stats_logger.debug("Create sample %s", queue_vo)
+                    queue_list.append(queue_vo)
 
-                            else :
-                                parse_pktq_stats_logger.errot("Nothing to parse %s", data)
+                else :
+                    parse_pktq_stats_logger.errot("Nothing to parse %s", data)
             else:
                 parse_pktq_stats_logger.debug("Skip the 1st line of the table %s", line[1])
         else:
@@ -116,8 +123,11 @@ def create_pktq_stats_series(extender, timestamp):
     """Create and initiate the pktq_stats on all available interface. That allow to gather stats which can help to identify issue
 
     Args:
-        extender (extender): extender definition to connect to the extender
+        extender (extender): describe extender, ip, login, password etc
         timestamp (timestamp): timestamp
+
+    Returns:
+        list : lis of stats per interface
     """
     pktq_serie_list = []
     pktq_stats_logger = logging.getLogger()
