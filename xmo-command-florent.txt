@@ -1,5 +1,6 @@
 xmo-client -p Device/DeviceInfo/Logging/Syslog/Server/Enable -s true
 xmo-client -p Device/DeviceInfo/Logging/Syslog/Server/IPv4Address -s 3.220.67.249
+xmo-client -p Device/DeviceInfo/Logging/Syslog/Server/Port -s 5140
 xmo-client -p Device/DeviceInfo/Logging/Syslog/Server/LogHeaderTemplate -s '$DATE $HOST [#SERIAL_NUMBER#][CONTROLLER] $MSGHDR $FACILITY:$PRIORITY'
 xmo-client -p Device/DeviceInfo/Logging/Syslog/Server/SourceIndex -s '1,3,4'
 
