@@ -502,8 +502,13 @@ def vm_stat_add_value(to_parse, row, command_type, success_command):
         vmstat_list = filter(lambda x: x != "", to_parse.split("\n")[2].split(" "))
         i = 0
         for vmstats in vmstat_info:
-            row[command_type + "-" + vmstats] = int(vmstat_list[i])
-            i = i + 1
+            try:
+                row[command_type + "-" + vmstats] = int(vmstat_list[i])
+                i = i + 1
+            except Exception:
+                row[command_type + "-" + vmstat] = -1
+                i = i + 1
+
     else:
         i = 0
         for vmstat in vmstat_info:
@@ -683,7 +688,10 @@ def update_row(to_parse, success_command, command_type, logger):
         elif "NB_HOSTAPD" in command_type:
             row[command_type] =  int(to_parse)
         elif "FD_" in command_type:
-            row[command_type] =  int(to_parse)
+            try :
+                row[command_type] =  int(to_parse)
+            except Exception :
+                row[command_type] = -1
         elif "NB_DUMPCORE" in command_type:
             if "cat: can't open" in to_parse:
                 row[command_type] = 0
