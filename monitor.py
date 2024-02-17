@@ -74,7 +74,7 @@ common_command_list = [
 ["du -s /opt/conf/", "CONF_FS_SIZE"],
 ["du -s /opt/data/", "DATA_FS_SIZE"],
 ["ps | grep hostapd | wc -l", "NB_HOSTAPD"],
-["cat /opt/data/dumpcore.history | wc -l", "NB_DUMPCORE"],
+["cat /opt/data/dumpcore/dumpcore.history | wc -l", "NB_DUMPCORE"],
 ["ping -c1 8.8.8.8", "PING_WO_DNS"],
 ["lsof | grep beerocks_fronthaul | wc -l", "FD_BEEROCKS_FH"],
 ["lsof | grep beerocks_agent | wc -l", "FD_BEEROCKS_AGENT"],
